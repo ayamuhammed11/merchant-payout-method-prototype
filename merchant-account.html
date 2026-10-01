@@ -510,15 +510,6 @@
         <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
       </button>
       <div class="topbar-right">
-        <div class="role-switch">
-          <label for="roleSelect">Viewing as</label>
-          <select id="roleSelect">
-            <option value="sales">Salesperson</option>
-            <option value="manager">Sales Manager</option>
-            <option value="head">Head of Sales</option>
-            <option value="onboarding">Onboarding Team</option>
-          </select>
-        </div>
         <button class="lang">عربي</button>
         <div class="user">
           <span class="name" id="userName">Aya Muhammed</span>
@@ -642,7 +633,8 @@
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
   const K = window.KashierRates;
   const { ROLES, TIER_OWNER } = K;
-  let role = K.getRole();
+  // This page is the Onboarding team's: it always opens as them, with no role switch.
+  const role = 'onboarding';
   const APP_ID = new URLSearchParams(location.search).get('app') || '';
 
   const TABS = ['Business Info', 'Change Requests', 'Documents', 'Payment Configurations', 'Payout Method',
@@ -1037,18 +1029,7 @@
     clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
   }
 
-  function renderRole() {
-    $('roleSelect').value = role;
-    $('userName').textContent = ROLES[role].name;
-  }
-  $('roleSelect').addEventListener('change', e => {
-    role = e.target.value;
-    K.setRole(role);
-    renderRole();
-    render();
-  });
-
-  renderRole();
+  $('userName').textContent = ROLES[role].name;
   render();
 
   // Sidebar collapsible sections

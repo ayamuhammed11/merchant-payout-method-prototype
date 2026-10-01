@@ -760,7 +760,13 @@ window.KashierRates = (function () {
           decision: 'rejected', decidedBy: by, decidedTs: at(9),
           reason: 'The wallet holder name does not match the registered business owner. Resubmit with the owner’s name or keep the bank account.' }] },
     ];
+    // Newer requests from the merchant, still waiting on the Onboarding team.
+    reqs.push({ id: app.id + '::pc4', ref: 'PCR-' + n + '-04', ts: at(16), by: app.biz, items: [
+      { account: 'Primary account', from: afterBranch, to: Object.assign({}, afterBranch, { holder: afterBranch.holder + ' Trading', account: '3004' + n }) }] });
     if (status === 'live') {
+      reqs.push({ id: app.id + '::pc5', ref: 'PCR-' + n + '-05', ts: at(18), by: app.biz, items: [
+        { account: 'Secondary account', from: sec,
+          to: { method: 'bank', bankName: 'Commercial International Bank (CIB)', branch: 'Nasr City', holder: sec.holder, account: '4005' + n } }] });
       reqs.push({ id: app.id + '::pc3', ref: 'PCR-' + n + '-03', ts: at(14), by: app.biz, items: [
         { account: 'Primary account', from: afterBranch, to: Object.assign({}, afterBranch, { bankName: 'Banque Misr', branch: 'Heliopolis', account: '2003' + n }) },
         { account: 'Secondary account', from: sec, to: Object.assign({}, sec, { provider: 'Orange Cash', number: '01211122233' }) },
