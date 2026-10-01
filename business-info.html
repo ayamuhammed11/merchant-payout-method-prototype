@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kashier | Merchant — Business Info</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    /* Kashier design tokens */
+    --primary: #001F5F;          /* Ocean 100 */
+    --primary-hover: #103788;    /* Ocean 90  */
+    --ocean-10: #F1F6FF;         /* Ocean 10  */
+    --ocean-07: #C0D5FF;         /* Ocean 07  */
+    --link: #2955B1;             /* Ocean 80  */
+    --accent: #00BCB4;           /* Kashier Teal (brand) */
+    --accent-10: #EAFFFE;        /* Kashier 10 */
+    --destructive: #A50017;      /* Watermelon base */
+    --destructive-hover: #830012;/* Watermelon 90 */
+    --destructive-bg: #FFEAED;   /* Watermelon 10 */
+    --destructive-border: #FFBBC4;
+    --success: #4AAB4E;          /* Lemon base */
+    --success-bg: #F3FFF4;       /* Lemon 10 */
+    --success-border: #AEFFB2;   /* Lemon 07 */
+    --success-text: #1A541D;     /* Lemon 100 */
+    --warning: #FBAF1F;          /* Mango base */
+    --warning-bg: #FFF7E8;       /* Mango 10 */
+    --warning-border: #FFD484;   /* Mango 07 */
+    --warning-text: #513500;     /* Mango 100 */
+
+    --foreground: #202020;       /* Cadet black */
+    --border: #E6E8E8;           /* Neutral 08 */
+    --border-subtle: #F5F6F6;    /* Neutral 09 */
+    --muted: #F5F6F6;
+    --cadet-base: #556767;       /* Neutral base */
+    --cadet-02: #697979;
+    --cadet-04: #839090;
+    --cadet-05: #919C9C;
+    --cadet-06: #B3BBBB;
+
+    --radius: 4px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Noto Sans', Arial, sans-serif;
+    background: #fff;
+    color: var(--foreground);
+    display: flex;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+  h1, h2, h3, h4 { font-family: 'Outfit', Arial, sans-serif; margin: 0; font-weight: 700; }
+  a { text-decoration: none; }
+  button { font-family: inherit; }
+
+  .hi { width: 20px; height: 20px; flex-shrink: 0; }
+  .hi-sm { width: 16px; height: 16px; flex-shrink: 0; }
+  .hi-xs { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar { width: 232px; background: #fff; min-height: 100vh; padding: 22px 14px 30px;
+    border-right: 1px solid var(--border-subtle);
+    position: sticky; top: 0; align-self: flex-start; max-height: 100vh; overflow-y: auto; flex-shrink: 0; z-index: 60; }
+  .brand { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 26px; color: var(--accent);
+    padding: 0 10px; margin-bottom: 26px; letter-spacing: -.01em; }
+  .nav-link { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 8px;
+    color: var(--cadet-base); text-decoration: none; font-size: 14px; margin-bottom: 2px; position: relative; }
+  .nav-link svg { color: var(--cadet-04); }
+  .nav-link.active { background: #EEF1FB; color: var(--primary); font-weight: 600; }
+  .nav-link.active svg { color: var(--primary); }
+  .nav-link:not(.active):hover { background: #F7F8F8; }
+  .nav-section { margin-top: 14px; }
+  .nav-section .section-head { display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 12px; color: var(--primary); font-weight: 600; font-size: 13px; cursor: pointer; user-select: none; }
+  .nav-section .section-head svg { color: var(--cadet-05); }
+  .nav-sub { display: flex; flex-direction: column; }
+  .nav-sub a { padding: 9px 12px; border-radius: 8px; color: var(--cadet-base); font-size: 14px; }
+  .nav-sub a:hover { background: #F7F8F8; }
+  .nav-sub a.active { background: #EEF1FB; color: var(--primary); font-weight: 600; }
+
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(16,24,40,.45); z-index: 55; }
+  .overlay.open { display: block; }
+
+  /* ---------- Main ---------- */
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .topbar { display: flex; justify-content: flex-end; align-items: center; gap: 18px;
+    padding: 14px 34px; position: sticky; top: 0; background: #fff; z-index: 40; }
+  .topbar-right { display: flex; align-items: center; gap: 18px; }
+  .lang { color: var(--cadet-base); font-size: 14px; cursor: pointer; background: none; border: none; padding: 0; }
+  .lang:hover { color: var(--primary); }
+  .user { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .user .name { font-weight: 600; font-size: 14px; color: var(--foreground); }
+  .user .gear { color: var(--cadet-04); display: flex; }
+  .hamburger { display: none; width: 40px; height: 40px; border: 1px solid var(--border); border-radius: 8px;
+    background: #fff; color: var(--cadet-base); align-items: center; justify-content: center; cursor: pointer; }
+
+  .content { padding: 8px 34px 60px; max-width: 1600px; width: 100%; }
+
+  /* Page head */
+  .page-head { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+  .page-title-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .page-head h1 { font-size: 28px; color: var(--foreground); }
+  .page-head h1 .mid { color: var(--cadet-05); font-weight: 700; }
+  .status-pill { display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+    background: var(--border-subtle); border-radius: 10px; padding: 8px 16px; }
+  .status-pill .lbl { font-size: 12px; color: var(--cadet-base); }
+  .status-pill .val { font-size: 14px; font-weight: 700; color: var(--success); }
+  .head-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 600;
+    border-radius: var(--radius); cursor: pointer; border: 1.5px solid transparent; padding: 0 18px; height: 40px;
+    transition: background .12s ease, border-color .12s ease, color .12s ease, opacity .12s ease; white-space: nowrap; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-outline { background: #fff; color: var(--primary); border-color: var(--primary); }
+  .btn-outline:hover { background: var(--ocean-10); }
+  .btn-ghost { background: transparent; color: var(--primary); border-color: transparent; }
+  .btn-ghost:hover { background: var(--ocean-10); }
+  .btn-danger { background: var(--destructive); color: #fff; }
+  .btn-danger:hover { background: var(--destructive-hover); }
+  .btn-danger-outline { background: #fff; color: var(--destructive); border-color: var(--destructive); }
+  .btn-danger-outline:hover { background: var(--destructive-bg); }
+  .btn[disabled] { opacity: .42; cursor: not-allowed; pointer-events: none; }
+  .btn-sm { height: 36px; padding: 0 14px; font-size: 13px; }
+
+  /* ---------- Tabs ---------- */
+  .tabbar { background: var(--ocean-10); border-radius: 10px; padding: 8px; display: flex; flex-wrap: wrap;
+    gap: 4px; margin-bottom: 26px; }
+  .tab { padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; letter-spacing: .3px;
+    text-transform: uppercase; color: var(--cadet-base); background: transparent; border: none; cursor: pointer; }
+  .tab:hover { color: var(--primary); }
+  .tab.active { background: var(--primary); color: #fff; }
+
+  /* ---------- Section / Cards ---------- */
+  .card { background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 26px 28px; }
+  .section-title { font-size: 22px; color: var(--foreground); margin-bottom: 22px; }
+  .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 40px; }
+  .grid-halves { display: grid; grid-template-columns: 1.3fr 1fr; gap: 28px; align-items: start; }
+
+  /* Form fields */
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field > label { font-size: 13px; font-weight: 600; color: var(--cadet-base); }
+  .field .opt { color: var(--cadet-05); font-weight: 400; }
+  .inp { height: 44px; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0 12px;
+    font-family: inherit; font-size: 14px; color: var(--foreground); background: #fff; width: 100%; }
+  .inp::placeholder { color: var(--cadet-05); }
+  .inp:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,31,95,.1); }
+  .inp:read-only, .inp[readonly] { background: var(--muted); color: var(--cadet-base); }
+  .inp.locked { background: var(--muted); color: var(--cadet-base); }
+  .inp.error { border-color: var(--destructive); }
+  .inp.error:focus { box-shadow: 0 0 0 3px rgba(165,0,23,.12); }
+  .field-err { display: none; font-size: 12px; color: var(--destructive); }
+  .field-err.show { display: block; }
+
+  /* Phone / prefixed group */
+  .pgroup { display: flex; align-items: stretch; }
+  .pgroup .prefix { display: flex; align-items: center; padding: 0 14px; background: var(--muted);
+    border: 1.5px solid var(--border); border-right: none; border-radius: var(--radius) 0 0 var(--radius);
+    font-size: 14px; font-weight: 600; color: var(--cadet-base); }
+  .pgroup .inp { border-radius: 0; }
+  .pgroup .btn { border-radius: 0 var(--radius) var(--radius) 0; }
+
+  /* Owner email row */
+  .owner-email-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .email-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 2px; }
+
+  /* Sales account owner */
+  .owner-chip { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--border);
+    border-radius: 8px; background: #fff; }
+  .owner-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--primary); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-weight: 700;
+    font-size: 16px; letter-spacing: .5px; flex-shrink: 0; }
+  .owner-avatar.empty { background: var(--muted); color: var(--cadet-05); }
+  .owner-avatar.empty svg { width: 22px; height: 22px; }
+  .owner-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .owner-info .nm { font-weight: 600; font-size: 14px; color: var(--foreground); }
+  .owner-info .em { font-size: 13px; color: var(--cadet-base); word-break: break-all; }
+  .owner-info .empty-t { font-weight: 600; font-size: 14px; color: var(--cadet-base); }
+  .owner-info .empty-s { font-size: 12.5px; color: var(--cadet-05); }
+  .assign-group { display: flex; align-items: stretch; max-width: 480px; }
+  .assign-group .inp { border-radius: var(--radius) 0 0 var(--radius); border-right: none; }
+  .assign-group .btn { border-radius: 0 var(--radius) var(--radius) 0; }
+
+  /* Badge */
+  .badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; font-size: 11px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: .3px; padding: 4px 10px; }
+  .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .badge.warning { background: var(--warning-bg); color: var(--warning-text); }
+  .badge.success { background: var(--success-bg); color: var(--success-text); }
+  .badge.neutral { background: var(--border-subtle); color: var(--cadet-02); }
+  .badge.error { background: var(--destructive-bg); color: var(--destructive); }
+  .badge.primary { background: var(--ocean-10); color: var(--primary); }
+  .badge.accent { background: var(--accent-10); color: #006A66; }
+
+  /* ---------- Invitation tracking ---------- */
+  .track-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .track-meta { font-size: 13px; color: var(--cadet-base); margin: 8px 0 16px; }
+  .track-meta b { color: var(--foreground); word-break: break-all; }
+  .track-table { width: 100%; border-collapse: collapse; }
+  .track-table th { text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
+    color: var(--cadet-base); background: var(--muted); padding: 10px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .track-table td { font-size: 13.5px; color: var(--foreground); padding: 12px; border-bottom: 1px solid var(--border-subtle);
+    vertical-align: middle; }
+  .track-table tr:last-child td { border-bottom: none; }
+  .track-table .num { color: var(--cadet-05); font-weight: 700; }
+  .track-table .badge { font-size: 10px; }
+  .inv-email { font-weight: 600; color: var(--foreground); word-break: break-all; }
+  .inv-sub { font-size: 11.5px; color: var(--cadet-05); margin-top: 3px; }
+  .inv-src { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+  .inv-src .actor { font-size: 11.5px; color: var(--cadet-base); white-space: nowrap; }
+
+  /* Alert (Kashier component: full border, 5px radius) */
+  .alert { display: none; align-items: flex-start; gap: 8px; border: 1px solid; border-radius: 5px;
+    padding: 12px; margin-top: 16px; font-size: 14px; line-height: 1.35; }
+  .alert.show { display: flex; }
+  .alert svg { width: 22px; height: 22px; flex-shrink: 0; margin-top: 1px; }
+  .alert .a-title { font-weight: 700; }
+  .alert.success { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
+  .alert.info { background: var(--ocean-10); border-color: var(--ocean-07); color: var(--primary); }
+  .alert.warning { background: var(--warning-bg); border-color: var(--warning-border); color: var(--warning-text); }
+
+  /* Sub-block card inside business info */
+  .subcard { border: 1px solid var(--border-subtle); border-radius: 8px; padding: 22px 24px; }
+  .subcard + .subcard { margin-top: 22px; }
+  .subcard h3 { font-size: 18px; color: var(--foreground); margin-bottom: 20px; }
+
+  /* Radio */
+  .radio-row { display: flex; gap: 34px; flex-wrap: wrap; }
+  .radio { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--foreground); cursor: pointer; }
+  .radio input { accent-color: var(--primary); width: 18px; height: 18px; }
+
+  /* Terms / textarea */
+  .ta { width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px 12px;
+    font-family: inherit; font-size: 14px; color: var(--foreground); background: #fff; resize: vertical; min-height: 96px; line-height: 1.5; }
+  .ta:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,31,95,.08); }
+
+  /* ---------- Events / audit log ---------- */
+  .events-card { display: flex; flex-direction: column; }
+  .events-desc { font-size: 13px; color: var(--cadet-base); margin: -12px 0 18px; line-height: 1.5; }
+  .events-list { display: flex; flex-direction: column; }
+  .event-item { display: flex; gap: 12px; padding-bottom: 20px; position: relative; }
+  .event-item:not(:last-child)::before { content: ''; position: absolute; left: 15px; top: 34px; bottom: 0;
+    width: 1px; background: var(--border); }
+  .event-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; z-index: 1; }
+  .event-icon svg { width: 17px; height: 17px; }
+  .event-icon.change { background: var(--ocean-10); color: var(--primary); }
+  .event-icon.cancel { background: var(--destructive-bg); color: var(--destructive); }
+  .event-icon.resend { background: var(--warning-bg); color: #92620A; }
+  .event-icon.verify { background: var(--success-bg); color: var(--success-text); }
+  .event-icon.assign { background: var(--accent-10); color: #006A66; }
+  .event-body { min-width: 0; padding-top: 2px; }
+  .event-action { font-size: 13.5px; color: var(--foreground); line-height: 1.4; }
+  .event-action b { font-weight: 700; }
+  .event-meta { font-size: 12px; color: var(--cadet-05); margin-top: 4px; }
+  .event-values { font-size: 12.5px; color: var(--cadet-base); margin-top: 8px; background: var(--muted);
+    border-radius: 6px; padding: 8px 11px; display: flex; flex-direction: column; gap: 4px; }
+  .event-values .vrow { display: flex; gap: 6px; align-items: baseline; }
+  .event-values .k { color: var(--cadet-05); min-width: 92px; white-space: nowrap; }
+  .event-values .v { color: var(--foreground); font-weight: 600; word-break: break-all; }
+  .events-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+    padding: 30px 10px; color: var(--cadet-05); }
+  .events-empty svg { width: 44px; height: 44px; color: var(--cadet-06); margin-bottom: 12px; }
+  .events-empty .t { font-size: 14px; font-weight: 600; color: var(--cadet-base); }
+  .events-empty .s { font-size: 12.5px; margin-top: 4px; max-width: 240px; line-height: 1.5; }
+
+  /* Prototype helper */
+  .proto { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--border); }
+  .proto .plabel { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
+    color: var(--cadet-05); margin-bottom: 8px; }
+  .proto-link { background: none; border: none; color: var(--link); font-size: 13px; font-weight: 600;
+    cursor: pointer; padding: 0; text-decoration: underline; }
+  .proto-link:disabled { color: var(--cadet-06); cursor: not-allowed; text-decoration: none; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--primary);
+    color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; z-index: 100; opacity: 0;
+    pointer-events: none; transition: opacity .2s ease, transform .2s ease; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 1100px) { .grid-halves { grid-template-columns: 1fr; } }
+  @media (max-width: 820px) {
+    .grid-2col { grid-template-columns: 1fr; }
+    .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%);
+      transition: transform .22s ease; box-shadow: 0 10px 40px rgba(0,0,0,.18); }
+    .sidebar.open { transform: translateX(0); }
+    .hamburger { display: flex; }
+    .content { padding: 8px 20px 60px; }
+    .topbar { padding: 12px 20px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">kashier</div>
+    <a class="nav-link" href="home.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>Home</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>BIN Management</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>Financial Institutions</a>
+    <a class="nav-link active" href="business-info.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"/></svg>Merchant</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h6m-6 3h6m-6 3h6M10.5 21v-3.75a1.5 1.5 0 0 1 3 0V21"/></svg>Business Industries</a>
+    <a class="nav-link" href="document-types.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>PCC Templates</a>
+    <a class="nav-link" href="terminals.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25"/></svg>Terminals</a>
+    <a class="nav-link" href="document-rules.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75"/></svg>Document Rules</a>
+
+    <div class="nav-section">
+      <div class="section-head">Balance Management
+        <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
+      </div>
+      <div class="nav-sub">
+        <a href="#">Settlement Windows</a>
+        <a href="account-details.html">Accounts</a>
+        <a href="on-hold.html">On-Hold</a>
+        <a href="#">Vacations</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+      </button>
+      <div class="topbar-right">
+        <button class="lang">عربي</button>
+        <div class="user">
+          <span class="name">Aya Muhammed</span>
+          <span class="gear"><svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-head">
+        <div class="page-title-row">
+          <h1>TEST Space Xx <span class="mid">(MID-3479-117)</span></h1>
+          <div class="status-pill">
+            <span class="lbl">Account status</span>
+            <span class="val">Live</span>
+          </div>
+        </div>
+        <div class="head-actions">
+          <button class="btn btn-outline" type="button">
+            <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+            Download All Documents
+          </button>
+          <button class="btn btn-danger" type="button">
+            <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+            Terminate
+          </button>
+          <button class="btn btn-primary" type="button">
+            <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg>
+            Edit Business Info
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabbar">
+        <button class="tab active">Business Info</button>
+        <button class="tab">Change Requests</button>
+        <button class="tab">Documents</button>
+        <button class="tab">Payment Configurations</button>
+        <button class="tab">Payout Method</button>
+        <button class="tab">Features Flagging</button>
+        <button class="tab">Connected Accounts</button>
+        <button class="tab">Shipping</button>
+        <button class="tab">Terminals</button>
+        <button class="tab">Discounts</button>
+        <button class="tab">Bundle</button>
+        <button class="tab">Logs</button>
+      </div>
+
+      <!-- ============ BUSINESS INFO ============ -->
+      <section class="card" style="margin-bottom:26px;">
+        <h2 class="section-title">Business Info</h2>
+        <div class="grid-2col">
+          <div class="field">
+            <label>Legal Company Name</label>
+            <input class="inp locked" value="Space X" readonly>
+          </div>
+          <div class="field">
+            <label>Business / Commercial Name</label>
+            <input class="inp" placeholder="Business/Commercial Name">
+          </div>
+          <div class="field">
+            <label>Business Industry</label>
+            <input class="inp locked" value="Retail / E-commerce" readonly>
+          </div>
+          <div class="field">
+            <label>Business Sector</label>
+            <input class="inp locked" value="Bazaar" readonly>
+          </div>
+          <div class="field">
+            <label>Website <span class="opt">(Optional)</span></label>
+            <input class="inp" placeholder="https://example.com">
+          </div>
+        </div>
+      </section>
+
+      <div class="grid-halves">
+        <!-- LEFT COLUMN -->
+        <div>
+          <!-- Account Type -->
+          <section class="card" style="margin-bottom:22px;">
+            <h2 class="section-title">Account Type</h2>
+            <div class="radio-row">
+              <label class="radio"><input type="radio" name="acctype"> Individual Seller</label>
+              <label class="radio"><input type="radio" name="acctype" checked> Registered Business</label>
+              <label class="radio"><input type="radio" name="acctype"> Professional Business</label>
+            </div>
+          </section>
+
+          <!-- ===================== OWNER CONTACTS ===================== -->
+          <section class="card" style="margin-bottom:22px;">
+            <h2 class="section-title">Owner Contacts</h2>
+
+            <div class="field" style="margin-bottom:22px;">
+              <label>Owner Name</label>
+              <input class="inp" placeholder="Owner Name" value="Elon Space">
+            </div>
+
+            <div class="field" style="margin-bottom:22px;">
+              <label>Owner Mobile Number</label>
+              <div class="pgroup">
+                <span class="prefix">+20</span>
+                <input class="inp" placeholder="Owner Mobile Number" value="100 123 4567">
+                <button class="btn btn-primary" type="button" style="height:44px;">Verify Account</button>
+              </div>
+            </div>
+
+            <!-- Owner Email -->
+            <div class="field">
+              <div class="owner-email-head">
+                <label style="margin:0;">Owner Email</label>
+                <span class="badge warning" id="ownerEmailBadge" style="display:none;">
+                  <span class="dot"></span><span id="ownerEmailBadgeText">Awaiting merchant email verification</span>
+                </span>
+              </div>
+              <input class="inp locked" id="ownerEmailInput" value="owner@spacex.com" readonly>
+              <div class="field-err" id="ownerEmailErr">Please enter a valid email address.</div>
+
+              <div class="email-actions" id="ownerEmailActions">
+                <!-- populated by JS -->
+              </div>
+
+              <!-- Inline alert for cancel / resend feedback -->
+              <div class="alert" id="ownerAlert" role="status">
+                <svg id="ownerAlertIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"></svg>
+                <div><span class="a-title" id="ownerAlertTitle"></span> <span id="ownerAlertText"></span></div>
+              </div>
+            </div>
+
+            <!-- Prototype-only simulation control -->
+            <div class="proto" id="ownerProto" style="display:none;">
+              <div class="plabel">Prototype simulation</div>
+              <button class="proto-link" id="simAccept" type="button">▶ Simulate: new owner accepts the invitation</button>
+            </div>
+          </section>
+
+          <!-- ===================== SALES ACCOUNT OWNER ===================== -->
+          <section class="card" style="margin-bottom:22px;">
+            <h2 class="section-title">Sales account owner</h2>
+            <p class="events-desc" style="margin-top:-14px;">The Kashier team member who owns this merchant account. Only one user can be assigned — assigning a new user replaces the current one.</p>
+
+            <!-- Current owner -->
+            <div id="salesOwnerCurrent" style="margin-bottom:16px;"></div>
+
+            <!-- Assign panel (email lookup) -->
+            <div id="salesAssignPanel" style="display:none;">
+              <div class="field" style="margin-bottom:4px;">
+                <label>Kashier user email</label>
+                <div class="assign-group">
+                  <input class="inp" id="salesEmailInput" placeholder="name@kashier.io" autocomplete="off" spellcheck="false">
+                  <button class="btn btn-primary" id="btnVerifySalesUser" type="button" style="height:44px;">Verify user</button>
+                </div>
+                <div class="field-err" id="salesEmailErr">Enter a valid email that uses the kashier.io domain.</div>
+              </div>
+
+              <!-- Lookup result -->
+              <div class="alert" id="salesLookupAlert" role="status">
+                <svg id="salesLookupIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"></svg>
+                <div><span class="a-title" id="salesLookupTitle"></span> <span id="salesLookupText"></span></div>
+              </div>
+
+              <div class="email-actions" id="salesAssignActions" style="margin-top:14px;"></div>
+            </div>
+
+            <!-- Idle actions -->
+            <div class="email-actions" id="salesOwnerActions"></div>
+
+            <!-- Prototype helper -->
+            <div class="proto">
+              <div class="plabel">Prototype — existing Kashier users you can look up</div>
+              <div style="font-size:12.5px; color:var(--cadet-base); line-height:1.7;">
+                omar.khaled@kashier.io · sara.adel@kashier.io · nour.hassan@kashier.io · mostafa.ibrahim@kashier.io<br>
+                Any other <b>@kashier.io</b> address returns “user not found”. Non-kashier.io domains are rejected.
+              </div>
+            </div>
+          </section>
+
+          <!-- Business Contacts -->
+          <section class="card">
+            <h2 class="section-title">Business Contacts</h2>
+            <div class="field" style="margin-bottom:22px;">
+              <label>Business Email</label>
+              <input class="inp" placeholder="Business Email">
+            </div>
+            <div class="grid-2col">
+              <div class="field">
+                <label>Business Phone</label>
+                <div class="pgroup"><span class="prefix">+20</span><input class="inp" placeholder="Business Phone"></div>
+              </div>
+              <div class="field">
+                <label>Landline Number <span class="opt">(Optional)</span></label>
+                <input class="inp" placeholder="Landline Number">
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div>
+          <!-- ===================== EVENTS (audit log) ===================== -->
+          <section class="card events-card" style="margin-bottom:22px;">
+            <h2 class="section-title">Events</h2>
+            <p class="events-desc">Audit log of business-info changes, including owner email invitations and sales account owner assignments.</p>
+
+            <div class="events-list" id="eventsList"></div>
+            <div class="events-empty" id="eventsEmpty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+              <div class="t">No events yet</div>
+              <div class="s">Owner email changes and invitation actions will be recorded here.</div>
+            </div>
+          </section>
+
+          <!-- ===================== INVITATION TRACKING ===================== -->
+          <section class="card" style="margin-bottom:22px;">
+            <div class="track-head">
+              <h2 class="section-title" style="margin:0;">Invitation Tracking</h2>
+              <span class="badge neutral" id="trackCountBadge"><span id="trackPending">0</span> pending</span>
+            </div>
+            <p class="events-desc" style="margin:8px 0 16px;">All invitation activity on this account — invitations the agent sends to a new owner, and invitations the merchant sends to their own users.</p>
+
+            <div id="trackTableWrap" style="display:none; overflow-x:auto;">
+              <table class="track-table">
+                <thead><tr><th>Invitee</th><th>Invited by</th><th>Status</th></tr></thead>
+                <tbody id="trackTableBody"></tbody>
+              </table>
+            </div>
+            <div class="events-empty" id="trackEmpty" style="padding:24px 10px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+              <div class="t">No invitations yet</div>
+              <div class="s">Owner and user invitations sent on this account will be listed here with their status.</div>
+            </div>
+          </section>
+
+          <!-- Terms & Conditions -->
+          <section class="card" style="margin-bottom:22px;">
+            <h2 class="section-title">Terms &amp; Conditions</h2>
+            <p class="events-desc" style="margin-top:-14px;">This info will appear on payment pages to your customers.</p>
+            <div class="field" style="margin-bottom:18px;"><label>English</label><textarea class="ta" placeholder="Terms &amp; Conditions"></textarea></div>
+            <div class="field"><label>اللغة العربية</label><textarea class="ta" placeholder="الشروط والأحكام" dir="rtl"></textarea></div>
+          </section>
+
+          <!-- Social Media Links -->
+          <section class="card">
+            <h2 class="section-title">Social Media Links</h2>
+            <div class="field" style="margin-bottom:18px;"><label>Facebook <span class="opt">(Optional)</span></label><input class="inp" placeholder="https://facebook.com/"></div>
+            <div class="field" style="margin-bottom:18px;"><label>Instagram <span class="opt">(Optional)</span></label><input class="inp" placeholder="https://instagram.com/"></div>
+            <div class="field" style="margin-bottom:18px;"><label>LinkedIn <span class="opt">(Optional)</span></label><input class="inp" placeholder="https://linkedin.com/"></div>
+            <div class="field"><label>Twitter <span class="opt">(Optional)</span></label><input class="inp" placeholder="https://twitter.com/"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast">Saved.</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const CURRENT_USER = { name: 'Aya Muhammed' };
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+  function formatTimestamp(d) {
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = d.toLocaleString('en-US', { month: 'short' });
+    const year = d.getFullYear();
+    let h = d.getHours(); const m = String(d.getMinutes()).padStart(2, '0');
+    const ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+    return `${day} ${month} ${year}, ${String(h).padStart(2,'0')}:${m} ${ampm}`;
+  }
+  function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+  /* =====================================================================
+     Owner-email invitation state machine
+       'idle'     : confirmed email shown, [Change email] enabled
+       'editing'  : email editable, [Save changes] + [Cancel]
+       'pending'  : "Awaiting merchant email verification"
+                    [Change email] DIMMED · [Cancel invitation] + [Resend invitation] ACTIVE
+       'accepted' : new owner verified · both invitation buttons DIMMED · [Change email] enabled
+  ===================================================================== */
+  let ownerState   = 'idle';
+  let confirmedEmail = 'owner@spacex.com';   // current / reverts-to value
+  let pendingEmail   = null;                 // new email awaiting verification
+
+  const emailInput   = $('ownerEmailInput');
+  const emailActions = $('ownerEmailActions');
+  const emailBadge   = $('ownerEmailBadge');
+  const emailBadgeTx = $('ownerEmailBadgeText');
+  const emailErr     = $('ownerEmailErr');
+  const ownerProto   = $('ownerProto');
+
+  const ICONS = {
+    edit:  'M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z',
+    check: 'm4.5 12.75 6 6 9-13.5',
+    x:     'M6 18 18 6M6 6l12 12',
+    cancel:'M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636',
+    send:  'M6 12 3.269 3.126A59.768 59.768 0 0 1 21.485 12 59.77 59.77 0 0 1 3.27 20.876L5.999 12Zm0 0h7.5',
+    userplus:'M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z'
+  };
+  const btnIcon = d => `<svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="${d}"/></svg>`;
+
+  function renderOwner() {
+    // Badge
+    if (ownerState === 'pending') {
+      emailBadge.style.display = 'inline-flex';
+      emailBadge.className = 'badge warning';
+      emailBadgeTx.textContent = 'Awaiting merchant email verification';
+    } else if (ownerState === 'accepted') {
+      emailBadge.style.display = 'inline-flex';
+      emailBadge.className = 'badge success';
+      emailBadgeTx.textContent = 'Verified';
+    } else {
+      emailBadge.style.display = 'none';
+    }
+
+    // Input
+    emailErr.classList.remove('show');
+    emailInput.classList.remove('error');
+    if (ownerState === 'editing') {
+      emailInput.readOnly = false;
+      emailInput.classList.remove('locked');
+    } else {
+      emailInput.readOnly = true;
+      emailInput.classList.add('locked');
+      emailInput.value = (ownerState === 'pending') ? pendingEmail
+                        : (ownerState === 'accepted') ? confirmedEmail
+                        : confirmedEmail;
+    }
+
+    // Action buttons per state
+    let html = '';
+    if (ownerState === 'idle') {
+      html = `<button class="btn btn-primary btn-sm" id="btnChangeEmail" type="button">${btnIcon(ICONS.edit)}Change email</button>`;
+    } else if (ownerState === 'editing') {
+      html = `<button class="btn btn-primary btn-sm" id="btnSaveEmail" type="button">${btnIcon(ICONS.check)}Save changes</button>
+              <button class="btn btn-outline btn-sm" id="btnCancelEdit" type="button">Cancel</button>`;
+    } else if (ownerState === 'pending') {
+      // Change email dimmed (visible, disabled) + the two invitation buttons active
+      html = `<button class="btn btn-primary btn-sm" id="btnChangeEmail" type="button" disabled>${btnIcon(ICONS.edit)}Change email</button>
+              <button class="btn btn-danger-outline btn-sm" id="btnCancelInvite" type="button">${btnIcon(ICONS.cancel)}Cancel invitation</button>
+              <button class="btn btn-outline btn-sm" id="btnResendInvite" type="button">${btnIcon(ICONS.send)}Resend invitation</button>`;
+    } else if (ownerState === 'accepted') {
+      // Change email enabled again + invitation buttons dimmed
+      html = `<button class="btn btn-primary btn-sm" id="btnChangeEmail" type="button">${btnIcon(ICONS.edit)}Change email</button>
+              <button class="btn btn-danger-outline btn-sm" type="button" disabled>${btnIcon(ICONS.cancel)}Cancel invitation</button>
+              <button class="btn btn-outline btn-sm" type="button" disabled>${btnIcon(ICONS.send)}Resend invitation</button>`;
+    }
+    emailActions.innerHTML = html;
+
+    // Wire buttons that exist in this state
+    if ($('btnChangeEmail') && !$('btnChangeEmail').disabled) $('btnChangeEmail').addEventListener('click', startEdit);
+    if ($('btnSaveEmail'))    $('btnSaveEmail').addEventListener('click', saveEmail);
+    if ($('btnCancelEdit'))   $('btnCancelEdit').addEventListener('click', cancelEdit);
+    if ($('btnCancelInvite')) $('btnCancelInvite').addEventListener('click', cancelInvitation);
+    if ($('btnResendInvite')) $('btnResendInvite').addEventListener('click', resendInvitation);
+
+    // Prototype "accept" helper only meaningful while pending
+    ownerProto.style.display = (ownerState === 'pending') ? 'block' : 'none';
+    $('simAccept').disabled = false;
+  }
+
+  function startEdit() {
+    hideAlert();
+    ownerState = 'editing';
+    renderOwner();
+    emailInput.value = confirmedEmail;
+    setTimeout(() => { emailInput.focus(); emailInput.select(); }, 40);
+  }
+
+  function cancelEdit() {
+    hideAlert();
+    ownerState = 'idle';
+    renderOwner();
+  }
+
+  function saveEmail() {
+    const newEmail = emailInput.value.trim();
+    if (!isValidEmail(newEmail)) {
+      emailInput.classList.add('error');
+      emailErr.classList.add('show');
+      emailInput.focus();
+      return;
+    }
+    if (newEmail.toLowerCase() === confirmedEmail.toLowerCase()) {
+      emailErr.textContent = 'This is already the current owner email. Enter a different address.';
+      emailInput.classList.add('error');
+      emailErr.classList.add('show');
+      return;
+    }
+    emailErr.textContent = 'Please enter a valid email address.';
+
+    const oldEmail = confirmedEmail;
+    pendingEmail = newEmail;
+    ownerState = 'pending';                     // invitation sent → awaiting verification
+    renderOwner();
+    hideAlert();
+    addOwnerInvitation(pendingEmail);           // track this invitation in the account log
+
+    logEvent('change', 'Requested owner email change', oldEmail, pendingEmail);
+    showToast('Invitation sent to ' + pendingEmail);
+  }
+
+  function cancelInvitation() {
+    // Dim both invitation buttons immediately (any click dims them)
+    dimInviteButtons();
+
+    const revertedFrom = pendingEmail;
+    // 1) invitation link expires  2) revert old email  3) remove user from list (simulated)
+    pendingEmail = null;
+    ownerState = 'idle';                        // [Change email] shown again so agent can modify
+    renderOwner();
+    setOwnerInvitation('expired');              // link expires — mark the invitation expired
+
+    logEvent('cancel', 'Cancelled owner email invitation', revertedFrom, confirmedEmail);
+    showAlert('warning', 'Invitation cancelled.',
+      'The invitation to the new owner has been cancelled. The email address has been reverted.');
+  }
+
+  function resendInvitation() {
+    // Dim both invitation buttons while the resend "sends", then re-enable
+    dimInviteButtons();
+    resendOwnerInvitation();                    // bump attempts + sent time in tracking
+    logEvent('resend', 'Resent owner email invitation', pendingEmail, pendingEmail);
+    showToast('Invitation resent to ' + pendingEmail);
+    showAlert('success', 'Invitation resent.', 'Invitation resent to ' + pendingEmail + '.');
+    setTimeout(() => { if (ownerState === 'pending') renderOwner(); }, 1500);
+  }
+
+  function acceptInvitation() {
+    if (ownerState !== 'pending') return;
+    const oldEmail = confirmedEmail;
+    confirmedEmail = pendingEmail;              // new owner email becomes confirmed
+    pendingEmail = null;
+    ownerState = 'accepted';                    // both invitation buttons dimmed
+    renderOwner();
+    setOwnerInvitation('accepted');             // tracking shows the invitation accepted
+    logEvent('verify', 'Owner email verified — invitation accepted', oldEmail, confirmedEmail);
+    showAlert('success', 'Owner email verified.',
+      'The new owner accepted the invitation. Both invitation actions are now disabled.');
+  }
+
+  function dimInviteButtons() {
+    if ($('btnCancelInvite')) $('btnCancelInvite').disabled = true;
+    if ($('btnResendInvite')) $('btnResendInvite').disabled = true;
+  }
+
+  $('simAccept').addEventListener('click', function () { this.disabled = true; acceptInvitation(); });
+
+  /* ---------- Inline alert ---------- */
+  const ownerAlert = $('ownerAlert');
+  let alertTimer;
+  function showAlert(type, title, text) {
+    ownerAlert.className = 'alert show ' + type;
+    const d = type === 'success' ? 'M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
+            : type === 'warning' ? 'M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z'
+            : 'M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z';
+    $('ownerAlertIcon').innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="${d}"/>`;
+    $('ownerAlertTitle').textContent = title;
+    $('ownerAlertText').textContent = text;
+    clearTimeout(alertTimer);
+    alertTimer = setTimeout(hideAlert, 6000);
+  }
+  function hideAlert() { ownerAlert.className = 'alert'; clearTimeout(alertTimer); }
+
+  /* =====================================================================
+     Invitation tracking — ALL invitation activity on the account
+       side   : 'agent'    → Kashier agent invites a NEW OWNER (owner-email flow)
+                'merchant' → the merchant invites a USER to their account
+       status : 'sent' (awaiting acceptance) | 'accepted' | 'expired'
+     Each invitation is one row; a resend bumps the sent time + attempt count.
+     The live owner-email flow adds / updates its own row here.
+  ===================================================================== */
+  const trackTableWrap = $('trackTableWrap');
+  const trackTableBody = $('trackTableBody');
+  const trackEmpty     = $('trackEmpty');
+  const trackPending   = $('trackPending');
+  const trackCountBadge= $('trackCountBadge');
+
+  const INV_STATUS = {
+    sent:     { badge: 'neutral',  label: 'Sent · awaiting' },
+    accepted: { badge: 'success',  label: 'Accepted' },
+    expired:  { badge: 'error',    label: 'Expired' },
+  };
+  const SIDE = {
+    agent:    { badge: 'primary', label: 'Agent' },
+    merchant: { badge: 'accent',  label: 'Merchant' },
+  };
+
+  const daysAgo = n => new Date(Date.now() - n * 864e5);
+
+  // Seeded merchant-side invitations (users the merchant invited to their account)
+  let invitations = [
+    { invitee: 'finance@spacex.com',  side: 'merchant', actor: 'Elon Space (Owner)',  role: 'Finance',     sentAt: daysAgo(6), attempts: 1, status: 'accepted' },
+    { invitee: 'ops.lead@spacex.com', side: 'merchant', actor: 'Elon Space (Owner)',  role: 'Operations',  sentAt: daysAgo(2), attempts: 2, status: 'sent' },
+    { invitee: 'viewer@spacex.com',   side: 'merchant', actor: 'Mona Tarek (Admin)',  role: 'Viewer',      sentAt: daysAgo(9), attempts: 1, status: 'expired' },
+  ];
+  let ownerInvite = null;   // reference to the current agent→owner invitation row
+
+  function addOwnerInvitation(email) {
+    ownerInvite = { invitee: email, side: 'agent', actor: CURRENT_USER.name + ' (Agent)', role: 'New owner',
+                    sentAt: new Date(), attempts: 1, status: 'sent' };
+    invitations.push(ownerInvite);
+    renderInvitations();
+  }
+  function resendOwnerInvitation() {
+    if (!ownerInvite) return;
+    ownerInvite.attempts += 1;
+    ownerInvite.sentAt = new Date();
+    renderInvitations();
+  }
+  function setOwnerInvitation(status) {
+    if (!ownerInvite) return;
+    ownerInvite.status = status;
+    ownerInvite = null;   // this invitation is now closed
+    renderInvitations();
+  }
+
+  function renderInvitations() {
+    const pending = invitations.filter(i => i.status === 'sent').length;
+    trackPending.textContent = pending;
+    trackCountBadge.className = 'badge ' + (pending ? 'warning' : 'neutral');
+
+    if (invitations.length === 0) {
+      trackTableWrap.style.display = 'none';
+      trackEmpty.style.display = 'flex';
+      return;
+    }
+    trackTableWrap.style.display = 'block';
+    trackEmpty.style.display = 'none';
+
+    const rows = [...invitations].sort((a, b) => b.sentAt - a.sentAt);
+    trackTableBody.innerHTML = rows.map(inv => {
+      const st = INV_STATUS[inv.status];
+      const side = SIDE[inv.side];
+      const resent = inv.attempts > 1 ? ` · resent ${inv.attempts - 1}×` : '';
+      return `
+        <tr>
+          <td>
+            <div class="inv-email">${escapeHtml(inv.invitee)}</div>
+            <div class="inv-sub">${escapeHtml(inv.role)} · ${formatTimestamp(inv.sentAt)}${resent}</div>
+          </td>
+          <td>
+            <div class="inv-src">
+              <span class="badge ${side.badge}">${side.label}</span>
+              <span class="actor">${escapeHtml(inv.actor)}</span>
+            </div>
+          </td>
+          <td><span class="badge ${st.badge}"><span class="dot"></span>${st.label}</span></td>
+        </tr>`;
+    }).join('');
+  }
+
+  /* =====================================================================
+     Events / audit log
+       kind : change | cancel | resend | verify
+  ===================================================================== */
+  const events = [];   // newest first
+  const eventsList = $('eventsList');
+  const eventsEmpty = $('eventsEmpty');
+  const EVENT_ICON = {
+    change: 'M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z',
+    cancel: 'M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636',
+    resend: 'M6 12 3.269 3.126A59.768 59.768 0 0 1 21.485 12 59.77 59.77 0 0 1 3.27 20.876L5.999 12Zm0 0h7.5',
+    verify: 'm4.5 12.75 6 6 9-13.5',
+    assign: 'M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z'
+  };
+
+  function logEvent(kind, action, oldVal, newVal, opts) {
+    events.unshift({ kind, action, oldVal, newVal, actor: CURRENT_USER.name, ts: new Date(),
+                     oldLabel: opts && opts.oldLabel, newLabel: opts && opts.newLabel });
+    renderEvents();
+  }
+
+  function renderEvents() {
+    if (events.length === 0) {
+      eventsList.style.display = 'none';
+      eventsEmpty.style.display = 'flex';
+      return;
+    }
+    eventsList.style.display = 'flex';
+    eventsEmpty.style.display = 'none';
+    eventsList.innerHTML = events.map(e => `
+      <div class="event-item">
+        <div class="event-icon ${e.kind}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="${EVENT_ICON[e.kind]}"/></svg>
+        </div>
+        <div class="event-body">
+          <div class="event-action"><b>${escapeHtml(e.actor)}</b> — ${escapeHtml(e.action)}</div>
+          <div class="event-meta">${formatTimestamp(e.ts)}</div>
+          <div class="event-values">
+            <div class="vrow"><span class="k">${escapeHtml(e.oldLabel || 'Old value')}</span><span class="v">${escapeHtml(e.oldVal || '—')}</span></div>
+            <div class="vrow"><span class="k">${escapeHtml(e.newLabel || 'New value')}</span><span class="v">${escapeHtml(e.newVal || '—')}</span></div>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  /* ---------- Toast ---------- */
+  let toastTimer;
+  function showToast(msg) {
+    const toast = $('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+  }
+
+  /* =====================================================================
+     Sales account owner — assign / replace a single Kashier user
+       states : 'view'   → current owner shown, [Assign new user]
+                'assign' → email lookup panel open
+     validations:
+       1) email must use the kashier.io domain
+       2) user must exist in the Kashier directory (else error)
+       3) existing user → confirmation before assigning
+       4) assigning is recorded in the Events audit log (full old → new)
+  ===================================================================== */
+  const KASHIER_DIRECTORY = [
+    { name: 'Omar Khaled',     email: 'omar.khaled@kashier.io' },
+    { name: 'Sara Adel',       email: 'sara.adel@kashier.io' },
+    { name: 'Nour Hassan',     email: 'nour.hassan@kashier.io' },
+    { name: 'Mostafa Ibrahim', email: 'mostafa.ibrahim@kashier.io' },
+  ];
+  let salesOwner = { name: 'Omar Khaled', email: 'omar.khaled@kashier.io' }; // current owner, or null
+  let salesState = 'view';
+  let salesMatch = null;   // user found by lookup, awaiting confirmation
+
+  const salesCurrent    = $('salesOwnerCurrent');
+  const salesActions    = $('salesOwnerActions');
+  const salesPanel      = $('salesAssignPanel');
+  const salesEmailInput = $('salesEmailInput');
+  const salesEmailErr   = $('salesEmailErr');
+  const salesAssignActs = $('salesAssignActions');
+  const salesAlert      = $('salesLookupAlert');
+
+  function initials(name) {
+    return name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+  }
+
+  function renderSalesOwner() {
+    // Current owner chip
+    if (salesOwner) {
+      salesCurrent.innerHTML = `
+        <div class="owner-chip">
+          <div class="owner-avatar">${escapeHtml(initials(salesOwner.name))}</div>
+          <div class="owner-info">
+            <span class="nm">${escapeHtml(salesOwner.name)}</span>
+            <span class="em">${escapeHtml(salesOwner.email)}</span>
+          </div>
+        </div>`;
+    } else {
+      salesCurrent.innerHTML = `
+        <div class="owner-chip">
+          <div class="owner-avatar empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+          </div>
+          <div class="owner-info">
+            <span class="empty-t">No sales account owner assigned</span>
+            <span class="empty-s">Assign a Kashier user to own this account.</span>
+          </div>
+        </div>`;
+    }
+
+    // Panel + top-level action per state
+    if (salesState === 'view') {
+      salesPanel.style.display = 'none';
+      salesActions.innerHTML = `<button class="btn btn-outline btn-sm" id="btnStartAssign" type="button">${btnIcon(ICONS.userplus)}${salesOwner ? 'Assign new user' : 'Assign user'}</button>`;
+      $('btnStartAssign').addEventListener('click', startSalesAssign);
+    } else {
+      salesActions.innerHTML = '';
+      salesPanel.style.display = 'block';
+    }
+  }
+
+  function startSalesAssign() {
+    salesState = 'assign';
+    salesEmailInput.value = '';
+    resetSalesLookup();
+    renderSalesOwner();
+    renderSalesAssignActions();
+    setTimeout(() => salesEmailInput.focus(), 40);
+  }
+
+  function resetSalesLookup() {
+    salesMatch = null;
+    salesEmailInput.classList.remove('error');
+    salesEmailErr.classList.remove('show');
+    salesAlert.className = 'alert';
+  }
+
+  function renderSalesAssignActions() {
+    if (salesMatch) {
+      salesAssignActs.innerHTML = `<button class="btn btn-primary btn-sm" id="btnConfirmAssign" type="button">${btnIcon(ICONS.check)}Confirm assignment</button>
+              <button class="btn btn-outline btn-sm" id="btnCancelAssign" type="button">Cancel</button>`;
+      $('btnConfirmAssign').addEventListener('click', confirmSalesAssign);
+    } else {
+      salesAssignActs.innerHTML = `<button class="btn btn-outline btn-sm" id="btnCancelAssign" type="button">Cancel</button>`;
+    }
+    $('btnCancelAssign').addEventListener('click', cancelSalesAssign);
+  }
+
+  function cancelSalesAssign() {
+    salesState = 'view';
+    resetSalesLookup();
+    renderSalesOwner();
+  }
+
+  function showSalesLookup(type, title, text) {
+    salesAlert.className = 'alert show ' + type;
+    const d = type === 'success' ? 'M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
+            : type === 'warning' ? 'M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z'
+            : 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z';
+    $('salesLookupIcon').innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="${d}"/>`;
+    $('salesLookupTitle').textContent = title;
+    $('salesLookupText').textContent = text;
+  }
+
+  function verifySalesUser() {
+    const email = salesEmailInput.value.trim().toLowerCase();
+    salesMatch = null;
+    salesAlert.className = 'alert';
+
+    // (validation 1) must be a valid email on the kashier.io domain
+    if (!isValidEmail(email) || !/@kashier\.io$/i.test(email)) {
+      salesEmailInput.classList.add('error');
+      salesEmailErr.textContent = 'Enter a valid email that uses the kashier.io domain.';
+      salesEmailErr.classList.add('show');
+      salesEmailInput.focus();
+      renderSalesAssignActions();
+      return;
+    }
+    salesEmailInput.classList.remove('error');
+    salesEmailErr.classList.remove('show');
+
+    // already the current owner?
+    if (salesOwner && email === salesOwner.email.toLowerCase()) {
+      showSalesLookup('warning', 'Already assigned.', `${salesOwner.name} is already the sales account owner.`);
+      renderSalesAssignActions();
+      return;
+    }
+
+    // (validation 2 / 3) look the user up in the directory
+    const match = KASHIER_DIRECTORY.find(u => u.email.toLowerCase() === email);
+    if (!match) {
+      showSalesLookup('error', 'User not found.', 'No Kashier user exists with this email address. Check the address and try again.');
+      renderSalesAssignActions();   // no confirm button while unresolved
+      return;
+    }
+
+    salesMatch = match;
+    showSalesLookup('success', 'User found.', `${match.name} (${match.email}) is a valid Kashier user and can be assigned.`);
+    renderSalesAssignActions();     // reveals [Confirm assignment]
+  }
+
+  function confirmSalesAssign() {
+    if (!salesMatch) return;
+    const prev = salesOwner;
+    salesOwner = { ...salesMatch };
+    const oldVal = prev ? `${prev.name} <${prev.email}>` : '— (unassigned)';
+    const newVal = `${salesOwner.name} <${salesOwner.email}>`;
+
+    salesState = 'view';
+    resetSalesLookup();
+    renderSalesOwner();
+
+    // (validation 4) full audit log of the assignment
+    logEvent('assign',
+      prev ? 'Reassigned sales account owner' : 'Assigned sales account owner',
+      oldVal, newVal, { oldLabel: 'Previous owner', newLabel: 'New owner' });
+    showToast('Sales account owner assigned to ' + salesOwner.name);
+  }
+
+  $('btnVerifySalesUser').addEventListener('click', verifySalesUser);
+  salesEmailInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); verifySalesUser(); } });
+  salesEmailInput.addEventListener('input', () => {
+    salesEmailInput.classList.remove('error');
+    salesEmailErr.classList.remove('show');
+    if (salesMatch) { salesMatch = null; salesAlert.className = 'alert'; renderSalesAssignActions(); }
+  });
+
+  /* ---------- Chrome ---------- */
+  $('hamburger').addEventListener('click', () => { $('sidebar').classList.add('open'); $('overlay').classList.add('open'); });
+  $('overlay').addEventListener('click', () => { $('sidebar').classList.remove('open'); $('overlay').classList.remove('open'); });
+  emailInput.addEventListener('input', () => { if (isValidEmail(emailInput.value.trim())) { emailInput.classList.remove('error'); emailErr.classList.remove('show'); } });
+
+  /* ---------- Init ---------- */
+  renderOwner();
+  renderSalesOwner();
+  renderInvitations();
+  renderEvents();
+</script>
+
+</body>
+</html>

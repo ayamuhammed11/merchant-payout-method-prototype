@@ -1,0 +1,2175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kashier | Merchant — Document Info</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Kashier design tokens */
+    --primary: #001F5F;          /* Ocean 100 */
+    --primary-hover: #103788;    /* Ocean 90  */
+    --ocean-10: #F1F6FF;
+    --ocean-20: #D9E5FF;
+    --link: #2955B1;             /* Ocean 80  */
+    --accent: #00BCB4;           /* Kashier Teal */
+    --accent-10: #EAFFFE;
+    --destructive: #A50017;      /* Watermelon base */
+    --destructive-hover: #830012;
+    --destructive-bg: #FFEAED;
+    --destructive-bd: #FFBBC4;
+    --warning: #FBAF1F;          /* Mango base */
+    --warning-bg: #FFF7E8;
+    --warning-bd: #FFD484;
+    --warning-text: #513500;
+    --success: #4AAB4E;          /* Lemon base */
+    --success-bg: #F3FFF4;
+    --success-bd: #AEFFB2;
+    --success-text: #1A541D;
+
+    --foreground: #202020;
+    --border: #E6E8E8;           /* Neutral 08 */
+    --border-subtle: #F5F6F6;    /* Neutral 09 */
+    --muted: #F5F6F6;
+    --cadet-base: #556767;
+    --cadet-02: #697979;
+    --cadet-04: #839090;
+    --cadet-05: #919C9C;
+    --cadet-06: #B3BBBB;
+
+    --pill-bg: #F5F6F6;
+    --pill-text: #697979;
+
+    --radius: 4px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Noto Sans', Arial, sans-serif;
+    background: #fff;
+    color: var(--foreground);
+    display: flex;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+  h1, h2, h3, h4 { font-family: 'Outfit', Arial, sans-serif; margin: 0; font-weight: 700; }
+  a { text-decoration: none; }
+  button { font-family: inherit; }
+
+  .hi { width: 20px; height: 20px; flex-shrink: 0; }
+  .hi-sm { width: 16px; height: 16px; flex-shrink: 0; }
+  .hi-xs { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar { width: 232px; background: #fff; min-height: 100vh; padding: 22px 14px 30px;
+    border-right: 1px solid var(--border-subtle);
+    position: sticky; top: 0; align-self: flex-start; max-height: 100vh; overflow-y: auto; flex-shrink: 0; z-index: 60; }
+  .brand { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 26px; color: var(--accent);
+    padding: 0 10px; margin-bottom: 26px; letter-spacing: -.01em; }
+  .nav-link { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 8px;
+    color: var(--cadet-base); font-size: 14px; margin-bottom: 2px; position: relative; }
+  .nav-link svg { color: var(--cadet-04); }
+  .nav-link.active { background: #EEF1FB; color: var(--primary); font-weight: 600; }
+  .nav-link.active svg { color: var(--primary); }
+  .nav-link:not(.active):hover { background: #F7F8F8; }
+  .nav-section { margin-top: 14px; }
+  .nav-section .section-head { display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 12px; color: var(--primary); font-weight: 600; font-size: 13px; cursor: pointer; user-select: none; }
+  .nav-section .section-head svg { color: var(--cadet-05); transition: transform .2s ease; }
+  .nav-sub { display: flex; flex-direction: column; overflow: hidden; }
+  .nav-sub a { padding: 9px 12px; border-radius: 8px; color: var(--cadet-base); font-size: 14px; }
+  .nav-sub a:hover { background: #F7F8F8; }
+  .nav-sub a.active { background: #EEF1FB; color: var(--primary); font-weight: 600; }
+
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(16,24,40,.45); z-index: 55; }
+  .overlay.open { display: block; }
+
+  /* ---------- Main ---------- */
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; gap: 18px;
+    padding: 14px 34px; border-bottom: 1px solid var(--border-subtle); position: sticky; top: 0; background: #fff; z-index: 40; }
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .hamburger { display: none; width: 40px; height: 40px; border: 1px solid var(--border); border-radius: 8px;
+    background: #fff; color: var(--cadet-base); align-items: center; justify-content: center; cursor: pointer; }
+  .topbar-right { display: flex; align-items: center; gap: 18px; }
+  .lang { color: var(--cadet-base); font-size: 14px; cursor: pointer; background: none; border: none; padding: 0; }
+  .lang:hover { color: var(--primary); }
+  .divider { width: 1px; height: 22px; background: var(--border); }
+  .user { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .user .avatar { width: 30px; height: 30px; background: #E7ECF7; color: var(--primary); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; font-family: 'Outfit', sans-serif; }
+  .user .name { font-weight: 600; font-size: 14px; }
+  .user .gear { color: var(--cadet-04); display: flex; }
+
+  .content { padding: 28px 34px 60px; max-width: 1400px; width: 100%; }
+  .breadcrumb { font-size: 13px; color: var(--cadet-04); margin-bottom: 12px; }
+  .breadcrumb .sep { margin: 0 6px; color: var(--cadet-06); }
+  .breadcrumb .current { color: var(--cadet-base); }
+
+  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; margin-bottom: 22px; }
+  .page-title-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .page-head h1 { font-size: 28px; color: var(--primary); }
+  .page-head h1 .mid { color: var(--cadet-base); font-weight: 400; }
+  .status-pill { display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+    background: var(--border-subtle); border-radius: 10px; padding: 8px 16px; }
+  .status-pill .lbl { font-size: 12px; color: var(--cadet-base); }
+  .status-pill .val { font-size: 14px; font-weight: 700; color: var(--success); }
+
+  /* Account type — sits above the documents listing, so "All documents" reads under it. */
+  .acct-type { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 14px;
+    background: var(--border-subtle); border-radius: 10px; padding: 8px 16px; }
+  .acct-type .lbl { font-size: 12px; color: var(--cadet-base); }
+  .acct-type .val { font-size: 14px; font-weight: 700; color: var(--foreground); }
+  .head-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 600;
+    border-radius: var(--radius); cursor: pointer; border: 1.5px solid transparent; padding: 0 18px; height: 40px;
+    transition: background .12s ease, border-color .12s ease, color .12s ease; white-space: nowrap; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-outline { background: #fff; color: var(--primary); border-color: var(--primary); }
+  .btn-outline:hover { background: var(--ocean-10); }
+  .btn-ghost { background: transparent; color: var(--primary); border-color: transparent; }
+  .btn-ghost:hover { background: var(--ocean-10); }
+  .btn-danger { background: var(--destructive); color: #fff; }
+  .btn-danger:hover { background: var(--destructive-hover); }
+  .btn-sm { height: 36px; padding: 0 14px; font-size: 13px; }
+
+  /* ---------- Account tab bar ---------- */
+  .tabbar { background: var(--ocean-10); border-radius: 10px; padding: 8px; display: flex; flex-wrap: wrap;
+    gap: 4px; margin-bottom: 22px; }
+  .tab { padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; letter-spacing: .3px;
+    text-transform: uppercase; color: var(--cadet-base); background: transparent; border: none; cursor: pointer; }
+  .tab:hover { color: var(--primary); }
+  .tab.active { background: var(--primary); color: #fff; }
+
+  /* ---------- Sub tabs ---------- */
+  .subtabs { display: flex; align-items: center; gap: 26px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+  .subtab { position: relative; background: none; border: none; padding: 0 0 13px; cursor: pointer;
+    font-size: 14.5px; font-weight: 600; color: var(--cadet-04); display: inline-flex; align-items: center; gap: 8px; }
+  .subtab:hover { color: var(--primary); }
+  .subtab.active { color: var(--primary); }
+  .subtab.active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--primary); }
+  .subtab .tcount { font-size: 11px; font-weight: 700; background: var(--pill-bg); color: var(--pill-text);
+    border-radius: 20px; padding: 2px 8px; }
+  .subtab.active .tcount { background: var(--ocean-20); color: var(--primary); }
+
+  /* ---------- Alert ---------- */
+  .alert { display: flex; gap: 8px; padding: 12px; border: 1px solid; border-radius: 5px; margin-bottom: 22px; line-height: 1.5; }
+  .alert svg { width: 22px; height: 22px; flex-shrink: 0; }
+  .alert.info { background: var(--ocean-10); border-color: #C0D5FF; color: var(--primary); }
+  .alert.warn { background: var(--warning-bg); border-color: var(--warning-bd); color: var(--warning-text); }
+  .alert b { font-weight: 700; }
+  .alert .a-body { font-size: 13.5px; }
+
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+  /* Prototype-only control — lets this demo toggle between an account with uploads
+     and one with none, so both states can be shown without a second file. */
+  .sim-toggle { display: inline-flex; align-items: center; gap: 6px; border: 1px dashed var(--border);
+    background: #fff; border-radius: var(--radius); padding: 8px 14px; font-size: 12.5px; font-weight: 600;
+    color: var(--cadet-base); cursor: pointer; white-space: nowrap; }
+  .sim-toggle:hover { border-color: var(--primary); color: var(--primary); background: var(--ocean-10); }
+  .sim-toggle.on { border-color: var(--primary); color: var(--primary); background: var(--ocean-10); border-style: solid; }
+
+  .foot-note { font-size: 12px; color: var(--cadet-05); }
+  .foot-note.blocked { color: var(--destructive); font-weight: 600; }
+
+  .ld-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 20px; }
+  .ld-field { display: flex; flex-direction: column; }
+  .ld-field.full { grid-column: 1 / -1; }
+  .ld-field label { font-size: 12.5px; font-weight: 600; color: var(--cadet-base); margin-bottom: 7px;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .ld-field label .f-label { min-width: 0; }
+  .ld-field label .req { color: var(--destructive); }
+  .ld-field label .opt { font-weight: 400; color: var(--cadet-05); }
+  .ld-field label .f-tags { display: flex; gap: 5px; flex-shrink: 0; }
+  .f-tag { font-size: 9.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+    border-radius: 3px; padding: 2px 6px; white-space: nowrap; }
+  .f-tag.side { background: var(--pill-bg); color: var(--pill-text); }
+  .inp { width: 100%; border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px;
+    font-family: inherit; font-size: 14px; color: var(--foreground); background: #fff; height: 42px; }
+  select.inp { cursor: pointer; }
+  .inp::placeholder { color: var(--cadet-05); }
+  .inp:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,31,95,.08); }
+  .inp.err { border-color: var(--destructive); }
+  .inp.err:focus { box-shadow: 0 0 0 3px rgba(165,0,23,.12); }
+  .f-note { font-size: 11.5px; color: var(--cadet-05); margin-top: 6px; line-height: 1.4; }
+  .f-note.error { color: var(--destructive); font-weight: 600; }
+  .f-note.warn { color: #92620A; font-weight: 600; }
+
+  /* ---------- All documents: Required / Additional tables ---------- */
+  .docs-card { background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; }
+  .docs-card-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    padding: 18px 22px; border-bottom: 1px solid var(--border-subtle); }
+  .docs-card-head h2 { font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 700; color: var(--foreground); }
+  .docs-card-sub { font-size: 12.5px; color: var(--cadet-05); margin-top: 4px; }
+  /* Actions sit to the right of the title, above the listing. */
+  .docs-card-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-left: auto; }
+
+  .docs-table-wrap { overflow-x: auto; border-radius: 0 0 8px 8px; }
+  .docs-table { width: 100%; border-collapse: collapse; min-width: 760px; }
+  .docs-table thead th { text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .05em;
+    color: var(--cadet-05); text-transform: uppercase; padding: 13px 16px; background: #FAFBFB;
+    border-bottom: 1px solid var(--border-subtle); white-space: nowrap; }
+  .docs-table thead th.dt-check { width: 40px; padding-right: 0; }
+  .docs-table thead th.dt-menu { width: 44px; }
+  .docs-table tbody td { padding: 16px; vertical-align: top; border-bottom: 1px solid var(--border-subtle); font-size: 13.5px; color: var(--foreground); }
+  .docs-table tbody tr:last-child td { border-bottom: none; }
+  .docs-table tbody tr:hover { background: #FCFCFD; }
+  .docs-table tbody tr[data-open-drawer] { cursor: pointer; }
+  .docs-table input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
+  .docs-table input[type="checkbox"]:disabled { cursor: not-allowed; opacity: .4; }
+
+  .doc-name-cell .dn-top { display: flex; align-items: center; gap: 8px; }
+  .doc-name-cell .dn-name { font-weight: 600; color: var(--foreground); }
+  .ver-pill { font-size: 10.5px; font-weight: 700; color: var(--pill-text); background: var(--pill-bg);
+    border-radius: 4px; padding: 2px 6px; }
+  .doc-name-cell .dn-files { margin-top: 4px; display: flex; flex-direction: column; gap: 1px; }
+  .doc-name-cell .dn-files span { font-size: 12px; color: var(--cadet-05); }
+
+  .row-menu { position: relative; }
+  .row-menu-btn { width: 30px; height: 30px; border: none; background: none; border-radius: 6px;
+    color: var(--cadet-04); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .row-menu-btn:hover { background: var(--muted); color: var(--primary); }
+  .row-menu-pop { display: none; position: absolute; right: 0; top: 34px; z-index: 30; min-width: 148px;
+    background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(16,24,40,.14); padding: 6px; }
+  .row-menu-pop.open { display: block; }
+  .row-menu-pop button { display: flex; align-items: center; gap: 9px; width: 100%; text-align: left;
+    background: none; border: none; border-radius: 6px; padding: 9px 10px; font-size: 13px; font-weight: 500;
+    color: var(--foreground); cursor: pointer; }
+  .row-menu-pop button:hover { background: var(--muted); }
+  .row-menu-pop svg { width: 16px; height: 16px; color: var(--cadet-04); flex-shrink: 0; }
+
+  .docs-empty { text-align: center; font-size: 13px; color: var(--cadet-05); padding: 30px 16px; }
+
+  /* ---------- Upload document drawer ---------- */
+  .up-field { margin-bottom: 22px; }
+  /* :not() keeps the field-label rule off the dropzone, which is a label too. */
+  .up-field > label:not(.up-dropzone) { display: block; font-size: 13px; font-weight: 600;
+    color: var(--foreground); margin-bottom: 7px; }
+  .up-field > label:not(.up-dropzone) .req { color: var(--destructive); }
+  .up-hint { font-size: 11.5px; color: var(--cadet-05); margin-top: 7px; line-height: 1.45; }
+  .up-hint.note { color: #92620A; font-weight: 600; }
+
+  .up-dropzone { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center;
+    border: 1.5px dashed var(--border); border-radius: 8px; padding: 24px 16px; cursor: pointer;
+    background: #FCFCFD; transition: border-color .15s ease, background .15s ease; }
+  .up-dropzone:hover, .up-dropzone.drag { border-color: var(--primary); background: var(--ocean-10); }
+  .up-dropzone svg { width: 26px; height: 26px; color: var(--cadet-04); }
+  .up-dropzone .dz-main { font-size: 13px; color: var(--foreground); }
+  .up-dropzone .dz-main .link { color: var(--primary); font-weight: 600; }
+  .up-dropzone .dz-sub { font-size: 11.5px; color: var(--cadet-05); }
+  .up-dropzone.disabled { opacity: .5; cursor: not-allowed; }
+
+  /* The type's file rule, stated before anything is attached */
+  .up-rule { border: 1px solid var(--border-subtle); border-radius: 8px; background: #FCFCFD;
+    padding: 12px 14px; margin-bottom: 22px; }
+  .up-rule-top { display: flex; align-items: center; gap: 8px; }
+  .up-rule-top svg { width: 16px; height: 16px; color: var(--cadet-04); flex-shrink: 0; }
+  .up-rule-mode { font-size: 12.5px; font-weight: 700; color: var(--foreground); }
+  .up-rule-meta { font-size: 11.5px; color: var(--cadet-05); margin-top: 5px; line-height: 1.45; }
+  .up-rule-labels { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+  .up-rule-labels .lchip { font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    background: var(--pill-bg); color: var(--pill-text); border-radius: 4px; padding: 3px 7px; }
+
+  /* One named slot per label, in "Multiple — fixed labels" mode */
+  .up-slot { margin-bottom: 14px; }
+  .up-slot:last-child { margin-bottom: 0; }
+  .up-slot-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+  .up-slot-name { font-size: 12.5px; font-weight: 600; color: var(--foreground); }
+  .up-slot-name .req { color: var(--destructive); }
+  .up-slot-state { font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+  .up-slot-state.filled { color: var(--success-text); }
+  .up-slot-state.empty { color: var(--cadet-05); }
+  .up-dropzone.slim { padding: 14px 16px; }
+  .up-dropzone.slim svg { width: 20px; height: 20px; }
+
+  /* What was refused, and why */
+  .up-error { display: flex; gap: 8px; border: 1px solid #FFBBC4; background: #FFEAED; color: var(--destructive);
+    border-radius: 5px; padding: 10px 12px; margin-top: 12px; font-size: 12px; line-height: 1.45; }
+  .up-error svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  .up-files { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .up-file { display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-subtle);
+    border-radius: 8px; padding: 10px 12px; background: #fff; }
+  .up-file > svg { width: 18px; height: 18px; color: var(--cadet-04); flex-shrink: 0; }
+  .up-file .uf-body { min-width: 0; flex: 1; }
+  .up-file .uf-name { font-size: 13px; font-weight: 600; color: var(--foreground);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .up-file .uf-size { font-size: 11.5px; color: var(--cadet-05); margin-top: 2px; }
+  .up-file .uf-remove { width: 28px; height: 28px; border: none; background: none; border-radius: 6px;
+    color: var(--cadet-04); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .up-file .uf-remove:hover { background: var(--muted); color: var(--destructive); }
+  .up-file .uf-remove svg { width: 15px; height: 15px; }
+
+  /* ---------- Document drawer ---------- */
+  .drawer-backdrop { display: none; position: fixed; inset: 0; background: rgba(16,24,40,.5); z-index: 90;
+    justify-content: flex-end; }
+  .drawer-backdrop.open { display: flex; }
+  .drawer { width: 460px; max-width: 92vw; height: 100%; background: #fff; box-shadow: -8px 0 30px rgba(16,24,40,.16);
+    display: flex; flex-direction: column; animation: drawerIn .18s ease; }
+  @keyframes drawerIn { from { transform: translateX(28px); opacity: .5; } to { transform: translateX(0); opacity: 1; } }
+  .drawer-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding: 20px 22px 16px; border-bottom: 1px solid var(--border-subtle); flex-shrink: 0; }
+  .drawer-head h2 { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700; color: var(--foreground);
+    line-height: 1.3; overflow-wrap: anywhere; }
+  .drawer-sub { display: flex; align-items: center; gap: 10px; margin-top: 7px; }
+  .drawer-status-text { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
+  .drawer-status-text.ok   { color: var(--success-text); }
+  .drawer-status-text.warn { color: #92620A; }
+  .drawer-status-text.err  { color: var(--destructive); }
+  .drawer-close { width: 32px; height: 32px; border: none; background: none; border-radius: 8px; color: var(--cadet-04);
+    cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .drawer-close:hover { background: var(--muted); }
+
+  .drawer-tabs { display: flex; gap: 22px; padding: 0 22px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .drawer-tab { position: relative; background: none; border: none; padding: 13px 0; font-size: 13.5px; font-weight: 600;
+    color: var(--cadet-04); cursor: pointer; }
+  .drawer-tab:hover { color: var(--primary); }
+  .drawer-tab.active { color: var(--primary); }
+  .drawer-tab.active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--primary); }
+
+  .drawer-body { flex: 1; overflow-y: auto; padding: 22px; }
+  .drawer-preview { width: 100%; height: 150px; border: 1px solid var(--border-subtle); border-radius: 8px;
+    background: #FAFBFC; display: flex; align-items: center; justify-content: center; color: var(--cadet-06); margin-bottom: 22px; }
+  .drawer-preview svg { width: 52px; height: 52px; }
+  .drawer-section { margin-bottom: 24px; }
+  .drawer-section-title { font-size: 13px; font-weight: 700; color: var(--foreground); margin-bottom: 4px; }
+  .dsec-meta { font-size: 12px; color: var(--cadet-05); margin-bottom: 14px; }
+  .detail-grid { display: flex; flex-direction: column; margin-top: 14px; }
+  .dg-pair { display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 12px 0; border-bottom: 1px solid var(--border-subtle); min-width: 0; }
+  .dg-pair:last-child { border-bottom: none; padding-bottom: 0; }
+  .dg-pair .dg-label { font-size: 12px; font-weight: 600; color: var(--cadet-05); text-transform: uppercase;
+    letter-spacing: .03em; flex-shrink: 0; }
+  .dg-pair .dg-value { font-size: 13.5px; color: var(--foreground); font-weight: 500; text-align: right; overflow-wrap: break-word; }
+
+  /* Previous versions — inside the Details tab, below the current document. A
+     dropdown, not a card per version, so it stays compact how ever many there are. */
+  .version-picker { border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px 14px; margin-top: 14px; }
+  .version-picker select.inp { height: 38px; padding: 7px 10px; font-size: 13px; }
+  .version-files { display: flex; flex-direction: column; gap: 1px; margin-top: 10px; }
+  .version-files span { font-size: 12px; color: var(--cadet-05); }
+  .version-meta { font-size: 11.5px; color: var(--cadet-05); margin-top: 8px; }
+  .version-picker-foot { display: flex; justify-content: flex-end; margin-top: 12px; }
+  .version-empty { font-size: 12.5px; color: var(--cadet-05); margin-top: 14px; }
+
+  /* Download-version picker — a centered pop-up, reached from the row's three-dot
+     menu, for choosing which version of a document to download. An ID selector,
+     not a class: this backdrop also matches the plain .drawer-backdrop rule two
+     blocks down (justify-content: flex-end; z-index: 90), and with equal
+     specificity the LAST-declared rule in the stylesheet wins regardless of
+     which reads more specific to a person — an ID always wins on specificity
+     alone, independent of source order. */
+  #dlPickerBackdrop { justify-content: center; align-items: center; padding: 24px; z-index: 95; }
+  .dl-picker-modal { background: #fff; border-radius: 12px; width: 380px; max-width: 100%;
+    box-shadow: 0 20px 60px rgba(16,24,40,.25); display: flex; flex-direction: column;
+    overflow: hidden; animation: drawerIn .18s ease; }
+  .dl-picker-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding: 20px 22px 16px; border-bottom: 1px solid var(--border-subtle); }
+  .dl-picker-head h2 { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700;
+    color: var(--foreground); line-height: 1.3; overflow-wrap: anywhere; }
+  .dl-picker-body { padding: 22px; }
+  .dl-picker-body > label { display: block; font-size: 13px; font-weight: 600; color: var(--foreground); margin-bottom: 7px; }
+  .dl-picker-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 22px;
+    background: #FCFCFD; border-top: 1px solid var(--border-subtle); }
+
+  .drawer-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 14px 22px; background: #FCFCFD; border-top: 1px solid var(--border-subtle); flex-shrink: 0; }
+
+  /* ---------- Events feed ---------- */
+  .event-item { display: flex; align-items: flex-start; gap: 16px; padding: 18px 4px;
+    border-bottom: 1px solid var(--border-subtle); }
+  .event-item:last-child { border-bottom: none; }
+  .ev-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--muted); color: var(--cadet-base);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ev-icon svg { width: 17px; height: 17px; }
+  /* Icon is tinted by action, one Kashier semantic color per action — never a
+     one-off hex: success (green) · info (ocean) · warning (amber) · destructive (red). */
+  .ev-icon.created { background: var(--success-bg); color: var(--success-text); }
+  .ev-icon.captured { background: var(--ocean-10); color: var(--primary); }
+  .ev-icon.updated { background: var(--warning-bg); color: var(--warning-text); }
+  .ev-icon.deleted { background: var(--destructive-bg); color: var(--destructive); }
+  .ev-body { min-width: 0; padding-top: 1px; flex: 1; }
+  .ev-ts { font-size: 13px; color: var(--cadet-04); }
+  .ev-sentence { font-size: 14px; color: var(--cadet-04); margin-top: 7px; line-height: 1.45; }
+  .ev-sentence b { font-weight: 700; color: var(--foreground); }
+  .ev-changes { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .ev-changes li { font-size: 12.5px; color: var(--cadet-base); line-height: 1.5;
+    background: #FCFCFD; border: 1px solid var(--border-subtle); border-radius: var(--radius); padding: 7px 10px; }
+  .ev-changes .fld { font-weight: 600; color: var(--foreground); }
+  .ev-changes .val { font-family: 'Noto Sans', monospace; color: var(--foreground); }
+  .ev-changes .none { color: var(--cadet-05); font-style: italic; }
+  .ev-changes .arrow { color: var(--cadet-05); margin: 0 4px; }
+  .events-empty { display: none; text-align: center; font-size: 13px; color: var(--cadet-05); padding: 26px 0 14px; }
+  .events-empty.show { display: block; }
+  .ev-icon.uploaded   { background: var(--success-bg); color: var(--success-text); } /* a file was successfully filed */
+  .ev-icon.downloaded { background: var(--accent-10); color: var(--accent); }           /* Kashier teal — retrieving a copy */
+  /* Pagination — mirrors the On-Hold tables so both modules page the same way */
+  .pagination-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;
+    flex-wrap: wrap; gap: 10px; border-top: 1px solid var(--border-subtle); }
+  .pagination-info { font-size: 13px; color: var(--foreground); }
+  .pagination-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .rpp { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--foreground); }
+  .rpp select { border: none; background: none; font-size: 13px; font-weight: 600; color: var(--foreground);
+    cursor: pointer; font-family: inherit; }
+  .pagination { display: flex; align-items: center; gap: 4px; }
+  .page-btn { min-width: 30px; height: 30px; padding: 0 6px; display: flex; align-items: center; justify-content: center;
+    border-radius: var(--radius); border: 1.5px solid transparent; background: #fff; font-size: 12px; font-weight: 600;
+    color: var(--foreground); cursor: pointer; }
+  .page-btn.active { background: var(--ocean-10); color: var(--primary); border-color: var(--primary); }
+  .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .page-btn:hover:not(.active):not(:disabled) { border-color: var(--border); }
+
+  /* ---------- Toast ---------- */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--primary);
+    color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; z-index: 100; opacity: 0;
+    pointer-events: none; transition: opacity .2s ease, transform .2s ease; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1000px) { .content { padding: 24px 22px 60px; } .topbar { padding: 12px 22px; } }
+  @media (max-width: 900px) {
+    .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%);
+      transition: transform .22s ease; box-shadow: 0 10px 40px rgba(0,0,0,.18); }
+    .sidebar.open { transform: translateX(0); }
+    .hamburger { display: flex; }
+    .page-head h1 { font-size: 24px; }
+  }
+  @media (max-width: 640px) {
+    .ld-grid { grid-template-columns: 1fr; }
+    .user .name { display: none; }
+    .head-actions { width: 100%; }
+    .head-actions .btn { flex: 1; }
+    .pagination-bar { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">kashier</div>
+
+    <a class="nav-link" href="home.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>Home</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>BIN Management</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>Financial Institutions</a>
+    <a class="nav-link active" href="business-info.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"/></svg>Merchant</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h6m-6 3h6m-6 3h6M10.5 21v-3.75a1.5 1.5 0 0 1 3 0V21"/></svg>Business Industries</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z"/></svg>PCC Templates</a>
+    <a class="nav-link" href="terminals.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25"/></svg>Terminals</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-9L21 3m0 0-4.5-4.5M21 3v13.5" transform="translate(0 3)"/></svg>Reconciliation</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5M21 16.5 16.5 21m0 0L12 16.5m4.5 4.5V7.5"/></svg>Orders</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"/></svg>Transfers</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0"/></svg>Bundles</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5v15h18M3 4.5h.375c.621 0 1.125.504 1.125 1.125v.75c0 .621.504 1.125 1.125 1.125m0 0a48.667 48.667 0 0 1 11.964 1.041M9 15l3-3 2.25 2.25L18 10.5"/></svg>Lending</a>
+
+    <div class="nav-section">
+      <div class="section-head" id="documentsHead">Documents
+        <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
+      </div>
+      <div class="nav-sub" id="documentsSub">
+        <a href="document-types.html">Document Types</a>
+        <a href="document-rules.html">Document Rules</a>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="section-head" id="balanceHead">Balance Management
+        <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
+      </div>
+      <div class="nav-sub" id="balanceSub">
+        <a href="#">Settlement Windows</a>
+        <a href="#">Accounts</a>
+        <a href="on-hold.html">On-Hold</a>
+        <a href="#">Vacations</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" id="hamburger" aria-label="Open menu">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+        </button>
+      </div>
+      <div class="topbar-right">
+        <button class="lang">عربي</button>
+        <div class="divider"></div>
+        <div class="user">
+          <div class="avatar">AM</div>
+          <span class="name">Aya Muhammed</span>
+          <span class="gear"><svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="breadcrumb">Merchant <span class="sep">/</span> TEST Space Xx <span class="sep">/</span> <span class="current">Documents</span></div>
+
+      <div class="page-head">
+        <div class="page-title-row">
+          <h1>TEST Space Xx <span class="mid">(MID-24126-295)</span></h1>
+          <div class="status-pill">
+            <span class="lbl">Account status</span>
+            <span class="val">Live</span>
+          </div>
+        </div>
+        <div class="head-actions">
+          <button class="btn btn-danger" type="button">
+            <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+            Terminate
+          </button>
+        </div>
+      </div>
+
+      <div class="tabbar">
+        <button class="tab">Business Info</button>
+        <button class="tab">Change Requests</button>
+        <button class="tab active">Documents</button>
+        <button class="tab">Payment Configurations</button>
+        <button class="tab">Payout Method</button>
+        <button class="tab">Features Flagging</button>
+        <button class="tab">Connected Accounts</button>
+        <button class="tab">Shipping</button>
+        <button class="tab">Terminals</button>
+        <button class="tab">Discounts</button>
+        <button class="tab">Bundle</button>
+        <button class="tab">Logs</button>
+      </div>
+
+      <div class="alert info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
+        <div class="a-body">
+          Click a document to view it, record its info fields as text, and see its audit log. Values are saved on the
+          account and can be edited at any time. The fields shown come from that type's definition in
+          <a href="document-types.html" style="color:var(--link);font-weight:600;">Document Types</a>.
+        </div>
+      </div>
+
+      <div class="acct-type">
+        <span class="lbl">Account type</span>
+        <span class="val">Registered Business</span>
+      </div>
+
+      <div class="docs-card">
+        <div class="docs-card-head">
+          <div class="docs-card-title">
+            <h2>All documents</h2>
+            <p class="docs-card-sub" id="allDocsSub">Every document on this account, in one list.</p>
+          </div>
+          <div class="docs-card-actions">
+            <button class="sim-toggle" id="btnSimulate" type="button">&#9654; Simulate: no documents uploaded</button>
+            <button class="btn btn-outline btn-sm" id="btnDownloadAll" type="button">
+              <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+              Download all
+            </button>
+            <button class="btn btn-primary btn-sm" id="btnUploadDoc" type="button">
+              <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z"/></svg>
+              Upload document
+            </button>
+          </div>
+        </div>
+        <div class="docs-table-wrap">
+          <table class="docs-table">
+            <thead>
+              <tr>
+                <th class="dt-check"><input type="checkbox" id="checkAllDocs" aria-label="Select all documents"></th>
+                <th>Document Name</th>
+                <th>Uploaded by</th>
+                <th>Status</th>
+                <th>Last update</th>
+                <th class="dt-menu"></th>
+              </tr>
+            </thead>
+            <tbody id="allDocsBody"></tbody>
+          </table>
+          <div class="docs-empty" id="allDocsEmpty" style="display:none;">No documents have been uploaded for this merchant.</div>
+        </div>
+        <div class="pagination-bar" id="docsPaginationBar">
+          <div class="pagination-info" id="docsPageInfo">0 - 0 of 0</div>
+          <div class="pagination-right">
+            <div class="pagination" id="docsPagination"></div>
+            <div class="rpp">
+              Rows per page:
+              <select id="docsRpp">
+                <option>5</option>
+                <option selected>10</option>
+                <option>20</option>
+                <option>50</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ══════════════════ Upload document drawer ══════════════════ -->
+  <div class="drawer-backdrop" id="uploadBackdrop">
+    <div class="drawer" role="dialog" aria-modal="true" aria-labelledby="uploadTitle">
+      <div class="drawer-head">
+        <div>
+          <h2 id="uploadTitle">Upload document</h2>
+          <div class="drawer-sub">
+            <span class="dsec-meta" style="margin:0;">Choose the document type, then attach the file.</span>
+          </div>
+        </div>
+        <button class="drawer-close" id="uploadClose" aria-label="Close" type="button">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="drawer-body">
+        <div class="up-field">
+          <label for="uploadType">Document type <span class="req">*</span></label>
+          <select class="inp" id="uploadType">
+            <option value="">Select a document type…</option>
+          </select>
+          <div class="up-hint" id="uploadTypeHint">Only the types defined in Document Types can be uploaded.</div>
+        </div>
+
+        <!-- The chosen type's file rule, stated before anything is attached -->
+        <div id="uploadRule"></div>
+
+        <!-- Built from the chosen type's file rule: one dropzone, one per label, or many -->
+        <div class="up-field" id="uploadFileField"></div>
+      </div>
+      <div class="drawer-foot">
+        <span class="foot-note" id="uploadFootNote"></span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" id="uploadCancelBtn" type="button">Cancel</button>
+          <button class="btn btn-primary btn-sm" id="uploadSubmitBtn" type="button" disabled>Upload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ Download-version picker (pop-up) ══════════════════ -->
+  <div class="drawer-backdrop" id="dlPickerBackdrop">
+    <div class="dl-picker-modal" role="dialog" aria-modal="true" aria-labelledby="dlPickerTitle">
+      <div class="dl-picker-head">
+        <h2 id="dlPickerTitle">Download document</h2>
+        <button class="drawer-close" id="dlPickerClose" aria-label="Close" type="button">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="dl-picker-body">
+        <label for="dlPickerSelect">Version</label>
+        <select class="inp" id="dlPickerSelect"></select>
+        <div id="dlPickerInfo"></div>
+      </div>
+      <div class="dl-picker-foot">
+        <button class="btn btn-ghost btn-sm" id="dlPickerCancel" type="button">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="dlPickerDownload" type="button">Download</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ Document drawer ══════════════════ -->
+  <div class="drawer-backdrop" id="drawerBackdrop">
+    <div class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+      <div class="drawer-head">
+        <div>
+          <h2 id="drawerTitle">Document</h2>
+          <div class="drawer-sub">
+            <span class="ver-pill" id="drawerVersion"></span>
+            <span id="drawerStatus"></span>
+          </div>
+        </div>
+        <button class="drawer-close" id="drawerClose" aria-label="Close" type="button">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="drawer-tabs">
+        <button class="drawer-tab active" id="tabDetails" type="button">Details</button>
+        <button class="drawer-tab" id="tabFields" type="button">Document info fields</button>
+        <button class="drawer-tab" id="tabAudit" type="button">Audit Logs</button>
+      </div>
+      <div class="drawer-body" id="drawerBody">
+        <div id="drawerDetailsPanel"></div>
+        <div id="drawerFieldsPanel" style="display:none;"></div>
+        <div id="drawerAuditPanel" style="display:none;"></div>
+      </div>
+      <div class="drawer-foot" id="drawerFoot">
+        <span class="foot-note" id="footNote"></span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" id="drawerCancelBtn" type="button">Cancel</button>
+          <button class="btn btn-primary btn-sm" id="drawerSaveBtn" type="button">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const CURRENT_USER = 'Aya Muhammed';
+  const MID = 'MID-24126-295';
+  const STORE_KEY = 'kashier.legalData.' + MID;
+
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  /* ═══════════════════════════════════════════════════════════════
+     1. Document types and their data fields.
+        This mirrors the definition in the Document Types module —
+        add a field there and it shows up here with no code change.
+     ═══════════════════════════════════════════════════════════════ */
+  /* Shared option lists */
+  const GENDERS = ['Male', 'Female'];
+  /* ISO country list — trimmed to the ones this market actually sees, plus Other. */
+  const COUNTRIES = ['Egypt','Saudi Arabia','United Arab Emirates','Kuwait','Qatar','Bahrain','Oman','Jordan',
+    'Lebanon','Syria','Iraq','Palestine','Yemen','Libya','Sudan','Morocco','Tunisia','Algeria',
+    'United Kingdom','United States','Canada','France','Germany','Italy','Spain','Netherlands',
+    'Turkey','China','India','Pakistan','Bangladesh','Philippines','Nigeria','Kenya','South Africa','Other'];
+  const NATIONALITIES = ['Egyptian','Saudi','Emirati','Kuwaiti','Qatari','Bahraini','Omani','Jordanian',
+    'Lebanese','Syrian','Iraqi','Palestinian','Yemeni','Libyan','Sudanese','Moroccan','Tunisian','Algerian',
+    'British','American','Canadian','French','German','Italian','Spanish','Dutch',
+    'Turkish','Chinese','Indian','Pakistani','Bangladeshi','Filipino','Nigerian','Kenyan','South African','Other'];
+  const LEGAL_FORMS = ['Sole proprietorship','LLC','JSC','Partnership','Branch of foreign company'];
+
+  const PASSPORT_TYPE = {
+    id: 'passport', name: 'Passport', nameAr: 'جواز السفر',
+    sub: 'Applies to non-Egyptian owners and signatories. Alternative to National ID, not additional.',
+    files: { mode: 'single', labels: [] }, formats: ['PDF','JPG','PNG'], maxSize: 5,
+    icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a8.949 8.949 0 0 0 4.951-1.488A3.987 3.987 0 0 0 13 16h-2a3.987 3.987 0 0 0-3.951 3.512A8.949 8.949 0 0 0 12 21Zm3-11.25a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>',
+    fields: [
+      { key:'passport_number', label:'Passport Number', type:'text', required:true, pattern:'^[A-Za-z0-9]{6,12}$',
+        hint:'Alphanumeric, 6–12 characters. Format varies by country.', placeholder:'A12345678', verifyAt:'Activation' },
+      { key:'full_name', label:'Full Name (as printed)', type:'text', required:true,
+        hint:'Latin characters, as shown in the MRZ. Must match Authorised Manager Name on the CR.', verifyAt:'Activation' },
+      { key:'nationality', label:'Nationality', type:'dropdown', required:true, options:NATIONALITIES,
+        hint:'ISO country list.', verifyAt:'Activation' },
+      { key:'date_of_birth', label:'Date of Birth', type:'date', required:true, verifyAt:'Activation' },
+      { key:'gender', label:'Gender', type:'dropdown', required:true, options:GENDERS, verifyAt:'Activation' },
+      { key:'issuing_country', label:'Issuing Country', type:'dropdown', required:true, options:COUNTRIES,
+        hint:'ISO country list.', verifyAt:'Activation' },
+      { key:'issue_date', label:'Issue Date', type:'date', required:false },
+      { key:'passport_expiry_date', label:'Passport Expiry Date', type:'date', required:true, isExpiry:true,
+        hint:'Must not be in the past at activation.', verifyAt:'Activation' }
+    ]
+  };
+  const VAT_TYPE = {
+    id: 'vat', name: 'VAT Registration Certificate', nameAr: 'شهادة التسجيل بضريبة القيمة المضافة',
+    files: { mode: 'single', labels: [] }, formats: ['PDF'], maxSize: 5,
+    sub: 'Captured when the merchant is VAT-registered.',
+    icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/>',
+    fields: [
+      { key:'vat_status', label:'VAT Status', type:'select', required:true, options:['Registered','Exempt','Not registered'] },
+      { key:'vat_number', label:'VAT Registration Number', type:'text', required:false, hint:'Required when status is Registered.', placeholder:'987654321' }
+    ]
+  };
+
+  /* ── Document Types integration ──
+     Passport and VAT are managed here directly — Document Types has no entry
+     for them. Every other document type is generated from the field
+     definitions published by document-types.html (same-origin localStorage):
+     add or edit a "document info field" there and it shows up here with no
+     code change. Falls back to a built-in copy of the same six types so this
+     page still works correctly even before Document Types has been opened
+     once in this browser. */
+  const REGISTRY_KEY = 'kashier.documentTypes.registry';
+  /* Keeps the storage ids these four types have always used, so any
+     previously-saved merchant field values aren't orphaned once their
+     definition starts coming from Document Types instead of being hardcoded. */
+  const ID_MAP = {
+    'National ID': 'nid',
+    'Commercial Registration': 'cr',
+    'Tax Card': 'tax',
+    'Proof of Address': 'utility'
+  };
+  const slug = s => String(s).toLowerCase().trim().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'doc';
+  const ICONS = {
+    'national-id': '<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>',
+    'certificate': '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>',
+    'tax-card': '<path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25 15 8.25m-5.25.75h.008v.008H9.75V9Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.5 4.5h.008v.008h-.008v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>',
+    'bank-statement': '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/>',
+    'contract': '<path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75"/>',
+    'proof-address': '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/>',
+    'generic': '<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>'
+  };
+  /* Mirrors the six document types seeded in document-types.html, so this
+     page is correct the first time it's opened too, before that page has
+     ever saved anything to localStorage. Patterns are copied verbatim from
+     that page's seed data — Document Types is the source of truth for regex,
+     this is only the fallback used before its own registry has synced.
+     type / required / options / isExpiry aren't concepts Document Types'
+     own editor captures (it only ever stores a field's label and regex),
+     so this doubles as the metadata Document Info enriches live-synced
+     fields with — see buildDocTypesFromRegistry below. */
+  const DEFAULT_REGISTRY = [
+    { id: 1, name: 'National ID', nameAr: 'بطاقة الرقم القومي', kind: 'national-id',
+      formats: ['PDF','JPG','PNG'], maxSize: 5, files: { mode: 'labeled', labels: [{ name: 'Front side' }, { name: 'Back side' }] },
+      desc: 'Front and back of a valid national identity card.',
+      infoFields: [
+        { label: 'National ID Number', type: 'text', required: true, options: [], pattern: '^[0-9]{14}$' },
+        { label: 'Full Name (as printed)', type: 'text', required: true, options: [], pattern: '' },
+        { label: 'Date of Birth', type: 'date', required: true, options: [], pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
+        { label: 'Gender', type: 'dropdown', required: true, options: ['Male','Female'], pattern: '^(Male|Female)$' },
+        { label: 'Nationality', type: 'dropdown', required: true, options: ['Egyptian','Foreign'], pattern: '^(Egyptian|Foreign)$' },
+        { label: 'Address on ID', type: 'text', required: false, options: [], pattern: '' },
+        { label: 'ID Expiry Date', type: 'date', required: true, options: [], isExpiry: true, pattern: '^\\d{4}-\\d{2}-\\d{2}$' }
+      ] },
+    { id: 2, name: 'Commercial Registration', nameAr: 'السجل التجاري', kind: 'certificate',
+      formats: ['PDF'], maxSize: 10, files: { mode: 'single', labels: [] },
+      desc: 'Official commercial registration certificate.',
+      infoFields: [
+        { label: 'CR Number', type: 'text', required: true, options: [], pattern: '^[0-9]{4,10}$' },
+        { label: 'Registered Company Name', type: 'text', required: true, options: [], pattern: '' },
+        { label: 'Legal Form', type: 'dropdown', required: true, options: ['Sole proprietorship','LLC','JSC','Partnership','Branch of foreign company'], pattern: '^(Sole proprietorship|LLC|JSC|Partnership|Branch of foreign company)$' },
+        { label: 'Registration Office', type: 'text', required: true, options: [], pattern: '' },
+        { label: 'CR Expiry / Renewal Date', type: 'date', required: true, options: [], isExpiry: true, pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
+        { label: 'Authorised Manager Name', type: 'text', required: true, options: [], pattern: '' }
+      ] },
+    { id: 3, name: 'Tax Card', nameAr: 'البطاقة الضريبية', kind: 'tax-card',
+      formats: ['PDF','JPG'], maxSize: 5, files: { mode: 'single', labels: [] },
+      desc: 'Valid tax registration card issued by the authority.',
+      infoFields: [
+        { label: 'Tax Registration Number', type: 'text', required: true, options: [], pattern: '^[0-9]{9}$' },
+        { label: 'Registered Name', type: 'text', required: true, options: [], pattern: '' },
+        { label: 'Tax Office', type: 'text', required: true, options: [], pattern: '' },
+        { label: 'Taxable Activity', type: 'text', required: false, options: [], pattern: '' }
+      ] },
+    { id: 4, name: 'Bank Statement', nameAr: 'كشف حساب بنكي', kind: 'bank-statement',
+      formats: ['PDF'], maxSize: 10, files: { mode: 'unlabeled', labels: [] },
+      desc: 'Recent statement confirming the settlement account.',
+      infoFields: [
+        { label: 'Account Holder Name', type: 'text', required: true, options: [], pattern: '' },
+        { label: 'IBAN', type: 'text', required: true, options: [], pattern: '^EG\\d{27}$' },
+        { label: 'Bank Name', type: 'text', required: true, options: [], pattern: '' }
+      ] },
+    { id: 5, name: 'Signed Contract', nameAr: 'العقد الموقع', kind: 'contract',
+      formats: ['PDF'], maxSize: 15, files: { mode: 'unlabeled', labels: [] },
+      desc: 'Merchant service agreement, signed and stamped.',
+      infoFields: [
+        { label: 'Authorized Signatory', type: 'text', required: true, options: [], pattern: '' },
+        { label: 'Signature Date', type: 'date', required: true, options: [], pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
+        { label: 'Contract Reference', type: 'text', required: false, options: [], pattern: '' }
+      ] },
+    { id: 6, name: 'Proof of Address', nameAr: 'إثبات العنوان', kind: 'proof-address',
+      formats: ['PDF','JPG','PNG'], maxSize: 5, files: { mode: 'single', labels: [] },
+      desc: 'Utility bill or lease dated within the last 3 months.',
+      infoFields: [
+        { label: 'Address on Document', type: 'text', required: true, options: [], pattern: '' },
+        { label: 'Document Issue Date', type: 'date', required: true, options: [], pattern: '^\\d{4}-\\d{2}-\\d{2}$' }
+      ] }
+  ];
+  function loadRegistry() {
+    try {
+      const raw = localStorage.getItem(REGISTRY_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        /* A registry saved before Document Types started publishing the file upload
+           rule (an older syncRegistry()) carries every entry with no `files` key at
+           all — not a real single-file rule, just data that was never written. Using
+           it as-is would show every type as "Single file" regardless of what's
+           actually configured, until document-types.html happened to reload and
+           overwrite it. Detect that shape and fall back to the bundled defaults
+           instead of trusting it, so this can't linger in anyone's browser. */
+        const stale = Array.isArray(parsed) && parsed.length && parsed.every(rt => !('files' in rt));
+        if (Array.isArray(parsed) && parsed.length && !stale) return parsed;
+      }
+    } catch (e) { /* fall through to defaults */ }
+    return DEFAULT_REGISTRY;
+  }
+
+  /* Document Types' own editor only ever stores a field's label and regex — it has
+     no notion of input type, required-ness, dropdown options or expiry. So that a
+     live-synced field (Gender, Nationality, an expiry date…) still renders as the
+     right control instead of degrading to a bare optional text box, this looks up
+     that missing shape by (doc-type id + label) from the known field set above.
+     A field Document Types doesn't (yet) know about — newly added there — simply
+     falls back to a plain optional text field, same as before this lookup existed. */
+  const FIELD_META = {};
+  DEFAULT_REGISTRY.forEach(rt => {
+    const id = ID_MAP[rt.name] || slug(rt.name);
+    rt.infoFields.forEach(f => {
+      FIELD_META[id + '|' + f.label] = { type: f.type, required: f.required, options: f.options, isExpiry: !!f.isExpiry };
+    });
+  });
+
+  function buildDocTypesFromRegistry(registry) {
+    return registry
+      .filter(rt => rt.infoFields && rt.infoFields.length)
+      .map(rt => {
+        const id = ID_MAP[rt.name] || slug(rt.name);
+        return {
+          id,
+          name: rt.name,
+          nameAr: rt.nameAr || '',
+          sub: rt.desc || '',
+          icon: ICONS[rt.kind] || ICONS.generic,
+          /* How the files themselves must arrive — set on the type in Document Types
+             under "File upload rule", and enforced by the upload drawer. */
+          files: rt.files || { mode: 'single', labels: [] },
+          formats: (rt.formats && rt.formats.length) ? rt.formats : ['PDF','JPG','PNG'],
+          maxSize: rt.maxSize || 5,
+          fields: rt.infoFields.map(f => {
+            const meta = FIELD_META[id + '|' + f.label] || {};
+            // Field type + regex rule now come LIVE from Document Types (Text / Number /
+            // Date / Dropdown, each validated the same way — one regex rule, or a list of
+            // options for Dropdown). FIELD_META is only a fallback for legacy fields with
+            // no live type.
+            const type = ['dropdown','date','number','text'].includes(f.type)
+              ? f.type
+              : (['dropdown','date','number'].includes(meta.type) ? meta.type : 'text');
+            return {
+              key: slug(f.label),
+              label: f.label,
+              type,
+              required: !!meta.required,
+              options: type === 'dropdown'
+                ? ((f.options && f.options.length) ? f.options : (meta.options || []))
+                : undefined,
+              isExpiry: !!meta.isExpiry,
+              pattern: f.pattern || undefined,                                   // regex rule, any type
+              patternMessage: f.patternMessage || undefined                      // agent-authored message when it fails
+            };
+          })
+        };
+      });
+  }
+
+  const DOC_TYPES = [...buildDocTypesFromRegistry(loadRegistry()), PASSPORT_TYPE, VAT_TYPE];
+
+  /* ═══════════════════════════════════════════════════════════════
+     1b. Documents the merchant has uploaded on this account.
+         The cards on this tab are derived from these — there is no
+         "add" step, because what exists is decided by the uploads.
+     ═══════════════════════════════════════════════════════════════ */
+  /* Every seeded timestamp on this page is built the same way: an offset from
+     today, stepped back a day if that would land in the future, so "now" always
+     sorts above history no matter what time the page happens to load. */
+  function seedTime(dayOffset, h, m) {
+    const now = Date.now();
+    const d = new Date();
+    d.setDate(d.getDate() - dayOffset);
+    d.setHours(h, m, 0, 0);
+    if (d.getTime() > now) d.setDate(d.getDate() - 1);
+    return d.getTime();
+  }
+  const SEEDED_UPLOADER = 'mhegab@elements-ft.com';
+  /* The account owner (Business Info → Owner Contacts). Documents a merchant files
+     themselves are attributed to this name, not the agent's email. */
+  const MERCHANT_UPLOADER = 'Elon Space';
+
+  /* A superseded version is kept, not deleted, so it stays reachable as a previous
+     version — `active` marks which entries are each type's current one. */
+  const SEED_ACCOUNT_DOCS = [
+    { id:'d1', type:'nid',              name:'National ID (Front)',   version:'V1', file:'national_id_front.pdf',
+      uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(0, 15, 25), active: true },
+    { id:'d2', type:'nid',              name:'National ID (Back)',    version:'V1', file:'national_id_back.pdf',
+      uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(0, 15, 25), active: true },
+    /* Commercial Registration carries one prior version, so this is the type that
+       demonstrates "previous versions" in the drawer out of the box. */
+    { id:'d0', type:'cr',               name:'Commercial Register',   version:'V1', file:'commercial_registration_v1.pdf',
+      uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(48, 10, 5),  active: false },
+    { id:'d3', type:'cr',               name:'Commercial Register',   version:'V2', file:'commercial_registration.pdf',
+      uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(0, 15, 25), active: true },
+    { id:'d4', type:'tax',              name:'Tax ID Card',           version:'V1', file:'tax_id_card.pdf',
+      uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(0, 16, 45), active: true },
+    /* Filed by the merchant, not the agent — Proof of Address and Bank Statement
+       are the two types typically self-uploaded rather than collected in person. */
+    { id:'d6', type:'utility',          name:'Utility Bill',          version:'V1', file:'utility_bill.pdf',
+      uploadedBy: MERCHANT_UPLOADER, uploadedAt: seedTime(0, 17, 15), active: true },
+    { id:'d7', type:'bank_statement',   name:'Bank Statement',        version:'V1', file:'bank_statement.pdf',
+      uploadedBy: MERCHANT_UPLOADER, uploadedAt: seedTime(1, 11, 10), active: true },
+    { id:'d8', type:'signed_contract',  name:'Signed Contract',       version:'V1', file:'signed_contract.pdf',
+      uploadedBy: SEEDED_UPLOADER, uploadedAt: seedTime(5, 17, 31), active: true }
+  ];
+
+  /* Prototype-only: lets this demo show what the tab looks like on an account
+     with nothing uploaded yet, without needing a second HTML file. Not persisted —
+     always starts from the seeded uploads on load. */
+  let simulateNoUploads = false;
+
+  /* The current files for a type — what the table row and the drawer's "Document
+     Details" show. */
+  const docsForType = id => simulateNoUploads ? [] : SEED_ACCOUNT_DOCS.filter(d => d.type === id && d.active);
+  /* One card per uploaded document type, in the order the types are defined. */
+  const recordableTypes = () => DOC_TYPES.filter(dt => docsForType(dt.id).length);
+
+  /* Every superseded version of a type, newest first, one entry per version number
+     with the file(s) filed under it — what "Previous Versions" in the drawer lists. */
+  function versionsForType(id) {
+    if (simulateNoUploads) return [];
+    const byVersion = {};
+    SEED_ACCOUNT_DOCS.filter(d => d.type === id && !d.active).forEach(d => {
+      const v = byVersion[d.version] || (byVersion[d.version] =
+        { version: d.version, files: [], uploadedBy: d.uploadedBy, uploadedAt: d.uploadedAt });
+      v.files.push(d);
+    });
+    return Object.values(byVersion).sort((a, b) => b.uploadedAt - a.uploadedAt);
+  }
+
+  /* Field keys repeat across types — full_name, date_of_birth, gender, nationality and
+     issue_date all appear on more than one document. Namespace each field by its type so
+     the stored values and the DOM ids stay distinct, while `key` keeps the schema's name. */
+  DOC_TYPES.forEach(dt => dt.fields.forEach(f => {
+    f.uid = dt.id + '.' + f.key;
+    f.inputId = 'in_' + dt.id + '_' + f.key;
+    f.docType = dt;
+  }));
+
+  /* ═══════════════════════════════════════════════════════════════
+     2. Values stored on the account
+     ═══════════════════════════════════════════════════════════════ */
+  let legalData = {};      // key -> { value, by, at, source }
+  let events = [];         // full audit trail, newest first
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) {
+        const p = JSON.parse(raw);
+        legalData = p.legalData || {};
+        events = p.events || [];
+      }
+    } catch (e) { /* start empty */ }
+  }
+  function persist() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify({ legalData, events })); } catch (e) {}
+  }
+
+  /* The uploads the account arrived with predate anything captured here, so on a
+     store with no history at all we lay them down as events. Times line up with the
+     "last update" column, and the uploader is the agent who filed them. */
+  /* Every filed version becomes an "uploaded" event, built straight from
+     SEED_ACCOUNT_DOCS so the feed can never drift from what the tab shows. */
+  function seedEvents() {
+    if (events.length) return;
+    const byVersion = {};
+    SEED_ACCOUNT_DOCS.forEach(d => {
+      const key = d.type + '|' + d.version;
+      const v = byVersion[key] || (byVersion[key] =
+        { doc: d.type, version: d.version, files: [], uploadedBy: d.uploadedBy, uploadedAt: d.uploadedAt });
+      v.files.push(d.file);
+    });
+    events = Object.values(byVersion).map(v => {
+      const dt = DOC_TYPES.find(x => x.id === v.doc);
+      const names = v.files.join(', ');
+      return {
+        type: 'uploaded', doc: v.doc, at: v.uploadedAt, by: v.uploadedBy,
+        text: 'uploaded <b>' + v.files.length + ' file' + (v.files.length > 1 ? 's' : '') + '</b> (' + esc(names) +
+              ') as <b>' + esc(v.version) + '</b> of <b>' + esc(dt ? dt.name : v.doc) + '</b>',
+        changes: []
+      };
+    }).sort((a, b) => b.at - a.at);
+  }
+
+  /* ── Drawer state ──
+     One document open at a time, in a slide-over panel. Closing (X, backdrop, Escape
+     or Cancel) is a discard: the panel re-renders from what is stored next time it
+     opens, so anything typed and not saved is simply dropped. Saving writes the
+     values and keeps the drawer open on the refreshed data. */
+  let openId = null;
+  let activeDrawerTab = 'details';
+
+  /* Required-but-empty fields only turn red once the agent has actually reached them —
+     by leaving them blank on the way past, or by trying to save with them still empty.
+     Without this a freshly opened drawer would show every required field as an error. */
+  let touched = new Set();
+  let attemptedSave = false;
+
+  function openDrawer(id) {
+    const dt = DOC_TYPES.find(d => d.id === id);
+    if (!dt) return;
+    openId = id;
+    touched = new Set();
+    attemptedSave = false;
+    activeDrawerTab = 'details';
+    renderDrawer();
+    $('drawerBackdrop').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    revalidate();
+  }
+
+  function closeDrawer() {
+    openId = null;
+    $('drawerBackdrop').classList.remove('open');
+    document.body.style.overflow = '';
+    touched = new Set();
+    attemptedSave = false;
+  }
+
+  function switchDrawerTab(which) {
+    activeDrawerTab = which;
+    $('drawerDetailsPanel').style.display = which === 'details' ? '' : 'none';
+    $('drawerFieldsPanel').style.display  = which === 'fields'  ? '' : 'none';
+    $('drawerAuditPanel').style.display   = which === 'audit'   ? '' : 'none';
+    /* Only the fields tab has anything to save — the footer follows it. */
+    $('drawerFoot').style.display = which === 'fields' ? '' : 'none';
+    $('tabDetails').classList.toggle('active', which === 'details');
+    $('tabFields').classList.toggle('active', which === 'fields');
+    $('tabAudit').classList.toggle('active', which === 'audit');
+    if (which === 'fields') {
+      const first = document.querySelector('#drawerFieldsPanel .inp');
+      if (first) setTimeout(() => first.focus({ preventScroll: true }), 120);
+    }
+  }
+
+
+  /* ═══════════════════════════════════════════════════════════════
+     3. Field helpers
+     ═══════════════════════════════════════════════════════════════ */
+  /* Takes a field (namespaced) or a raw storage uid. */
+  const valueOf = f => {
+    const uid = typeof f === 'string' ? f : f.uid;
+    return (legalData[uid] && legalData[uid].value) ? String(legalData[uid].value).trim() : '';
+  };
+
+  /* VAT number becomes required the moment the merchant is VAT-registered.
+     `live` is an optional uid -> current-input-value map from the open card, so this
+     reacts to what is being typed right now rather than only the last saved value. */
+  function isRequired(f, live) {
+    if (f.key === 'vat_number') {
+      const v = (live && Object.prototype.hasOwnProperty.call(live, 'vat.vat_status'))
+        ? live['vat.vat_status'] : valueOf('vat.vat_status');
+      return v === 'Registered';
+    }
+    return !!f.required;
+  }
+
+  function daysUntil(iso) {
+    if (!iso) return null;
+    const d = new Date(iso + 'T00:00:00');
+    if (isNaN(d)) return null;
+    const today = new Date(); today.setHours(0,0,0,0);
+    return Math.round((d - today) / 864e5);
+  }
+
+  /* A "Number" field (set via the Type dropdown in Document Types) only accepts numeric
+     values. Digits, one optional leading minus, one optional decimal point. */
+  const NUMBER_RE = /^-?\d+(\.\d+)?$/;
+  const isNumberMismatch = (f, v) => f.type === 'number' && v && !NUMBER_RE.test(v.trim());
+
+  /* Returns: empty | invalid | expired | expiring | ok — for any value, typed or stored. */
+  function stateFor(f, v) {
+    if (!v) return 'empty';
+    if (f.pattern && !new RegExp(f.pattern).test(v.replace(/\s/g, ''))) return 'invalid';
+    if (isNumberMismatch(f, v)) return 'invalid';
+    if (f.isExpiry) {
+      const d = daysUntil(v);
+      if (d !== null && d < 0) return 'expired';
+      if (d !== null && d <= 60) return 'expiring';
+    }
+    return 'ok';
+  }
+  const fieldState = f => stateFor(f, valueOf(f));
+
+  /* A malformed value always blocks saving. A required field left empty blocks it too —
+     checked separately, since "empty" alone isn't wrong until you try to save the card.
+     An expired date does not block: it is a true fact about the document, just flagged. */
+  const blocksSave = st => st === 'invalid';
+
+  /* The message under a field, for whatever value it currently holds.
+     `flagMissing` renders the "required" reminder — only passed once the agent has
+     actually reached that field (touched it, or tried to save with it empty). */
+  /* What the regex-rule mismatch note leads with, per field type — the rest of the
+     sentence (the optional field-specific hint) is appended the same way for all. */
+  const REGEX_MISMATCH_LEAD = {
+    text: "This value doesn't match the required format",
+    number: "This number doesn't match the required format",
+    date: "This date doesn't match the required format",
+    dropdown: "This value doesn't match the required format"
+  };
+
+  function noteInfo(f, v, flagMissing) {
+    const st = stateFor(f, v);
+    /* An agent-authored message (set on the regex rule in Document Types) always wins
+       once the value is invalid — it's written to explain that field's own rule, so it
+       takes priority over both the generic per-type message and the numbers-only one. */
+    if (st === 'invalid' && f.patternMessage) return { cls: 'f-note error', text: f.patternMessage };
+    if (st === 'invalid' && isNumberMismatch(f, v)) return { cls: 'f-note error', text: 'This field only accepts numbers.' };
+    if (st === 'invalid') {
+      const lead = REGEX_MISMATCH_LEAD[f.type] || REGEX_MISMATCH_LEAD.text;
+      return { cls: 'f-note error', text: lead + (f.hint ? ' — ' + f.hint : '.') };
+    }
+    if (st === 'empty' && flagMissing) return { cls: 'f-note error', text: 'This field is required.' };
+    if (st === 'expired')  return { cls: 'f-note warn',  text: 'Expired on ' + fmtDate(v) + ' — a renewed document is needed.' };
+    if (st === 'expiring') return { cls: 'f-note warn',  text: 'Expires in ' + daysUntil(v) + ' days (' + fmtDate(v) + ').' };
+    return { cls: 'f-note', text: f.hint || '' };
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso + 'T00:00:00');
+    if (isNaN(d)) return iso;
+    return d.getDate() + ' ' + d.toLocaleString('en-US', { month:'short' }) + ' ' + d.getFullYear();
+  }
+  function fmtStamp(ms) {
+    const d = new Date(ms), p = n => String(n).padStart(2,'0');
+    let h = d.getHours(); const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+    return p(d.getDate()) + ' ' + d.toLocaleString('en-US',{month:'short'}) + ' ' + d.getFullYear() + ', ' + p(h) + ':' + p(d.getMinutes()) + ' ' + ap;
+  }
+  /* "Today, 3:25 PM" / "Yesterday, 11:10 AM" / "20 Sep 2025, 5:31 PM" — the relative
+     style already used for document upload dates, now computed instead of hardcoded. */
+  function fmtRelative(ms) {
+    const d = new Date(ms), now = new Date();
+    const startOf = x => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+    const days = Math.round((startOf(now) - startOf(d)) / 86400000);
+    const p = n => String(n).padStart(2,'0');
+    let h = d.getHours(); const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+    const time = h + ':' + p(d.getMinutes()) + ' ' + ap;
+    if (days === 0) return 'Today, ' + time;
+    if (days === 1) return 'Yesterday, ' + time;
+    return p(d.getDate()) + ' ' + d.toLocaleString('en-US',{month:'short'}) + ' ' + d.getFullYear() + ', ' + time;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     4. Toast
+     ═══════════════════════════════════════════════════════════════ */
+  let toastTimer;
+  function toast(msg) {
+    const t = $('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     5. Render — the field grid inside the drawer
+     ═══════════════════════════════════════════════════════════════ */
+  function fieldHTML(f) {
+    const v = valueOf(f);
+    const st = fieldState(f);
+    const inputId = f.inputId;
+
+    let control;
+    if (f.type === 'select' || f.type === 'dropdown') {
+      const opts = ['<option value="">Select…</option>']
+        .concat(f.options.map(o => '<option value="' + esc(o) + '"' + (o === v ? ' selected' : '') + '>' + esc(o) + '</option>'));
+      control = '<select class="inp' + (st === 'invalid' ? ' err' : '') + '" id="' + inputId + '" data-key="' + f.key + '">' + opts.join('') + '</select>';
+    } else {
+      /* Number fields stay type="text" (with a numeric keyboard hint) rather than
+         type="number" — a native number input silently discards anything invalid
+         before it ever reaches app validation, so mistyped values vanish with no
+         error shown. Keeping it text lets stateFor()/noteInfo() below catch and
+         explain the mismatch instead. */
+      const type = f.type === 'date' ? 'date' : 'text';
+      const inputmode = f.type === 'number' ? ' inputmode="decimal"' : '';
+      control = '<input class="inp' + (st === 'invalid' || st === 'expired' ? ' err' : '') + '" id="' + inputId + '" data-key="' + f.key +
+        '" type="' + type + '"' + inputmode + ' value="' + esc(v) + '" placeholder="' + esc(f.placeholder || '') + '">';
+    }
+
+    /* Always render the note element so live validation has something to write into. */
+    const ni = noteInfo(f, v);
+    const note = '<div class="' + ni.cls + '" id="note_' + f.inputId + '">' + esc(ni.text) + '</div>';
+
+    /* Side (Front / Back) comes straight from the schema. */
+    const tags = f.side ? '<span class="f-tag side">' + esc(f.side) + '</span>' : '';
+
+    /* Rendered once here from the stored state; revalidate() keeps it in sync with
+       whatever is currently typed, since VAT Registration Number's requiredness
+       depends on a sibling field in the same card. */
+    const reqOpt = '<span class="req-opt" id="reqopt_' + inputId + '">' +
+      (isRequired(f) ? '<span class="req">*</span>' : '<span class="opt">(Optional)</span>') + '</span>';
+
+    return '<div class="ld-field' + (f.full ? ' full' : '') + '">' +
+      '<label for="' + inputId + '">' +
+        '<span class="f-label">' + esc(f.label) + ' ' + reqOpt + '</span>' +
+        (tags ? '<span class="f-tags">' + tags + '</span>' : '') +
+      '</label>' +
+      control + note +
+    '</div>';
+  }
+
+  /* ── Drawer · Details tab: preview, document details, and the info-fields form ── */
+  /* ── Drawer · Details tab: read-only preview + document details, listed one per row ── */
+  function drawerDetailsHTML(dt, files) {
+    const primary = files[0];
+    const pairs = [
+      ['Document Type', dt.name],
+      ['File Name', files.map(f => f.file).filter(Boolean).join(', ') || '—'],
+      ['Uploaded By', primary ? primary.uploadedBy : '—'],
+      ['Upload Date', primary ? fmtRelative(primary.uploadedAt) : '—']
+    ];
+
+    return (
+      '<div class="drawer-preview">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">' + dt.icon + '</svg>' +
+      '</div>' +
+      '<div class="drawer-section">' +
+        '<div class="drawer-section-title">Document Details</div>' +
+        '<div class="detail-grid">' + pairs.map(([l, v]) =>
+          '<div class="dg-pair"><span class="dg-label">' + esc(l) + '</span><span class="dg-value">' + esc(v) + '</span></div>'
+        ).join('') + '</div>' +
+      '</div>' +
+      '<div class="drawer-section" style="margin-bottom:0;">' +
+        '<div class="drawer-section-title">Previous Versions</div>' +
+        versionListHTML(dt) +
+      '</div>'
+    );
+  }
+
+  /* ── Drawer · Details tab: the Previous Versions list ── */
+  function versionListHTML(dt) {
+    const versions = versionsForType(dt.id);
+    if (!versions.length) return '<div class="version-empty">No previous versions for this document.</div>';
+    return '<div class="version-picker" data-doctype="' + esc(dt.id) + '">' +
+      '<select class="inp" id="verSelect">' +
+        versions.map(v => '<option value="' + esc(v.version) + '">' + esc(v.version) + ' \u2014 ' + esc(fmtRelative(v.uploadedAt)) + '</option>').join('') +
+      '</select>' +
+      '<div id="verPickerBody"></div>' +
+      '<div class="version-picker-foot">' +
+        '<button class="btn btn-outline btn-sm" type="button" id="verDownloadBtn">' + DOWNLOAD_ICON + 'Download</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  /* The file list + uploader/date under the dropdown, for whichever version is
+     currently selected. Re-run on open and on every change of the select. */
+  function renderVersionPickerBody() {
+    const picker = document.querySelector('.version-picker');
+    if (!picker) return;
+    const dt = DOC_TYPES.find(d => d.id === picker.getAttribute('data-doctype'));
+    const select = $('verSelect');
+    const v = dt && versionsForType(dt.id).find(x => x.version === select.value);
+    if (!v) return;
+    $('verPickerBody').innerHTML =
+      '<div class="version-files">' + v.files.map(f => '<span>' + esc(f.file || '') + '</span>').join('') + '</div>' +
+      '<div class="version-meta">Uploaded by ' + esc(v.uploadedBy) + ' \u00b7 ' + esc(fmtRelative(v.uploadedAt)) + '</div>';
+  }
+
+  /* ── Download-version picker (pop-up) ──
+     Reached from a row's three-dot menu. Every version of a type, current
+     included — unlike the drawer's Previous Versions dropdown, which only
+     lists what's been superseded, since the current version is already the
+     one shown there. */
+  let dlPickerDocId = null;
+
+  function dlPickerVersions(dt) {
+    const current = docsForType(dt.id);
+    const primary = current[0];
+    const versions = primary
+      ? [{ version: primary.version, files: current, uploadedBy: primary.uploadedBy, uploadedAt: primary.uploadedAt, isCurrent: true }]
+      : [];
+    return versions.concat(versionsForType(dt.id).map(v => Object.assign({ isCurrent: false }, v)));
+  }
+
+  function openDownloadPicker(dt) {
+    const versions = dlPickerVersions(dt);
+    if (!versions.length) return;
+    dlPickerDocId = dt.id;
+    $('dlPickerTitle').textContent = 'Download ' + dt.name;
+    $('dlPickerSelect').innerHTML = versions.map(v =>
+      '<option value="' + esc(v.version) + '">' + esc(v.version) + (v.isCurrent ? ' (Current)' : '') +
+      ' \u2014 ' + esc(fmtRelative(v.uploadedAt)) + '</option>').join('');
+    renderDownloadPickerInfo();
+    $('dlPickerBackdrop').classList.add('open');
+  }
+
+  function closeDownloadPicker() {
+    $('dlPickerBackdrop').classList.remove('open');
+    dlPickerDocId = null;
+  }
+
+  function renderDownloadPickerInfo() {
+    const dt = DOC_TYPES.find(d => d.id === dlPickerDocId);
+    const v = dt && dlPickerVersions(dt).find(x => x.version === $('dlPickerSelect').value);
+    if (!v) return;
+    $('dlPickerInfo').innerHTML =
+      '<div class="version-files">' + v.files.map(f => '<span>' + esc(f.file || '') + '</span>').join('') + '</div>' +
+      '<div class="version-meta">Uploaded by ' + esc(v.uploadedBy) + ' \u00b7 ' + esc(fmtRelative(v.uploadedAt)) + '</div>';
+  }
+
+  /* ── Drawer · Document info fields tab: the editable form ── */
+  function drawerFieldsHTML(dt) {
+    const filled = dt.fields.filter(f => valueOf(f)).length;
+    const total = dt.fields.length;
+    const stamps = dt.fields.map(f => legalData[f.uid] && legalData[f.uid].at).filter(Boolean);
+    const lastLine = stamps.length
+      ? 'Last saved ' + fmtStamp(Math.max.apply(null, stamps)) + ' by ' + CURRENT_USER
+      : 'Not saved yet';
+
+    return (
+      '<div class="drawer-section" style="margin-bottom:0;">' +
+        '<div class="dsec-meta" style="margin-top:0;">' + filled + ' of ' + total + ' fields filled · ' + esc(lastLine) + '</div>' +
+        '<div class="ld-grid">' + dt.fields.map(fieldHTML).join('') + '</div>' +
+      '</div>'
+    );
+  }
+
+  /* ── Drawer · Audit Logs tab: this document type's events only ── */
+  function eventItemHTML(e) {
+    const detail = e.changes && e.changes.length
+      ? '<ul class="ev-changes">' + e.changes.map(c =>
+          '<li><span class="fld">' + esc(c.label) + '</span> — ' +
+          valueCell(c.from) + '<span class="arrow">→</span>' + valueCell(c.to) + '</li>').join('') + '</ul>'
+      : '';
+    return '<div class="event-item">' +
+      '<div class="ev-icon ' + e.type + '">' + (EV_ICON[e.type] || EV_ICON.updated) + '</div>' +
+      '<div class="ev-body">' +
+        '<div class="ev-ts">' + fmtStamp(e.at) + '</div>' +
+        '<div class="ev-sentence"><b>' + esc(e.by) + '</b> ' + e.text + '</div>' +
+        detail +
+      '</div>' +
+    '</div>';
+  }
+  function drawerAuditHTML(dt) {
+    const mine = events.filter(e => e.doc === dt.id);
+    if (!mine.length) return '<div class="events-empty show">No changes recorded yet for this document.</div>';
+    return mine.map(eventItemHTML).join('');
+  }
+
+  function renderDrawer() {
+    const dt = DOC_TYPES.find(d => d.id === openId);
+    if (!dt) return;
+    const files = docsForType(dt.id);
+    const primary = files[0];
+    $('drawerTitle').textContent = primary ? primary.file : dt.name;
+    $('drawerVersion').textContent = primary ? primary.version : '';
+    $('drawerStatus').innerHTML = '<span class="drawer-status-text ok">Approved</span>';
+    $('drawerDetailsPanel').innerHTML = drawerDetailsHTML(dt, files);
+    $('drawerFieldsPanel').innerHTML = drawerFieldsHTML(dt);
+    $('drawerAuditPanel').innerHTML = drawerAuditHTML(dt);
+    renderVersionPickerBody();     // the dropdown's own file list starts on its first option
+    switchDrawerTab(activeDrawerTab);
+  }
+
+  /* Reads what is currently typed into the open card, keyed by uid — used so a field's
+     requiredness (VAT Registration Number) can react to a sibling field's live value. */
+  function liveValues(dt) {
+    const live = {};
+    dt.fields.forEach(f => {
+      const el = $(f.inputId);
+      live[f.uid] = el ? el.value.trim() : valueOf(f);
+    });
+    return live;
+  }
+
+  /* A card can be saved only once nothing entered is malformed and every required
+     field holds a value. Returns the two blocking sets so callers can report why. */
+  function evaluateCard(dt, live) {
+    const badFields = [];
+    const missingFields = [];
+    dt.fields.forEach(f => {
+      const v = live[f.uid];
+      const st = stateFor(f, v);
+      if (blocksSave(st)) badFields.push(f);
+      else if (isRequired(f, live) && st === 'empty') missingFields.push(f);
+    });
+    return { badFields, missingFields };
+  }
+
+  /* ── Live validation ──
+     Re-checks the open card against what is currently typed: updates each field's
+     required/optional badge and note, and blocks Save until every value is well-formed
+     and every required field is filled. */
+  function revalidate() {
+    if (!openId) return;
+    const dt = DOC_TYPES.find(d => d.id === openId);
+    if (!dt) return;
+
+    const live = liveValues(dt);
+    const { badFields, missingFields } = evaluateCard(dt, live);
+    const badSet = new Set(badFields.map(f => f.uid));
+    const missingSet = new Set(missingFields.map(f => f.uid));
+
+    dt.fields.forEach(f => {
+      const el = $(f.inputId);
+      if (!el) return;
+      const v = live[f.uid];
+      const isBad = badSet.has(f.uid);
+      const isMissing = missingSet.has(f.uid);
+      const showMissing = isMissing && (attemptedSave || touched.has(f.inputId));
+
+      el.classList.toggle('err', isBad || showMissing);
+
+      const noteEl = $('note_' + f.inputId);
+      if (noteEl) {
+        const ni = noteInfo(f, v, showMissing);
+        noteEl.className = ni.cls;
+        noteEl.textContent = ni.text;
+      }
+
+      const reqEl = $('reqopt_' + f.inputId);
+      if (reqEl) {
+        reqEl.innerHTML = isRequired(f, live)
+          ? '<span class="req">*</span>' : '<span class="opt">(Optional)</span>';
+      }
+    });
+
+    const bad = badFields.length, missing = missingFields.length;
+    $('drawerSaveBtn').disabled = bad > 0 || missing > 0;
+
+    const foot = $('footNote');
+    if (bad || missing) {
+      const parts = [];
+      if (bad)     parts.push(bad     + (bad     > 1 ? ' values not in the expected format'  : ' value not in the expected format'));
+      if (missing) parts.push(missing + (missing > 1 ? ' required fields left empty'         : ' required field left empty'));
+      foot.textContent = parts.join(' and ') + ' — fix ' + (bad + missing > 1 ? 'these' : 'this') + ' to save.';
+      foot.classList.add('blocked');
+    } else {
+      foot.textContent = 'Closing this panel discards anything not saved.';
+      foot.classList.remove('blocked');
+    }
+    return bad + missing;
+  }
+
+  /* ── Events ── */
+  const EV_ICON = {
+    uploaded: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 7.5 12 3m0 0L7.5 7.5M12 3v13.5"/></svg>',
+    downloaded: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>',
+    captured: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg>',
+    updated:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992V4.356m0 4.992-3.181-3.183a8.25 8.25 0 0 0-13.803 3.7M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7"/></svg>'
+  };
+
+  function addEvent(type, docId, text, changes) {
+    events.unshift({ type, doc: docId, at: Date.now(), by: CURRENT_USER, text, changes: changes || [] });
+    persist();
+  }
+
+  function valueCell(v) {
+    return v ? '<span class="val">' + esc(v) + '</span>' : '<span class="none">empty</span>';
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     7. Save / discard
+     ═══════════════════════════════════════════════════════════════ */
+  function saveDoc(dtId) {
+    const dt = DOC_TYPES.find(d => d.id === dtId);
+
+    /* Nothing is written unless every value is well-formed and every required field
+       is filled. Re-checked here as well as live, so the guard holds however Save
+       was reached. */
+    const live = liveValues(dt);
+    const { badFields, missingFields } = evaluateCard(dt, live);
+
+    if (badFields.length || missingFields.length) {
+      attemptedSave = true;
+      revalidate();
+      const firstBlocking = dt.fields.find(f => badFields.includes(f) || missingFields.includes(f));
+      const first = firstBlocking && $(firstBlocking.inputId);
+      if (first) { first.scrollIntoView({ behavior:'smooth', block:'center' }); first.focus({ preventScroll: true }); }
+
+      let msg;
+      if (badFields.length && missingFields.length) {
+        msg = badFields.length + (badFields.length > 1 ? ' values are not in the expected format' : ' value is not in the expected format') +
+          ' and ' + missingFields.length + (missingFields.length > 1 ? ' required fields are' : ' required field is') +
+          ' empty — nothing was saved.';
+      } else if (badFields.length) {
+        msg = badFields.length > 1
+          ? badFields.length + ' values are not in the expected format — nothing was saved.'
+          : badFields[0].label + ' is not in the expected format — nothing was saved.';
+      } else {
+        msg = missingFields.length > 1
+          ? missingFields.length + ' required fields are still empty — nothing was saved.'
+          : missingFields[0].label + ' is required — nothing was saved.';
+      }
+      toast(msg);
+      return;
+    }
+
+    /* Counters, named apart from the field values they describe. */
+    let nFilled = 0, nEdited = 0, nCleared = 0;
+    const changes = [];
+
+    dt.fields.forEach(f => {
+      const el = $(f.inputId);
+      if (!el) return;
+      const v = el.value.trim();
+      const prev = valueOf(f);
+      if (v === prev) return;
+
+      /* Record the before/after for the audit trail, formatted the way the field displays. */
+      changes.push({
+        label: f.label,
+        from: prev ? (f.type === 'date' ? fmtDate(prev) : prev) : '',
+        to:   v    ? (f.type === 'date' ? fmtDate(v)    : v)    : ''
+      });
+
+      if (!v) { delete legalData[f.uid]; nCleared++; }
+      else {
+        legalData[f.uid] = { value: v, by: CURRENT_USER, at: Date.now(), source: 'manual' };
+        if (prev) nEdited++; else nFilled++;
+      }
+    });
+
+    if (!changes.length) { toast('Nothing to save — no values changed.'); return; }
+
+    const parts = [];
+    if (nFilled)  parts.push('filled <b>' + nFilled  + ' field' + (nFilled >1?'s':'') + '</b>');
+    if (nEdited)  parts.push('edited <b>' + nEdited  + ' field' + (nEdited >1?'s':'') + '</b>');
+    if (nCleared) parts.push('cleared <b>' + nCleared + ' field' + (nCleared>1?'s':'') + '</b>');
+    addEvent(nEdited || nCleared ? 'updated' : 'captured', dt.id,
+      parts.join(', ') + ' on <b>' + esc(dt.name) + '</b>', changes);
+
+    persist();
+    touched = new Set();
+    attemptedSave = false;
+    renderDrawer();          /* stays open, refreshed with the saved values and audit entry */
+    renderAllDocs();
+    toast(dt.name + ' info saved.');
+  }
+
+  /* Cancel discards: closing the drawer re-renders from what is stored next time it
+     opens, so anything typed and not saved is simply dropped. */
+  function cancelCard() {
+    closeDrawer();
+    toast('Unsaved changes discarded.');
+  }
+
+  /* Flip between the seeded uploads and an account with nothing uploaded. */
+  function toggleSimulation() {
+    simulateNoUploads = !simulateNoUploads;
+    if (openId) closeDrawer();
+    renderAll();
+    toast(simulateNoUploads
+      ? 'Simulating an account with no documents uploaded.'
+      : 'Restored the uploaded documents.');
+  }
+  function renderSimToggle() {
+    const b = $('btnSimulate');
+    if (!b) return;
+    b.textContent = simulateNoUploads ? '◀ Restore uploaded documents' : '▶ Simulate: no documents uploaded';
+    b.classList.toggle('on', simulateNoUploads);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     8. Render — All documents (one listing for every document on the account)
+     ═══════════════════════════════════════════════════════════════ */
+  const KEBAB = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75h.008v.008H12V6.75Zm0 5.25h.008v.008H12V12Zm0 5.25h.008v.008H12v-.008Z"/></svg>';
+  const EYE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>';
+  const DOWNLOAD_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>';
+
+  function rowMenuHTML(dt) {
+    const rowId = dt.id;
+    /* Always the same two options — Download opens the version picker itself
+       when there's more than one to choose from, so the menu stays simple. */
+    return '<div class="row-menu" data-row-menu="' + rowId + '">' +
+      '<button class="row-menu-btn" type="button" data-menu-toggle="' + rowId + '" aria-label="Row actions">' + KEBAB + '</button>' +
+      '<div class="row-menu-pop" id="menu_' + rowId + '">' +
+        '<button type="button" data-menu-action="preview" data-menu-row="' + rowId + '">' + EYE_ICON + 'Preview</button>' +
+        '<button type="button" data-menu-action="download" data-menu-row="' + rowId + '">' + DOWNLOAD_ICON + 'Download</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderAllDocs() {
+    const types = recordableTypes();
+    const { rows: pageTypes, totalPages, info } = paginate(types, docsPage);
+    const rows = pageTypes.map(dt => {
+      const files = docsForType(dt.id);
+      const version = files[0] ? files[0].version : '';
+      const uploadedBy = files[0] ? files[0].uploadedBy : '—';
+      const lastUpdate = files[0] ? fmtRelative(files[0].uploadedAt) : '—';
+      return '<tr data-open-drawer="' + dt.id + '">' +
+        '<td class="dt-check"><input type="checkbox" data-row-check="' + dt.id + '"></td>' +
+        '<td><div class="doc-name-cell">' +
+          '<div class="dn-top"><span class="dn-name">' + esc(dt.name) + '</span>' +
+            (version ? '<span class="ver-pill">' + esc(version) + '</span>' : '') + '</div>' +
+          '<div class="dn-files">' + files.map(f => '<span>' + esc(f.file || '') + '</span>').join('') + '</div>' +
+        '</div></td>' +
+        '<td>' + esc(uploadedBy) + '</td>' +
+        '<td><span class="status-badge ok"><span class="dot"></span>Approved</span></td>' +
+        '<td>' + esc(lastUpdate) + '</td>' +
+        '<td class="dt-menu">' + rowMenuHTML(dt) + '</td>' +
+      '</tr>';
+    });
+    $('allDocsBody').innerHTML = rows.join('');
+    $('allDocsEmpty').style.display = types.length ? 'none' : '';
+    $('checkAllDocs').checked = false;
+    renderPagination('docsPaginationBar', 'docsPagination', 'docsPageInfo',
+      docsPage, types.length, totalPages, info);
+    $('allDocsSub').textContent = types.length
+      ? types.length + (types.length === 1 ? ' document' : ' documents') + ' on this account'
+      : 'Nothing uploaded on this account yet';
+  }
+
+  function closeRowMenus() {
+    document.querySelectorAll('.row-menu-pop.open').forEach(p => p.classList.remove('open'));
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     8a. Pagination — one helper, used by the All documents listing
+     ══════════════════════════════════════════════════════════════ */
+  const CHEV_L = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>';
+  const CHEV_R = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>';
+
+  const docsPage = { page: 1, perPage: 10 };
+
+  /* Clamps the page, then returns the slice to draw plus the range for the info line. */
+  function paginate(items, state) {
+    const totalPages = Math.max(1, Math.ceil(items.length / state.perPage));
+    if (state.page > totalPages) state.page = totalPages;
+    const start = (state.page - 1) * state.perPage;
+    return {
+      rows: items.slice(start, start + state.perPage),
+      totalPages,
+      info: items.length
+        ? (start + 1) + ' - ' + Math.min(start + state.perPage, items.length) + ' of ' + items.length
+        : '0 - 0 of 0'
+    };
+  }
+
+  function renderPagination(barId, listId, infoId, state, total, totalPages, info) {
+    $(infoId).textContent = info;
+    const btn = (label, page, opts) =>
+      '<button class="page-btn' + (opts && opts.active ? ' active' : '') + '"' +
+      (opts && opts.disabled ? ' disabled' : '') + ' data-page="' + page + '">' + label + '</button>';
+    let html = btn(CHEV_L, state.page - 1, { disabled: state.page <= 1 });
+    for (let i = 1; i <= totalPages; i++) html += btn(i, i, { active: i === state.page });
+    html += btn(CHEV_R, state.page + 1, { disabled: state.page >= totalPages });
+    $(listId).innerHTML = html;
+    /* One row of results needs no controls, but the count line still earns its place. */
+    $(barId).style.display = total ? '' : 'none';
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     8b. Upload document — side drawer with the document type picker
+         The type list is the predefined set from Document Types (plus Passport
+         and VAT), so an upload is always filed against a known type.
+     ══════════════════════════════════════════════════════════════ */
+  let uploadFiles = [];          // { name, size, label } — attached but not yet uploaded
+  let uploadRejects = [];        // why anything just dropped was refused
+  let uploadSeq = SEED_ACCOUNT_DOCS.length;
+
+  const FILE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>';
+  const X_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>';
+  const fmtSize = b => b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
+
+  /* ── The file rule ──
+     Every type carries one, authored in Document Types:
+       single    → exactly one file
+       labeled   → one file per named slot, every slot required
+       unlabeled → any number of files
+     Formats and the size cap come from the same definition. */
+  const RULE_MODE_TEXT = {
+    single:    { name: 'Single file',              hint: 'One file only.' },
+    labeled:   { name: 'Multiple \u2014 fixed labels', hint: 'One file per named slot. Every slot is required.' },
+    unlabeled: { name: 'Multiple \u2014 no labels',    hint: 'Any number of files.' }
+  };
+  const RULE_ICON = {
+    single: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>',
+    labeled: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z"/></svg>',
+    unlabeled: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>'
+  };
+  const ALERT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/></svg>';
+
+  const ruleOf = dt => (dt && dt.files) || { mode: 'single', labels: [] };
+  const labelsOf = dt => (ruleOf(dt).labels || []).map(l => l.name).filter(Boolean);
+  const formatsOf = dt => (dt && dt.formats && dt.formats.length) ? dt.formats : ['PDF','JPG','PNG'];
+  const maxBytesOf = dt => ((dt && dt.maxSize) || 5) * 1048576;
+  const acceptAttr = dt => formatsOf(dt).map(f => '.' + f.toLowerCase()).join(',') +
+    (formatsOf(dt).includes('JPG') ? ',.jpeg' : '');
+  const extOf = n => (String(n).split('.').pop() || '').toUpperCase().replace('JPEG', 'JPG');
+
+  /* Why a file can't be attached to this type, or null when it can. */
+  function rejectReason(dt, f) {
+    if (!formatsOf(dt).includes(extOf(f.name)))
+      return esc(f.name) + ' is not ' + formatsOf(dt).join(', ') + '.';
+    if (f.size > maxBytesOf(dt))
+      return esc(f.name) + ' is ' + fmtSize(f.size) + ' \u2014 over the ' + dt.maxSize + ' MB limit.';
+    return null;
+  }
+
+  function openUploadDrawer() {
+    uploadFiles = [];
+    uploadRejects = [];
+    $('uploadType').innerHTML = '<option value="">Select a document type\u2026</option>' +
+      DOC_TYPES.map(dt => '<option value="' + dt.id + '">' + esc(dt.name) + '</option>').join('');
+    renderUploadDrawer();
+    $('uploadBackdrop').classList.add('open');
+    setTimeout(() => $('uploadType').focus(), 0);
+  }
+
+  function closeUploadDrawer() {
+    $('uploadBackdrop').classList.remove('open');
+    uploadFiles = [];
+    uploadRejects = [];
+  }
+
+  /* One attached file's card. `slot` names the label it fills, when there is one. */
+  function fileCardHTML(f, idx) {
+    return '<div class="up-file">' + FILE_ICON +
+      '<div class="uf-body"><div class="uf-name">' + esc(f.name) + '</div>' +
+      '<div class="uf-size">' + fmtSize(f.size) + '</div></div>' +
+      '<button class="uf-remove" type="button" data-remove-file="' + idx + '" aria-label="Remove ' + esc(f.name) + '">' + X_ICON + '</button>' +
+    '</div>';
+  }
+
+  function dropzoneHTML(dt, slot, slim) {
+    const many = ruleOf(dt).mode === 'unlabeled';
+    return '<label class="up-dropzone' + (slim ? ' slim' : '') + '"' +
+        (slot ? ' data-slot="' + esc(slot) + '"' : '') + '>' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg>' +
+      '<span class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</span>' +
+      '<span class="dz-sub">' + formatsOf(dt).join(', ') + ' \u00b7 up to ' + dt.maxSize + ' MB' +
+        (many ? ' \u00b7 one or more files' : ' \u00b7 one file') + '</span>' +
+      '<input type="file" accept="' + acceptAttr(dt) + '"' + (many ? ' multiple' : '') +
+        (slot ? ' data-slot="' + esc(slot) + '"' : '') + ' class="up-input" hidden>' +
+    '</label>';
+  }
+
+  /* The file area, shaped by the rule. */
+  function fileAreaHTML(dt) {
+    if (!dt) return '';
+    const mode = ruleOf(dt).mode;
+    const errs = uploadRejects.length
+      ? '<div class="up-error">' + ALERT_ICON + '<div>' + uploadRejects.join('<br>') + '</div></div>'
+      : '';
+
+    if (mode === 'labeled') {
+      const labels = labelsOf(dt);
+      const slots = labels.map(name => {
+        const idx = uploadFiles.findIndex(f => f.label === name);
+        const filled = idx > -1;
+        return '<div class="up-slot">' +
+          '<div class="up-slot-head">' +
+            '<span class="up-slot-name">' + esc(name) + ' <span class="req">*</span></span>' +
+            '<span class="up-slot-state ' + (filled ? 'filled' : 'empty') + '">' +
+              (filled ? 'Attached' : 'Required') + '</span>' +
+          '</div>' +
+          (filled ? '<div class="up-files" style="margin-top:0;">' + fileCardHTML(uploadFiles[idx], idx) + '</div>'
+                  : dropzoneHTML(dt, name, true)) +
+        '</div>';
+      }).join('');
+      return '<label>Files <span class="req">*</span></label>' + slots + errs;
+    }
+
+    /* single and unlabeled both use one dropzone; single hides it once filled. */
+    const showZone = mode === 'unlabeled' || !uploadFiles.length;
+    return '<label>File' + (mode === 'unlabeled' ? 's' : '') + ' <span class="req">*</span></label>' +
+      (showZone ? dropzoneHTML(dt, null, false) : '') +
+      (uploadFiles.length
+        ? '<div class="up-files">' + uploadFiles.map(fileCardHTML).join('') + '</div>'
+        : '') +
+      errs;
+  }
+
+  function ruleSummaryHTML(dt) {
+    if (!dt) return '';
+    const mode = ruleOf(dt).mode;
+    const t = RULE_MODE_TEXT[mode] || RULE_MODE_TEXT.single;
+    const labels = labelsOf(dt);
+    return '<div class="up-rule">' +
+      '<div class="up-rule-top">' + (RULE_ICON[mode] || RULE_ICON.single) +
+        '<span class="up-rule-mode">' + t.name + '</span></div>' +
+      '<div class="up-rule-meta">' + t.hint + ' ' + formatsOf(dt).join(', ') +
+        ' \u00b7 up to ' + dt.maxSize + ' MB per file.</div>' +
+      (labels.length ? '<div class="up-rule-labels">' +
+        labels.map(l => '<span class="lchip">' + esc(l) + '</span>').join('') + '</div>' : '') +
+    '</div>';
+  }
+
+  /* What is still missing before the upload satisfies the rule. */
+  function ruleGap(dt) {
+    if (!dt) return 'Choose a document type to continue.';
+    const mode = ruleOf(dt).mode;
+    if (mode === 'labeled') {
+      const missing = labelsOf(dt).filter(n => !uploadFiles.some(f => f.label === n));
+      if (!missing.length) return null;
+      return 'Attach a file for ' +
+        (missing.length === 1 ? missing[0] : missing.slice(0, -1).join(', ') + ' and ' + missing[missing.length - 1]) + '.';
+    }
+    if (!uploadFiles.length) {
+      return mode === 'unlabeled' ? 'Attach at least one file to continue.' : 'Attach the file to continue.';
+    }
+    return null;
+  }
+
+  function renderUploadDrawer() {
+    const dt = DOC_TYPES.find(d => d.id === $('uploadType').value);
+
+    /* The hint says what the chosen type is, and warns when the account already
+       holds one \u2014 that upload files a new version rather than a second row. */
+    const hint = $('uploadTypeHint');
+    if (!dt) {
+      hint.className = 'up-hint';
+      hint.textContent = 'Only the types defined in Document Types can be uploaded.';
+    } else if (docsForType(dt.id).length) {
+      hint.className = 'up-hint note';
+      hint.textContent = 'This account already has a ' + dt.name + ' \u2014 uploading files a new version of it.';
+    } else {
+      hint.className = 'up-hint';
+      hint.textContent = dt.sub || 'Uploading adds this document to the account.';
+    }
+
+    $('uploadRule').innerHTML = ruleSummaryHTML(dt);
+    $('uploadFileField').innerHTML = fileAreaHTML(dt);
+
+    const gap = ruleGap(dt);
+    $('uploadSubmitBtn').disabled = !!gap;
+    const note = $('uploadFootNote');
+    note.textContent = gap || 'Closing this panel discards the upload.';
+    note.classList.toggle('blocked', !!gap);
+  }
+
+  /* Attaching files \u2014 the rule decides how many land and where. */
+  function addUploadFiles(fileList, slot) {
+    const dt = DOC_TYPES.find(d => d.id === $('uploadType').value);
+    if (!dt) return;
+    const mode = ruleOf(dt).mode;
+    uploadRejects = [];
+
+    let incoming = [...fileList];
+    /* Anything the type won't take is refused with the reason, not silently dropped. */
+    incoming = incoming.filter(f => {
+      const why = rejectReason(dt, f);
+      if (why) { uploadRejects.push(why); return false; }
+      return true;
+    });
+
+    if (mode === 'labeled') {
+      /* One file per slot: the newest wins, extras from a multi-drop are refused. */
+      if (slot) {
+        const f = incoming[0];
+        if (f) {
+          const at = uploadFiles.findIndex(x => x.label === slot);
+          const entry = { name: f.name, size: f.size, label: slot };
+          if (at > -1) uploadFiles[at] = entry; else uploadFiles.push(entry);
+        }
+        if (incoming.length > 1) uploadRejects.push(slot + ' takes one file \u2014 only ' + esc(incoming[0].name) + ' was attached.');
+      }
+    } else if (mode === 'single') {
+      const f = incoming[0];
+      if (f) uploadFiles = [{ name: f.name, size: f.size, label: null }];
+      if (incoming.length > 1) uploadRejects.push('This type takes a single file \u2014 only ' + esc(incoming[0].name) + ' was attached.');
+    } else {
+      incoming.forEach(f => uploadFiles.push({ name: f.name, size: f.size, label: null }));
+    }
+
+    renderUploadDrawer();
+  }
+
+  /* Files the document on the account, bumping the version when the type is already on file. */
+  function submitUpload() {
+    const dt = DOC_TYPES.find(d => d.id === $('uploadType').value);
+    if (!dt || !uploadFiles.length) return;
+
+    /* An upload has to be visible to make sense, so it also lifts the
+       "no documents uploaded" simulation. */
+    simulateNoUploads = false;
+
+    /* A new upload supersedes what was there: the type's current files are marked
+       inactive rather than removed, so the old version stays reachable afterwards. */
+    const allVersions = SEED_ACCOUNT_DOCS.filter(d => d.type === dt.id);
+    const nextVer = 'V' + (allVersions.reduce((n, d) => Math.max(n, parseInt(String(d.version).slice(1), 10) || 1), 0) + 1);
+    allVersions.filter(d => d.active).forEach(d => { d.active = false; });
+    const uploadedAt = Date.now();
+    uploadFiles.forEach(f => SEED_ACCOUNT_DOCS.push({
+      id: 'd' + (++uploadSeq), type: dt.id, version: nextVer, file: f.name,
+      /* Labelled slots keep their name, matching how the seeded uploads read. */
+      name: f.label ? dt.name + ' (' + f.label + ')' : dt.name,
+      label: f.label || null,
+      uploadedBy: CURRENT_USER, uploadedAt, active: true
+    }));
+
+    const names = uploadFiles.map(f => f.name);
+    addEvent('uploaded', dt.id,
+      'uploaded <b>' + names.length + ' file' + (names.length > 1 ? 's' : '') + '</b> (' +
+      esc(names.join(', ')) + ') as <b>' + esc(nextVer) + '</b> of <b>' + esc(dt.name) + '</b>', []);
+
+    const count = uploadFiles.length;
+    docsPage.page = 1;               // a new row can land outside the current page
+    closeUploadDrawer();
+    renderAll();
+    toast(dt.name + ' uploaded — ' + count + ' file' + (count > 1 ? 's' : '') + ' filed as ' + nextVer + '.');
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     9. Wiring
+     ═══════════════════════════════════════════════════════════════ */
+  function renderAll() {
+    renderAllDocs();
+    renderSimToggle();
+    if (openId) renderDrawer();
+  }
+
+  document.addEventListener('click', e => {
+    if (e.target.closest('#btnSimulate')) { toggleSimulation(); return; }
+    if (e.target.closest('#drawerSaveBtn')) { if (openId) saveDoc(openId); return; }
+    if (e.target.closest('#drawerCancelBtn')) { cancelCard(); return; }
+    if (e.target.closest('#drawerClose')) { closeDrawer(); return; }
+    if (e.target === $('drawerBackdrop')) { closeDrawer(); return; }
+    if (e.target.closest('#tabDetails')) { switchDrawerTab('details'); return; }
+    if (e.target.closest('#tabFields')) { switchDrawerTab('fields'); return; }
+    if (e.target.closest('#tabAudit')) { switchDrawerTab('audit'); return; }
+
+    const menuToggle = e.target.closest('[data-menu-toggle]');
+    if (menuToggle) {
+      const id = menuToggle.getAttribute('data-menu-toggle');
+      const pop = $('menu_' + id);
+      const willOpen = !pop.classList.contains('open');
+      closeRowMenus();
+      pop.classList.toggle('open', willOpen);
+      return;
+    }
+    const menuAction = e.target.closest('[data-menu-action]');
+    if (menuAction) {
+      const row = menuAction.getAttribute('data-menu-row');
+      const dt = DOC_TYPES.find(d => d.id === row);
+      const action = menuAction.getAttribute('data-menu-action');
+      closeRowMenus();
+      /* Preview opens the same document details drawer a row-click does — the
+         kebab menu just gives an explicit, discoverable path to it. */
+      if (action === 'preview') {
+        if (dt) openDrawer(dt.id);
+        return;
+      }
+      /* Download picks a version first when there's more than one on file;
+         only Download is logged either way — opening a preview doesn't change
+         or move anything. */
+      if (dt) {
+        if (versionsForType(dt.id).length) {
+          openDownloadPicker(dt);
+        } else {
+          addEvent('downloaded', dt.id, 'downloaded <b>' + esc(dt.name) + '</b>', []);
+          toast('Downloads ' + dt.name + '.');
+        }
+      }
+      return;
+    }
+    if (!e.target.closest('.row-menu')) closeRowMenus();
+
+    if (e.target.closest('#checkAllDocs')) {
+      const checked = e.target.closest('#checkAllDocs').checked;
+      document.querySelectorAll('[data-row-check]').forEach(c => c.checked = checked);
+      return;
+    }
+    if (e.target.closest('#btnDownloadAll')) {
+      const n = recordableTypes().length;
+      addEvent('downloaded', null, 'downloaded <b>all documents</b> on this account (' + n +
+        ' document' + (n === 1 ? '' : 's') + ')', []);
+      toast('Downloading all documents on this account.');
+      return;
+    }
+
+    /* Upload document opens its own drawer, where the type is chosen. */
+    if (e.target.closest('#btnUploadDoc')) { openUploadDrawer(); return; }
+    if (e.target.closest('#uploadClose') || e.target.closest('#uploadCancelBtn')) { closeUploadDrawer(); return; }
+    if (e.target === $('uploadBackdrop')) { closeUploadDrawer(); return; }
+    if (e.target.closest('#uploadSubmitBtn')) { submitUpload(); return; }
+    if (e.target.closest('#dlPickerClose') || e.target.closest('#dlPickerCancel')) { closeDownloadPicker(); return; }
+    if (e.target === $('dlPickerBackdrop')) { closeDownloadPicker(); return; }
+    if (e.target.closest('#dlPickerDownload')) {
+      const dt = DOC_TYPES.find(d => d.id === dlPickerDocId);
+      const version = $('dlPickerSelect').value;
+      if (dt && version) {
+        addEvent('downloaded', dt.id, 'downloaded <b>' + esc(version) + '</b> of <b>' + esc(dt.name) + '</b>', []);
+        toast('Downloads ' + dt.name + ' ' + version + '.');
+      }
+      closeDownloadPicker();
+      return;
+    }
+    const pageBtn = e.target.closest('.page-btn[data-page]');
+    if (pageBtn && !pageBtn.disabled) {
+      docsPage.page = Number(pageBtn.getAttribute('data-page'));
+      renderAllDocs();
+      return;
+    }
+
+    /* Previous Versions dropdown, inside the drawer — downloads whichever
+       version is currently selected. */
+    if (e.target.closest('#verDownloadBtn')) {
+      const picker = document.querySelector('.version-picker');
+      const dt = picker && DOC_TYPES.find(d => d.id === picker.getAttribute('data-doctype'));
+      const version = $('verSelect') && $('verSelect').value;
+      if (dt && version) {
+        addEvent('downloaded', dt.id, 'downloaded <b>' + esc(version) + '</b> of <b>' + esc(dt.name) + '</b>', []);
+        toast('Downloads ' + dt.name + ' ' + version + '.');
+      }
+      return;
+    }
+
+    const rmFile = e.target.closest('[data-remove-file]');
+    if (rmFile) {
+      uploadFiles.splice(+rmFile.getAttribute('data-remove-file'), 1);
+      uploadRejects = [];
+      renderUploadDrawer();
+      return;
+    }
+
+    /* Clicking anywhere else on a row — except its checkbox or kebab menu — opens the drawer. */
+    const row = e.target.closest('[data-open-drawer]');
+    if (row && !e.target.closest('[data-row-check]') && !e.target.closest('.row-menu')) {
+      openDrawer(row.getAttribute('data-open-drawer'));
+    }
+  });
+
+  /* Validate as the agent types, so Save is never a surprise. */
+  document.addEventListener('input', e => { if (e.target.closest('#drawerFieldsPanel')) revalidate(); });
+  document.addEventListener('change', e => {
+    if (e.target.closest('#drawerFieldsPanel')) revalidate();
+    if (e.target.id === 'uploadType') { uploadFiles = []; uploadRejects = []; renderUploadDrawer(); }
+    if (e.target.classList && e.target.classList.contains('up-input')) {
+      addUploadFiles(e.target.files, e.target.getAttribute('data-slot'));
+    }
+    if (e.target.id === 'docsRpp') { docsPage.perPage = Number(e.target.value); docsPage.page = 1; renderAllDocs(); }
+    if (e.target.id === 'verSelect') renderVersionPickerBody();
+    if (e.target.id === 'dlPickerSelect') renderDownloadPickerInfo();
+  });
+
+  /* Drag & drop, same as picking through the file dialog. Delegated, because the
+     dropzones are rebuilt whenever the rule or the attachments change. */
+  const fileField = $('uploadFileField');
+  ['dragenter', 'dragover'].forEach(ev => fileField.addEventListener(ev, e => {
+    const zone = e.target.closest('.up-dropzone');
+    if (!zone) return;
+    e.preventDefault(); zone.classList.add('drag');
+  }));
+  ['dragleave', 'drop'].forEach(ev => fileField.addEventListener(ev, e => {
+    const zone = e.target.closest('.up-dropzone');
+    if (!zone) return;
+    e.preventDefault(); zone.classList.remove('drag');
+  }));
+  fileField.addEventListener('drop', e => {
+    const zone = e.target.closest('.up-dropzone');
+    if (!zone || !e.dataTransfer || !e.dataTransfer.files) return;
+    addUploadFiles(e.dataTransfer.files, zone.getAttribute('data-slot'));
+  });
+  /* A required field only turns red once the agent has actually left it empty,
+     not the instant the drawer opens. 'focusout' bubbles, unlike 'blur'. */
+  document.addEventListener('focusout', e => {
+    if (e.target.classList && e.target.classList.contains('inp') && e.target.closest('#drawerFieldsPanel')) {
+      touched.add(e.target.id);
+      revalidate();
+    }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if ($('dlPickerBackdrop').classList.contains('open')) { closeDownloadPicker(); return; }
+    if ($('uploadBackdrop').classList.contains('open')) { closeUploadDrawer(); return; }
+    if (openId) closeDrawer();
+  });
+
+  /* Sidebar / mobile */
+  $('hamburger').addEventListener('click', () => { $('sidebar').classList.add('open'); $('overlay').classList.add('open'); });
+  $('overlay').addEventListener('click', () => { $('sidebar').classList.remove('open'); $('overlay').classList.remove('open'); });
+  $('balanceHead').addEventListener('click', () => {
+    const sub = $('balanceSub'), head = $('balanceHead');
+    const hidden = sub.style.display === 'none';
+    sub.style.display = hidden ? 'flex' : 'none';
+    head.querySelector('svg').style.transform = hidden ? '' : 'rotate(180deg)';
+  });
+
+  /* Go */
+  load();
+  seedEvents();      // an account with no stored history still shows how it got here
+  renderAll();
+</script>
+<script>
+  /* Documents nav group */
+  (function () {
+    const head = document.getElementById('documentsHead');
+    const sub = document.getElementById('documentsSub');
+    if (!head || !sub) return;
+    head.addEventListener('click', () => {
+      const chev = head.querySelector('svg');
+      const open = sub.style.display !== 'none';
+      sub.style.display = open ? 'none' : 'flex';
+      if (chev) chev.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+    });
+  })();
+</script>
+</body>
+</html>

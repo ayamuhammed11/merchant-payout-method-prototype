@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kashier | Terminal Details</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #001F5F;
+    --primary-hover: #103788;
+    --primary-10: #F1F6FF;
+    --link: #2955B1;
+    --accent: #00BCB4;
+    --destructive: #A50017;
+    --warning: #FBAF1F;
+    --success: #4AAB4E;
+
+    --foreground: #202020;
+    --border: #E6E8E8;
+    --border-subtle: #F5F6F6;
+    --muted: #F5F6F6;
+    --muted-foreground: #637373;
+    --cadet-base: #556767;
+    --cadet-04: #839090;
+    --cadet-05: #919C9C;
+    --cadet-06: #B3BBBB;
+    --bg: #F8F9F9;
+
+    --alert-warning-bg: #FFF7E8; --alert-warning-border: #FFE6B6; --alert-warning-text: #513500;
+
+    --badge-active-bg: #E1F7E4; --badge-active-text: #1B7F37;
+    --badge-inactive-bg: #FDE7EA; --badge-inactive-text: #A50017;
+
+    --toast-success-bg: #F3FFF4; --toast-success-border: #AEFFB2; --toast-success-text: #1A541D;
+
+    --radius: 4px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Noto Sans', Arial, sans-serif;
+    background: #fff;
+    color: var(--foreground);
+    display: flex;
+    font-size: 14px;
+  }
+  h1, h2, h3, h4 { font-family: 'Outfit', Arial, sans-serif; margin: 0; font-weight: 700; }
+  a { text-decoration: none; }
+  button { font-family: inherit; }
+
+  .hi { width: 18px; height: 18px; flex-shrink: 0; }
+  .hi-sm { width: 16px; height: 16px; flex-shrink: 0; }
+  .hi-xs { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar { width: 240px; background: var(--bg); min-height: 100vh; padding: 20px 16px; border-right: 1px solid var(--border-subtle);
+    position: sticky; top: 0; align-self: flex-start; max-height: 100vh; overflow-y: auto; flex-shrink: 0; }
+  .profile { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+  .avatar { width: 36px; height: 36px; background: var(--primary); color: #fff; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center; font-weight: bold; }
+  .profile .name { font-weight: 600; font-size: 14px; }
+  .profile .mid { font-size: 11px; color: var(--cadet-base); border: 1px solid var(--border);
+    border-radius: 4px; padding: 1px 6px; display: inline-block; }
+  .nav-section { margin-top: 18px; }
+  .nav-section .label { font-size: 11px; font-weight: 700; color: #9aa5a5; letter-spacing: .04em; margin: 8px 0 4px 8px; }
+  .nav-link { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px;
+    color: var(--primary); text-decoration: none; font-size: 14px; }
+  .nav-link.active { color: var(--cadet-base); font-weight: 600; }
+  .nav-link:hover { background: rgba(0,31,95,0.06); }
+
+  /* ---------- Main ---------- */
+  .main { flex: 1; padding: 24px 32px; min-width: 0; }
+
+  .topbar { display: flex; align-items: center; margin-bottom: 20px; gap: 24px; flex-wrap: wrap; }
+  .topbar h1 { font-size: 30px; }
+  .topbar-search { position: relative; flex: 1; min-width: 220px; max-width: 380px; }
+  .topbar-search input { width: 100%; height: 42px; background: var(--muted); border: none; border-radius: 6px;
+    padding: 0 40px 0 14px; font-family: 'Noto Sans', sans-serif; font-size: 13px; color: var(--foreground); }
+  .topbar-search input::placeholder { color: var(--cadet-05); }
+  .topbar-search input:focus { outline: 1.5px solid var(--primary); }
+  .topbar-search svg { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--foreground); }
+  .top-actions { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+  .lang { color: var(--cadet-base); font-size: 14px; cursor: pointer; }
+  .currency { display: flex; align-items: center; gap: 4px; border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 12px; font-size: 14px; background: #fff; cursor: pointer; }
+  .test-mode { display: flex; align-items: center; gap: 10px; background: var(--alert-warning-bg);
+    border: 1px solid var(--alert-warning-border); border-radius: 4px; padding: 9px 13px; font-size: 13px;
+    font-weight: 600; color: var(--alert-warning-text); }
+  .toggle { position: relative; width: 32px; height: 16px; border-radius: 48px; background: #FFD484;
+    flex-shrink: 0; cursor: pointer; border: none; padding: 0; }
+  .toggle .knob { position: absolute; top: -2px; left: 0; width: 20px; height: 20px; border-radius: 100%;
+    background: #FDFDFD; border: 1px solid var(--cadet-05); transition: left .15s ease; }
+  .toggle.on { background: var(--primary); }
+  .toggle.on .knob { left: 12px; }
+  .icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-subtle);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--cadet-base); background: #fff; }
+  .icon-btn:hover { background: var(--muted); }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; font-weight: 600;
+    border-radius: var(--radius); cursor: pointer; border: none; padding: 0 18px; height: 40px;
+    transition: background .12s ease, border-color .12s ease; white-space: nowrap; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-outline { background: #fff; border: 1.5px solid var(--border); color: var(--foreground); }
+  .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-sm { height: 36px; padding: 0 14px; font-size: 13px; }
+
+  .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; margin-bottom: 16px; }
+  .breadcrumb a { color: var(--link); }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb .sep { color: var(--cadet-05); }
+  .breadcrumb .current { color: var(--cadet-base); }
+
+  /* Detail cards */
+  .detail-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  .detail-card { background: #fff; border: 1px solid var(--border-subtle); border-radius: var(--radius); padding: 20px; }
+  .detail-card + .detail-card { margin-top: 20px; }
+  .card-head { display: flex; align-items: center; gap: 10px; padding-bottom: 14px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 18px; }
+  .card-head svg { width: 22px; height: 22px; color: var(--cadet-base); flex-shrink: 0; }
+  .card-head h3 { font-size: 20px; flex: 1; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; }
+  .detail-item { display: flex; gap: 10px; }
+  .detail-item svg { width: 18px; height: 18px; color: var(--cadet-base); flex-shrink: 0; margin-top: 2px; }
+  .detail-item .k { font-size: 13px; color: var(--cadet-base); margin-bottom: 4px; }
+  .detail-item .v { font-size: 14px; font-weight: 700; color: var(--foreground); }
+  .badge { display: inline-flex; align-items: center; border-radius: 4px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .3px; padding: 4px 10px; }
+  .badge-active { background: var(--badge-active-bg); color: var(--badge-active-text); }
+  .badge-inactive { background: var(--badge-inactive-bg); color: var(--badge-inactive-text); }
+  .badge-published { background: var(--badge-active-bg); color: var(--badge-active-text); }
+
+  .users-table { width: 100%; border: 1px solid var(--border-subtle); border-radius: var(--radius); overflow: hidden; }
+  .users-row { display: grid; grid-template-columns: 1fr 1fr; }
+  .users-cell { padding: 12px 16px; }
+  .users-cell .k { font-size: 13px; color: var(--cadet-base); margin-bottom: 4px; }
+  .users-cell .v { font-size: 14px; font-weight: 700; }
+
+  /* Product pages card */
+  .pp-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-subtle); }
+  .pp-row:last-child { border-bottom: none; }
+  .pp-row .pp-icon { width: 34px; height: 34px; border-radius: 6px; background: var(--primary-10); color: var(--primary);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .pp-row .pp-icon svg { width: 17px; height: 17px; }
+  .pp-row .pp-name { font-size: 14px; font-weight: 600; }
+  .pp-row .pp-id { font-size: 12px; color: var(--cadet-05); margin-top: 2px; }
+  .pp-row .pp-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .pp-unassign { background: none; border: none; cursor: pointer; color: var(--destructive); display: flex; align-items: center;
+    gap: 4px; font-size: 12px; font-weight: 600; padding: 6px; border-radius: 4px; }
+  .pp-unassign:hover { background: #FDE7EA; }
+  .pp-unassign svg { width: 14px; height: 14px; }
+  .pp-empty { padding: 18px 0 8px; font-size: 13px; color: var(--muted-foreground); }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(2,10,34,.45); display: none; align-items: flex-start;
+    justify-content: center; z-index: 50; padding: 60px 16px; overflow-y: auto; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: #fff; border-radius: 8px; width: 540px; max-width: 100%; padding: 26px 32px 28px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.22); }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .modal-head h2 { font-size: 22px; }
+  .modal-close { background: none; border: none; cursor: pointer; color: var(--foreground); padding: 4px; display: flex; border-radius: 4px; }
+  .modal-close:hover { background: var(--muted); }
+  .modal-sub { font-size: 14px; color: var(--cadet-base); margin: 0 0 20px; }
+  .mfield { margin-bottom: 16px; }
+  .mfield > label { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 5px; margin-bottom: 7px; }
+  .modal-footer { display: flex; justify-content: flex-end; margin-top: 22px; }
+
+  .ppselect { position: relative; }
+  .ppselect-trigger { width: 100%; height: 42px; border: 1.5px solid var(--border); border-radius: var(--radius); background: #fff;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 12px; font-size: 13px;
+    cursor: pointer; color: var(--cadet-05); }
+  .ppselect-trigger.has-value { color: var(--foreground); }
+  .ppselect-trigger:focus { outline: none; border-color: var(--primary); }
+  .ppselect-trigger .caret { width: 15px; height: 15px; color: var(--foreground); flex-shrink: 0; }
+  .ppselect-panel { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: 0 4px 16px rgba(0,0,0,.14); z-index: 30; display: none; padding: 6px;
+    max-height: 210px; overflow-y: auto; }
+  .ppselect.open .ppselect-panel { display: block; }
+  .pp-opt { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border: none; background: none;
+    border-radius: 4px; cursor: pointer; font-size: 13px; text-align: left; color: var(--foreground); }
+  .pp-opt:hover { background: var(--muted); }
+  .pp-opt input { pointer-events: none; accent-color: var(--primary); width: 15px; height: 15px; }
+  .pp-opt .pp-id { margin-left: auto; color: var(--cadet-05); font-size: 11px; }
+  .pp-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .pp-chip { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; color: var(--foreground);
+    background: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 4px 9px; }
+  .pp-chip button { color: var(--destructive); background: none; border: none; cursor: pointer; display: flex; padding: 0; }
+  .pp-chip button svg { width: 13px; height: 13px; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--toast-success-bg); border: 1px solid var(--toast-success-border);
+    color: var(--toast-success-text); padding: 12px 16px; border-radius: 5px; font-size: 13px; font-weight: 600;
+    display: none; align-items: center; gap: 8px; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+  .toast.show { display: flex; }
+  .toast svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  @media (max-width: 1000px) {
+    .detail-columns { grid-template-columns: 1fr; }
+    .topbar-search { order: 3; max-width: none; }
+  }
+</style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="profile">
+      <div class="avatar">A</div>
+      <div>
+        <div class="name">Azazy</div>
+        <span class="mid">MID-14531-398</span>
+      </div>
+    </div>
+    <a class="nav-link" href="home.html">
+      <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+      Home
+    </a>
+    <a class="nav-link" href="payments.html">
+      <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5M21 16.5 16.5 21m0 0L12 16.5m4.5 4.5V7.5"/></svg>
+      Payments
+    </a>
+    <div class="nav-section">
+      <div class="label">PAYMENT LINKS</div>
+      <a class="nav-link" href="payment-links.html">Payment Links</a>
+      <a class="nav-link" href="#">Payment Pages</a>
+    </div>
+    <div class="nav-section">
+      <div class="label">MANAGE</div>
+      <a class="nav-link" href="#">Products</a>
+      <a class="nav-link" href="#">Categories</a>
+      <a class="nav-link" href="#">Customers</a>
+      <a class="nav-link active" href="terminals.html">Terminals</a>
+    </div>
+    <div class="nav-section">
+      <div class="label">BALANCE MANAGMENT</div>
+      <a class="nav-link" href="#">Transfers</a>
+      <a class="nav-link" href="#">Schedule Transfers</a>
+    </div>
+    <div class="nav-section">
+      <div class="label">TEAM</div>
+      <a class="nav-link" href="#">Roles</a>
+      <a class="nav-link" href="#">Users</a>
+    </div>
+    <div class="nav-section">
+      <div class="label">DEVELOPERS</div>
+      <a class="nav-link" href="#">Integrations</a>
+      <a class="nav-link" href="#">Docs</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">Terminal</h1>
+      <div class="topbar-search">
+        <input type="text" placeholder="Find a terminal...">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+      </div>
+      <div class="top-actions">
+        <span class="lang">عربي</span>
+        <div class="currency">EGP
+          <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+        </div>
+        <div class="test-mode">
+          Test Mode
+          <button class="toggle on" id="testToggle" aria-pressed="true"><span class="knob"></span></button>
+        </div>
+        <div class="icon-btn" title="Help">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg>
+        </div>
+        <div class="icon-btn" title="Settings">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="breadcrumb">
+      <a href="terminals.html">Terminals</a>
+      <span class="sep">/</span>
+      <span class="current" id="crumbName">Terminal</span>
+    </div>
+
+    <div class="detail-columns">
+      <div>
+        <div class="detail-card">
+          <div class="card-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>
+            <h3>Details</h3>
+          </div>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5"/></svg>
+              <div><div class="k">Terminal ID</div><div class="v" id="dTermId">—</div></div>
+            </div>
+            <div class="detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9"/></svg>
+              <div><div class="k">Status</div><div class="v" id="dStatus">—</div></div>
+            </div>
+            <div class="detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z"/></svg>
+              <div><div class="k">Serial number</div><div class="v" id="dSerial">—</div></div>
+            </div>
+            <div class="detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-1.5 0v-.75A2.25 2.25 0 0 0 17.25 4.5h-.75"/></svg>
+              <div><div class="k">Branch name</div><div class="v" id="dBranch">—</div></div>
+            </div>
+            <div class="detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
+              <div><div class="k">Branch Address</div><div class="v" id="dAddress">—</div></div>
+            </div>
+            <div class="detail-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+              <div><div class="k">Creation date</div><div class="v" id="dCreated">—</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <div class="card-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
+            <h3>Product pages</h3>
+            <button class="btn btn-outline btn-sm" id="manageBtn">Manage</button>
+          </div>
+          <div id="ppList"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="detail-card">
+          <div class="card-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
+            <h3>Users</h3>
+          </div>
+          <div class="users-table">
+            <div class="users-row">
+              <div class="users-cell"><div class="k">Username</div><div class="v" id="dUser">—</div></div>
+              <div class="users-cell"><div class="k">Passcode</div><div class="v" id="dPasscode">—</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ---------- Assign product pages modal ---------- -->
+  <div class="modal-overlay" id="assignOverlay">
+    <div class="modal" role="dialog" aria-labelledby="assignTitle">
+      <div class="modal-head">
+        <h2 id="assignTitle">Assign product pages</h2>
+        <button class="modal-close" id="assignCloseBtn" aria-label="Close">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <p class="modal-sub" id="assignSub">Selected product pages will be displayed on this terminal after it syncs. Only published product pages are listed.</p>
+
+      <div class="mfield">
+        <label>Product pages</label>
+        <div class="ppselect" id="assignPpSelect">
+          <button type="button" class="ppselect-trigger" id="assignPpTrigger">
+            <span id="assignPpTriggerLabel">Select product pages</span>
+            <svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+          </button>
+          <div class="ppselect-panel" id="assignPpPanel"></div>
+        </div>
+        <div class="pp-chips" id="assignPpChips"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="assignSaveBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- Toast ---------- -->
+  <div class="toast" id="toast">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+    <span id="toastMsg">Saved</span>
+  </div>
+
+<script>
+  // ---------- Mock data (kept in sync with terminals.html) ----------
+  const productPages = [
+    { id: 'PP-1024', name: 'Coffee Corner Menu', status: 'published' },
+    { id: 'PP-1025', name: 'Donations — Zakat', status: 'published' },
+    { id: 'PP-1031', name: 'Ramadan Bundle', status: 'published' },
+    { id: 'PP-1040', name: 'Charity General', status: 'published' },
+    { id: 'PP-1044', name: 'Eid Offers', status: 'draft' },
+    { id: 'PP-0912', name: 'Old Menu 2024', status: 'unpublished' },
+  ];
+  const publishedPages = productPages.filter(p => p.status === 'published');
+
+  const terminals = [
+    { id:'TR-100241', model:'PAX 920 Pro', labels:['Cashier 1','Front desk'], status:'inactive', serial:'012345678901234', account:'Primary',     branch:'Masr El Gedida', address:'12 El-Hegaz St., Heliopolis',    created:'Today',        user:'Mohamed Khaled', passcode:'1234' },
+    { id:'TR-100242', model:'F20',         labels:['Front desk'],             status:'active',   serial:'012345678901235', account:'Heliopolis',  branch:'Maadi',          address:'8 Road 9, Maadi',               created:'Today',        user:'Sara Adel',      passcode:'5521' },
+    { id:'TR-100243', model:'F20',         labels:['Drive-thru'],             status:'inactive', serial:'012345678901236', account:'Haram',       branch:'Downtown',       address:'23 Talaat Harb St., Downtown',  created:'Yesterday',    user:'Omar Fathy',     passcode:'8830' },
+    { id:'TR-100244', model:'PAX 920 Pro', labels:['Counter 2','VIP'],        status:'active',   serial:'012345678901237', account:'Dokki',       branch:'Zamalek',        address:'5 Brazil St., Zamalek',         created:'Jan 6',        user:'Nour Hassan',    passcode:'2210' },
+    { id:'TR-100245', model:'PAX 920',     labels:['Cashier 1'],              status:'inactive', serial:'012345678901238', account:'Mohandesin',  branch:'Dokki',          address:'14 Tahrir St., Dokki',          created:'Jan 2',        user:'Khaled Samir',   passcode:'7645' },
+    { id:'TR-100246', model:'PAX 920 Pro', labels:['Kiosk'],                  status:'active',   serial:'012345678901239', account:'Zamalek',     branch:'5th Settlement', address:'90th St., 5th Settlement',      created:'Dec 24, 2024', user:'Mona Youssef',   passcode:'1093' },
+    { id:'TR-100247', model:'PAX 920 Pro', labels:['Front desk'],             status:'active',   serial:'012345678901240', account:'Downtown',    branch:'6th October',    address:'Central Axis, 6th October',     created:'Dec 18, 2024', user:'Ahmed Lotfy',    passcode:'4478' },
+    { id:'TR-100248', model:'F20',         labels:['Counter 2'],              status:'active',   serial:'012345678901241', account:'Garden City', branch:'Zayed',          address:'Arkan Plaza, Sheikh Zayed',     created:'Dec 18, 2024', user:'Laila Mostafa',  passcode:'9902' },
+    { id:'TR-100249', model:'F20',         labels:['VIP'],                    status:'active',   serial:'012345678901242', account:'Maadi',       branch:'Payment',        address:'11 Corniche El Nil, Maadi',     created:'Dec 2, 2024',  user:'Youssef Nabil',  passcode:'3316' },
+    { id:'TR-100250', model:'F20',         labels:['Cashier 1'],              status:'active',   serial:'012345678901243', account:'Helwan',      branch:'Payment',        address:'20 Mansour St., Helwan',        created:'Nov 10, 2024', user:'Hana Tarek',     passcode:'6089' },
+  ];
+
+  const PP_STORE_KEY = 'kashier.terminalProductPages';
+  const defaultAssignments = {
+    'TR-100241': ['PP-1024'],
+    'TR-100242': ['PP-1025', 'PP-1040'],
+    'TR-100244': ['PP-1024', 'PP-1025', 'PP-1031'],
+    'TR-100247': ['PP-1031'],
+  };
+  function loadAssignments() {
+    try {
+      const raw = localStorage.getItem(PP_STORE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) { /* corrupted storage — fall back to defaults */ }
+    return JSON.parse(JSON.stringify(defaultAssignments));
+  }
+  function saveAssignments() {
+    localStorage.setItem(PP_STORE_KEY, JSON.stringify(assignments));
+  }
+  let assignments = loadAssignments();
+  const pageById = id => productPages.find(p => p.id === id);
+
+  // ---------- Resolve terminal from ?id= ----------
+  const params = new URLSearchParams(location.search);
+  const terminal = terminals.find(t => t.id === params.get('id')) || terminals[0];
+
+  // ---------- Render details ----------
+  document.title = 'Kashier | ' + terminal.model;
+  document.getElementById('pageTitle').textContent = terminal.model;
+  document.getElementById('crumbName').textContent = terminal.model + ' (' + terminal.id + ')';
+  document.getElementById('dTermId').textContent = terminal.id;
+  document.getElementById('dStatus').innerHTML =
+    `<span class="badge ${terminal.status === 'active' ? 'badge-active' : 'badge-inactive'}">${terminal.status.toUpperCase()}</span>`;
+  document.getElementById('dSerial').textContent = terminal.serial;
+  document.getElementById('dBranch').textContent = terminal.branch;
+  document.getElementById('dAddress').textContent = terminal.address;
+  document.getElementById('dCreated').textContent = terminal.created;
+  document.getElementById('dUser').textContent = terminal.user;
+  document.getElementById('dPasscode').textContent = terminal.passcode;
+
+  // ---------- Product pages card ----------
+  function renderPpList() {
+    const ids = assignments[terminal.id] || [];
+    const list = document.getElementById('ppList');
+    if (ids.length === 0) {
+      list.innerHTML = '<div class="pp-empty">No product pages assigned to this terminal yet. Use <strong>Manage</strong> to assign published pages.</div>';
+      return;
+    }
+    list.innerHTML = ids.map(id => {
+      const p = pageById(id);
+      return `<div class="pp-row">
+        <div class="pp-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"/></svg>
+        </div>
+        <div>
+          <div class="pp-name">${p.name}</div>
+          <div class="pp-id">${p.id}</div>
+        </div>
+        <div class="pp-right">
+          <span class="badge badge-published">Published</span>
+          <button class="pp-unassign" data-id="${id}" title="Unassign">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+            Unassign
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+    list.querySelectorAll('.pp-unassign').forEach(btn => {
+      btn.addEventListener('click', () => {
+        assignments[terminal.id] = (assignments[terminal.id] || []).filter(x => x !== btn.dataset.id);
+        saveAssignments();
+        renderPpList();
+        showToast('Product page unassigned');
+      });
+    });
+  }
+  renderPpList();
+
+  // ---------- Assign modal ----------
+  let assignSelection = [];
+
+  function renderPpControl(selection) {
+    const panel = document.getElementById('assignPpPanel');
+    const chips = document.getElementById('assignPpChips');
+    const trigger = document.getElementById('assignPpTrigger');
+    const triggerLabel = document.getElementById('assignPpTriggerLabel');
+
+    panel.innerHTML = publishedPages.map(p => `
+      <button type="button" class="pp-opt" data-id="${p.id}">
+        <input type="checkbox" tabindex="-1" ${selection.includes(p.id) ? 'checked' : ''}>
+        ${p.name}
+        <span class="pp-id">${p.id}</span>
+      </button>`).join('');
+    panel.querySelectorAll('.pp-opt').forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = opt.dataset.id;
+        const i = selection.indexOf(id);
+        if (i === -1) selection.push(id); else selection.splice(i, 1);
+        renderPpControl(selection);
+      });
+    });
+
+    chips.innerHTML = selection.map(id => `
+      <span class="pp-chip">${pageById(id).name}
+        <button type="button" data-id="${id}" aria-label="Unassign ${pageById(id).name}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </span>`).join('');
+    chips.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = selection.indexOf(btn.dataset.id);
+        if (i !== -1) selection.splice(i, 1);
+        renderPpControl(selection);
+      });
+    });
+
+    triggerLabel.textContent = selection.length
+      ? `${selection.length} product page${selection.length > 1 ? 's' : ''} selected`
+      : 'Select product pages';
+    trigger.classList.toggle('has-value', selection.length > 0);
+  }
+
+  document.getElementById('assignPpTrigger').addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('assignPpSelect').classList.toggle('open');
+  });
+
+  document.getElementById('manageBtn').addEventListener('click', () => {
+    assignSelection = [...(assignments[terminal.id] || [])];
+    document.getElementById('assignSub').textContent =
+      `Selected product pages will be displayed on ${terminal.model} (${terminal.id}) after it syncs. Only published product pages are listed.`;
+    renderPpControl(assignSelection);
+    document.getElementById('assignOverlay').classList.add('open');
+  });
+
+  document.getElementById('assignSaveBtn').addEventListener('click', () => {
+    assignments[terminal.id] = [...assignSelection];
+    saveAssignments();
+    closeAssign();
+    renderPpList();
+    showToast('Product pages updated');
+  });
+
+  function closeAssign() {
+    document.getElementById('assignOverlay').classList.remove('open');
+    document.querySelectorAll('.ppselect.open').forEach(s => s.classList.remove('open'));
+  }
+  document.getElementById('assignCloseBtn').addEventListener('click', closeAssign);
+  document.getElementById('assignOverlay').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('assignOverlay')) closeAssign();
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAssign(); });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.ppselect')) document.querySelectorAll('.ppselect.open').forEach(s => s.classList.remove('open'));
+  });
+
+  // ---------- Toast ----------
+  let toastTimer = null;
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+  }
+
+  const testToggle = document.getElementById('testToggle');
+  testToggle.addEventListener('click', () => {
+    testToggle.classList.toggle('on');
+    testToggle.setAttribute('aria-pressed', testToggle.classList.contains('on'));
+  });
+</script>
+
+</body>
+</html>

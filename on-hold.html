@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kashier | On-Hold</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Kashier design tokens */
+    --primary: #001F5F;          /* Ocean 100 */
+    --primary-hover: #103788;    /* Ocean 90  */
+    --primary-10: #F1F6FF;       /* Ocean 10  */
+    --ocean-10: #F1F6FF;
+    --link: #2955B1;             /* Ocean 80  */
+    --accent: #00BCB4;           /* Kashier Teal (brand) */
+    --accent-10: #EAFFFE;        /* Kashier 10 */
+    --destructive: #A50017;      /* Watermelon base */
+    --destructive-hover: #830012;/* Watermelon 90 */
+    --destructive-bg: #FFEAED;   /* Watermelon 10 */
+    --success: #4AAB4E;          /* Lemon base */
+    --success-bg: #F3FFF4;       /* Lemon 10 */
+    --success-text: #1A541D;     /* Lemon 100 */
+    --warning: #FBAF1F;          /* Mango base */
+    --warning-bg: #FFF7E8;       /* Mango 10 */
+    --warning-border: #FFE6B6;   /* Mango 20 */
+    --warning-text: #513500;     /* Mango 100 */
+
+    --foreground: #202020;       /* Cadet black */
+    --border: #E6E8E8;           /* Neutral 08 */
+    --border-subtle: #F5F6F6;    /* Neutral 09 */
+    --muted: #F5F6F6;
+    --cadet-base: #556767;       /* Neutral base */
+    --cadet-02: #697979;
+    --cadet-04: #839090;
+    --cadet-05: #919C9C;
+    --cadet-06: #B3BBBB;
+
+    --pill-bg: #F5F6F6;          /* Neutral 09 */
+    --pill-text: #697979;        /* Neutral 02 */
+
+    --radius: 4px;               /* Figma default */
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Noto Sans', Arial, sans-serif;
+    background: #fff;
+    color: var(--foreground);
+    display: flex;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+  h1, h2, h3, h4 { font-family: 'Outfit', Arial, sans-serif; margin: 0; font-weight: 700; }
+  a { text-decoration: none; }
+  button { font-family: inherit; }
+
+  .hi { width: 20px; height: 20px; flex-shrink: 0; }
+  .hi-sm { width: 16px; height: 16px; flex-shrink: 0; }
+  .hi-xs { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar { width: 232px; background: #fff; min-height: 100vh; padding: 22px 14px 30px;
+    border-right: 1px solid var(--border-subtle);
+    position: sticky; top: 0; align-self: flex-start; max-height: 100vh; overflow-y: auto; flex-shrink: 0; z-index: 60; }
+  .brand { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 26px; color: var(--accent);
+    padding: 0 10px; margin-bottom: 26px; letter-spacing: -.01em; }
+  .nav-link { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 8px;
+    color: var(--cadet-base); text-decoration: none; font-size: 14px; margin-bottom: 2px; position: relative; }
+  .nav-link svg { color: var(--cadet-04); }
+  .nav-link.active { background: #EEF1FB; color: var(--primary); font-weight: 600; }
+  .nav-link.active svg { color: var(--primary); }
+  .nav-link:not(.active):hover { background: #F7F8F8; }
+  .nav-section { margin-top: 14px; }
+  .nav-section .section-head { display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 12px; color: var(--primary); font-weight: 600; font-size: 13px; cursor: pointer; user-select: none; }
+  .nav-section .section-head svg { color: var(--cadet-05); transition: transform .2s ease; }
+  .nav-sub { display: flex; flex-direction: column; overflow: hidden; }
+  .nav-sub a { padding: 9px 12px; border-radius: 8px; color: var(--cadet-base); font-size: 14px; }
+  .nav-sub a:hover { background: #F7F8F8; }
+  .nav-sub a.active { background: #EEF1FB; color: var(--primary); font-weight: 600; }
+
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(16,24,40,.45); z-index: 55; }
+  .overlay.open { display: block; }
+
+  /* ---------- Main ---------- */
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+  .topbar { display: flex; justify-content: space-between; align-items: center; gap: 18px;
+    padding: 14px 34px; border-bottom: 1px solid var(--border-subtle); position: sticky; top: 0; background: #fff; z-index: 40; }
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .hamburger { display: none; width: 40px; height: 40px; border: 1px solid var(--border); border-radius: 8px;
+    background: #fff; color: var(--cadet-base); align-items: center; justify-content: center; cursor: pointer; }
+  .hamburger:hover { background: var(--muted); }
+  .topbar-right { display: flex; align-items: center; gap: 18px; }
+  .lang { color: var(--cadet-base); font-size: 14px; cursor: pointer; background: none; border: none; padding: 0; }
+  .lang:hover { color: var(--primary); }
+  .divider { width: 1px; height: 22px; background: var(--border); }
+  .user { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .user .avatar { width: 30px; height: 30px; background: #E7ECF7; color: var(--primary); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; font-family: 'Outfit', sans-serif; }
+  .user .name { font-weight: 600; font-size: 14px; color: var(--foreground); }
+  .user .gear { color: var(--cadet-04); display: flex; }
+
+  .content { padding: 28px 34px 60px; max-width: 1500px; width: 100%; }
+
+  .breadcrumb { font-size: 13px; color: var(--cadet-04); margin-bottom: 12px; }
+  .breadcrumb .sep { margin: 0 6px; color: var(--cadet-06); }
+  .breadcrumb .current { color: var(--cadet-base); }
+
+  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+  .page-head h1 { font-size: 30px; color: var(--primary); margin-bottom: 8px; }
+  .page-head .sub { font-size: 14px; color: var(--cadet-base); max-width: 560px; line-height: 1.5; margin: 0; }
+  .head-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  /* Buttons — Kashier design-system variants */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 600;
+    border-radius: var(--radius); cursor: pointer; border: 1.5px solid transparent; padding: 0 18px; height: 40px;
+    transition: background .12s ease, border-color .12s ease, color .12s ease; white-space: nowrap; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-outline { background: #fff; color: var(--primary); border-color: var(--primary); }
+  .btn-outline:hover { background: var(--ocean-10); }
+  .btn-ghost { background: transparent; color: var(--primary); border-color: transparent; }
+  .btn-ghost:hover { background: var(--ocean-10); }
+  .btn-danger { background: var(--destructive); color: #fff; }
+  .btn-danger:hover { background: var(--destructive-hover); }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-success:hover { background: #388E3B; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .btn-sm { height: 36px; padding: 0 14px; font-size: 13px; }
+  .btn-link { background: none; border: none; color: var(--primary-hover); font-size: 13px; font-weight: 600; cursor: pointer; }
+
+  /* ---------- Tabs ---------- */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 22px; }
+  .tab { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; font-size: 14px; font-weight: 600;
+    color: var(--cadet-base); background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px;
+    cursor: pointer; transition: color .12s ease, border-color .12s ease; }
+  .tab:hover { color: var(--foreground); }
+  .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .tab .tab-count { font-size: 11px; font-weight: 700; border-radius: 999px; padding: 2px 7px;
+    background: var(--pill-bg); color: var(--pill-text); }
+  .tab.active .tab-count { background: var(--primary-10); color: var(--primary); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ---------- Table card ---------- */
+  .table-card { background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden; }
+  .table-toolbar { display: flex; align-items: center; gap: 16px; padding: 16px; flex-wrap: wrap; }
+  .table-toolbar h2 { font-size: 18px; color: var(--cadet-base); flex-shrink: 0; }
+  .search-input { position: relative; flex: 1; min-width: 240px; }
+  .search-input input { width: 100%; height: 38px; border: none; border-radius: var(--radius);
+    padding: 0 12px 0 30px; font-family: 'Noto Sans', sans-serif; font-size: 13px; color: var(--foreground); background: transparent; }
+  .search-input input:focus { outline: none; }
+  .search-input input::placeholder { color: var(--cadet-05); }
+  .search-input svg { position: absolute; left: 6px; top: 50%; transform: translateY(-50%); color: var(--cadet-05); width: 16px; height: 16px; }
+  .toolbar-right { display: flex; align-items: center; gap: 20px; margin-left: auto; }
+  .toolbar-link { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--foreground);
+    background: none; border: none; cursor: pointer; }
+  .toolbar-link:hover { color: var(--primary); }
+  .toolbar-link svg { color: var(--cadet-base); }
+  .toolbar-link.on { color: var(--primary); }
+  .toolbar-link.on svg { color: var(--primary); }
+
+  /* Filter panel */
+  .filter-panel { display: none; border-top: 1px solid var(--border-subtle); padding: 18px 16px;
+    grid-template-columns: repeat(4, 1fr); gap: 18px 20px; }
+  .filter-panel.open { display: grid; }
+  .filter-panel .field-label { font-size: 13px; font-weight: 600; color: var(--foreground); margin-bottom: 8px; display: block; }
+  .amount-range { display: flex; align-items: center; gap: 8px; }
+  .amount-range input { width: 100%; height: 36px; border: 1.5px solid var(--border); border-radius: var(--radius);
+    padding: 0 10px; font-size: 13px; font-family: inherit; }
+  .amount-range input:focus { outline: none; border-color: var(--primary); }
+  .fselect { height: 36px; width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius); background: #fff;
+    padding: 0 10px; font-size: 13px; color: var(--foreground); cursor: pointer; font-family: inherit; }
+  .fselect:focus { outline: none; border-color: var(--primary); }
+  .finput { height: 36px; width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius); background: #fff;
+    padding: 0 10px; font-size: 13px; color: var(--foreground); font-family: inherit; }
+  .finput:focus { outline: none; border-color: var(--primary); }
+  .filter-footer { grid-column: 1 / -1; display: flex; justify-content: flex-end; align-items: center; gap: 18px; margin-top: 4px; }
+
+  /* Selection bar */
+  .sel-bar { display: none; align-items: center; gap: 16px; padding: 12px 16px; background: var(--primary-10);
+    border-top: 1px solid var(--border-subtle); }
+  .sel-bar.show { display: flex; }
+  .sel-bar .sel-text { font-size: 13px; font-weight: 600; color: var(--primary); }
+  .sel-bar .sel-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+  /* ---------- Table ---------- */
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  #recordsTable { min-width: 1180px; }
+  #logsTable { min-width: 1040px; }
+  thead th { height: 42px; padding: 0 10px; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle);
+    background: var(--muted); font-size: 11px; font-weight: 700; color: var(--cadet-base); text-transform: uppercase;
+    letter-spacing: .3px; text-align: left; white-space: nowrap; }
+  th .th-inner { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; }
+  th .th-inner:hover { color: var(--primary); }
+  th .sort-carets { display: inline-flex; color: var(--cadet-06); }
+  th .sort-carets svg { width: 11px; height: 11px; }
+  th.sorted .sort-carets { color: var(--primary); }
+  tbody tr:nth-child(even) { background: rgba(248,249,249,.6); }
+  tbody tr:hover { background: var(--primary-10); }
+  tbody td { padding: 12px 10px; font-size: 13px; font-weight: 400; color: var(--foreground); vertical-align: middle;
+    border-bottom: 1px solid var(--border-subtle); }
+  tbody tr:last-child td { border-bottom: none; }
+  .chk-cell { width: 40px; }
+  .chk-cell input, thead .chk-cell input { accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer; }
+
+  /* Merchant cell */
+  .merchant-name { font-weight: 600; color: var(--foreground); font-size: 13.5px; }
+  .merchant-id { color: var(--cadet-04); font-size: 12px; margin-top: 3px; }
+
+  .amount { font-weight: 600; white-space: nowrap; }
+  .amount .cur { color: #687182; font-size: 11.5px; font-weight: 400; margin-left: 3px; }
+
+  .ref { color: var(--link); font-weight: 600; white-space: nowrap; }
+  .notes { color: var(--cadet-base); max-width: 190px; line-height: 1.4; }
+  .date-cell { color: var(--cadet-base); white-space: nowrap; }
+  .muted-dash { color: var(--cadet-06); }
+
+  /* Reason cell — label + channel/provider icons */
+  .reason-cell { min-width: 130px; }
+  .reason-label { color: var(--foreground); }
+  .reason-icons { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+  .ch-icon { color: var(--cadet-04); display: flex; }
+  .ch-icon svg { width: 15px; height: 15px; }
+  .prov { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+    border-radius: 3px; padding: 2px 6px; white-space: nowrap; }
+  .prov.valu { background: #FFF1E8; color: #C75B1E; }
+  .prov.mega { background: var(--destructive-bg); color: var(--destructive); }
+  .prov.souhoola { background: var(--primary-10); color: var(--primary); }
+  .prov.aman { background: var(--accent-10); color: #006A66; }
+
+  /* Badges */
+  .badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 4px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .3px; padding: 4px 9px; white-space: nowrap; }
+  .badge .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+  .badge-onhold { background: var(--warning-bg); color: #92620A; }
+  .badge-released { background: var(--success-bg); color: var(--success-text); }
+  .badge-deducted { background: var(--destructive-bg); color: var(--destructive); }
+
+  /* Logs-specific */
+  .actor { display: flex; align-items: center; gap: 8px; }
+  .actor .av { width: 26px; height: 26px; border-radius: 50%; background: #E7ECF7; color: var(--primary);
+    display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-weight: 700;
+    font-size: 10px; flex-shrink: 0; }
+  .actor .av.system { background: var(--accent-10); color: #006A66; }
+  .actor .who { min-width: 0; }
+  .actor .who-name { font-weight: 600; font-size: 13px; color: var(--foreground); white-space: nowrap; }
+  .actor .who-role { font-size: 11px; color: var(--cadet-05); white-space: nowrap; }
+  .log-when { white-space: nowrap; }
+  .log-when .abs { color: var(--foreground); }
+  .log-when .rel { font-size: 11.5px; color: var(--cadet-05); margin-top: 3px; }
+  .log-detail { color: var(--cadet-base); max-width: 260px; line-height: 1.45; }
+  .log-detail .delta { color: var(--foreground); font-weight: 600; }
+
+  /* Pagination */
+  .pagination-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; flex-wrap: wrap; gap: 10px;
+    border-top: 1px solid var(--border-subtle); }
+  .pagination-info { font-size: 13px; color: var(--foreground); }
+  .rpp { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--foreground); }
+  .rpp select { border: none; background: none; font-size: 13px; font-weight: 600; color: var(--foreground); cursor: pointer; font-family: inherit; }
+  .pagination { display: flex; align-items: center; gap: 4px; }
+  .page-btn { min-width: 30px; height: 30px; padding: 0 6px; display: flex; align-items: center; justify-content: center;
+    border-radius: var(--radius); border: 1.5px solid transparent; background: #fff; font-size: 12px; font-weight: 600;
+    color: var(--foreground); cursor: pointer; }
+  .page-btn.active { background: var(--primary-10); color: var(--primary); border-color: var(--primary); }
+  .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .page-btn:hover:not(.active):not(:disabled) { border-color: var(--border); }
+
+  /* Empty state */
+  .empty-state { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 56px 20px; text-align: center; }
+  .empty-state.show { display: flex; }
+  .empty-state svg { width: 150px; height: 120px; margin-bottom: 16px; }
+  .empty-state .empty-title { font-size: 16px; font-weight: 700; color: var(--foreground); }
+  .empty-state .empty-sub { font-size: 13px; color: var(--cadet-04); margin-top: 6px; }
+
+  /* ---------- Modal ---------- */
+  .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(16,24,40,.5); z-index: 80;
+    align-items: flex-start; justify-content: center; padding: 40px 16px; overflow-y: auto; }
+  .modal-backdrop.open { display: flex; }
+  .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 620px; box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    animation: pop .16s ease; }
+  .modal.sm { max-width: 460px; }
+  @keyframes pop { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px 16px;
+    border-bottom: 1px solid var(--border-subtle); }
+  .modal-head h2 { font-size: 20px; color: var(--primary); }
+  .modal-close { width: 34px; height: 34px; border: none; background: none; border-radius: 8px; color: var(--cadet-04);
+    cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .modal-close:hover { background: var(--muted); }
+  .modal-body { padding: 22px 24px; }
+  .modal-foot { display: flex; justify-content: flex-end; gap: 12px; padding: 16px 24px 22px; border-top: 1px solid var(--border-subtle); }
+
+  .field { margin-bottom: 18px; }
+  .field:last-child { margin-bottom: 0; }
+  label.lbl { display: block; font-size: 13px; font-weight: 600; color: var(--cadet-base); margin-bottom: 7px; }
+  .inp, .modal textarea, .modal select { width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius);
+    padding: 10px 12px; font-family: inherit; font-size: 14px; color: var(--foreground); background: #fff; }
+  .inp:focus, .modal textarea:focus, .modal select:focus { outline: none; border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0,31,95,.08); }
+  .modal textarea { resize: vertical; min-height: 70px; line-height: 1.45; }
+
+  /* Record summary inside Manage modal */
+  .rec-summary { border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+  .rec-summary-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 12px; }
+  .rec-summary-head .rs-name { font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 700; color: var(--foreground); }
+  .rec-summary-head .rs-ids { font-size: 12px; color: var(--cadet-04); margin-top: 4px; }
+  .rec-rows { display: flex; flex-direction: column; gap: 2px; }
+  .rec-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 5px 0; }
+  .rec-row .rr-label { font-size: 13px; color: var(--cadet-base); }
+  .rec-row .rr-value { font-size: 14px; font-weight: 600; color: var(--foreground); text-align: right; }
+
+  /* Record history inside Manage modal */
+  .hist-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--cadet-05); margin: 22px 0 12px; }
+  .hist { display: flex; flex-direction: column; gap: 0; }
+  .hist-item { display: flex; gap: 12px; padding-bottom: 16px; position: relative; }
+  .hist-item:not(:last-child)::before { content: ''; position: absolute; left: 12px; top: 26px; bottom: 0;
+    width: 1px; background: var(--border); }
+  .hist-dot { width: 24px; height: 24px; border-radius: 50%; background: var(--muted); color: var(--cadet-base);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1; }
+  .hist-dot svg { width: 13px; height: 13px; }
+  .hist-dot.released { background: var(--success-bg); color: var(--success-text); }
+  .hist-dot.hold { background: var(--warning-bg); color: #92620A; }
+  .hist-dot.deducted { background: var(--destructive-bg); color: var(--destructive); }
+  .hist-body { min-width: 0; padding-top: 2px; }
+  .hist-action { font-size: 13px; font-weight: 600; color: var(--foreground); }
+  .hist-meta { font-size: 12px; color: var(--cadet-05); margin-top: 3px; }
+  .hist-note { font-size: 12.5px; color: var(--cadet-base); margin-top: 5px; line-height: 1.4; }
+  .hist-empty { font-size: 13px; color: var(--cadet-05); padding: 4px 0 8px; }
+
+  .confirm-text { font-size: 14px; color: var(--cadet-base); line-height: 1.55; }
+  .confirm-text b { color: var(--foreground); }
+
+  /* Alert (styleguide §4.4) */
+  .alert-info { display: flex; gap: 8px; padding: 12px; border-radius: 5px; background: var(--primary-10);
+    border: 1px solid #C0D5FF; color: var(--primary); font-size: 13px; line-height: 1.45; margin-bottom: 18px; }
+  .alert-info svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--primary);
+    color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; z-index: 100; opacity: 0;
+    pointer-events: none; transition: opacity .2s ease, transform .2s ease; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1100px) {
+    .filter-panel { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 1000px) {
+    .content { padding: 24px 22px 60px; }
+    .topbar { padding: 12px 22px; }
+  }
+  @media (max-width: 900px) {
+    .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%);
+      transition: transform .22s ease; box-shadow: 0 10px 40px rgba(0,0,0,.18); }
+    .sidebar.open { transform: translateX(0); }
+    .hamburger { display: flex; }
+    .page-head h1 { font-size: 26px; }
+  }
+  @media (max-width: 720px) {
+    .head-actions { width: 100%; }
+    .head-actions .btn { flex: 1; }
+    .tabs { overflow-x: auto; }
+    .filter-panel { grid-template-columns: 1fr; }
+    .rec-row { flex-direction: column; align-items: flex-start; gap: 2px; }
+    .rec-row .rr-value { text-align: left; }
+  }
+  @media (max-width: 520px) {
+    .user .name { display: none; }
+    .modal-head h2 { font-size: 18px; }
+    .pagination-bar { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">kashier</div>
+
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>Home</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>BIN Management</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>Financial Institutions</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"/></svg>Merchant</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h6m-6 3h6m-6 3h6M10.5 21v-3.75a1.5 1.5 0 0 1 3 0V21"/></svg>Business Industries</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z"/></svg>PCC Templates</a>
+    <a class="nav-link" href="terminals.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25"/></svg>Terminals</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-9L21 3m0 0-4.5-4.5M21 3v13.5" transform="translate(0 3)"/></svg>Reconciliation</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5M21 16.5 16.5 21m0 0L12 16.5m4.5 4.5V7.5"/></svg>Orders</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"/></svg>Transfers</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0"/></svg>Bundles</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5v15h18M3 4.5h.375c.621 0 1.125.504 1.125 1.125v.75c0 .621.504 1.125 1.125 1.125m0 0a48.667 48.667 0 0 1 11.964 1.041M9 15l3-3 2.25 2.25L18 10.5"/></svg>Lending</a>
+
+    <div class="nav-section">
+      <div class="section-head" id="documentsHead">Documents
+        <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
+      </div>
+      <div class="nav-sub" id="documentsSub">
+        <a href="document-types.html">Document Types</a>
+        <a href="document-rules.html">Document Rules</a>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="section-head" id="balanceHead">Balance Management
+        <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
+      </div>
+      <div class="nav-sub" id="balanceSub">
+        <a href="#">Settlement Windows</a>
+        <a href="#">Accounts</a>
+        <a class="active" href="on-hold.html">On-Hold</a>
+        <a href="#">Vacations</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" id="hamburger" aria-label="Open menu">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+        </button>
+      </div>
+      <div class="topbar-right">
+        <button class="lang" id="langBtn">عربي</button>
+        <div class="divider"></div>
+        <div class="user">
+          <div class="avatar">AM</div>
+          <span class="name">Aya Muhammed</span>
+          <span class="gear"><svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="breadcrumb">Balance Management <span class="sep">/</span> <span class="current">On-Hold</span></div>
+
+      <div class="page-head">
+        <div>
+          <h1>On-Hold</h1>
+          <p class="sub">Amounts withheld from merchant settlement. Release them individually or in bulk — every action is recorded in the Logs tab.</p>
+        </div>
+        <div class="head-actions">
+          <button class="btn btn-outline" id="bulkReleaseBtn" disabled>
+            <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"/></svg>
+            Bulk Release
+          </button>
+        </div>
+      </div>
+
+      <!-- ---------- Tabs ---------- -->
+      <div class="tabs" role="tablist">
+        <button class="tab active" role="tab" aria-selected="true" data-tab="records" id="tabRecords">
+          On-Hold Records
+          <span class="tab-count" id="recordsCount">0</span>
+        </button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="logs" id="tabLogs">
+          <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+          Logs
+          <span class="tab-count" id="logsCount">0</span>
+        </button>
+      </div>
+
+      <!-- ================= RECORDS TAB ================= -->
+      <div class="tab-panel active" id="panelRecords" role="tabpanel">
+        <div class="table-card">
+          <div class="table-toolbar">
+            <h2>On-Hold</h2>
+            <div class="search-input">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+              <input type="text" id="recSearch" placeholder="Search Record IDs or Balance IDs...">
+            </div>
+            <div class="toolbar-right">
+              <button class="toolbar-link" id="recFilterBtn">
+                <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"/></svg>
+                Filter
+              </button>
+              <button class="toolbar-link" id="recExportBtn">
+                <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                Export
+              </button>
+            </div>
+          </div>
+
+          <div class="filter-panel" id="recFilterPanel">
+            <div>
+              <label class="field-label" for="recAmountFrom">Amount</label>
+              <div class="amount-range">
+                <input class="finput" type="number" id="recAmountFrom" placeholder="From">
+                <span>-</span>
+                <input class="finput" type="number" id="recAmountTo" placeholder="To">
+              </div>
+            </div>
+            <div>
+              <label class="field-label" for="recStatusFilter">Status</label>
+              <select class="fselect" id="recStatusFilter">
+                <option value="">All</option>
+                <option value="On-Hold">On-Hold</option>
+                <option value="Released">Released</option>
+                <option value="Deducted">Deducted</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label" for="recReasonFilter">Reason</label>
+              <select class="fselect" id="recReasonFilter">
+                <option value="">All</option>
+                <option value="Settlement Delay">Settlement Delay</option>
+                <option value="Risk Review">Risk Review</option>
+                <option value="Chargeback Reserve">Chargeback Reserve</option>
+                <option value="Compliance Check">Compliance Check</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label" for="recProviderFilter">Provider</label>
+              <select class="fselect" id="recProviderFilter">
+                <option value="">All</option>
+                <option value="valu">Valu</option>
+                <option value="mega">Mega</option>
+                <option value="souhoola">Souhoola</option>
+                <option value="aman">Aman</option>
+              </select>
+            </div>
+            <div class="filter-footer">
+              <button class="btn-link" id="recClearFilters">Clear All</button>
+              <button class="btn btn-primary btn-sm" id="recSubmitFilters">Submit Filters</button>
+            </div>
+          </div>
+
+          <div class="sel-bar" id="selBar">
+            <span class="sel-text" id="selText">0 selected</span>
+            <div class="sel-actions">
+              <button class="btn-link" id="selClear">Clear selection</button>
+              <button class="btn btn-primary btn-sm" id="selRelease">
+                <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"/></svg>
+                Release Selected
+              </button>
+            </div>
+          </div>
+
+          <div class="table-scroll">
+            <table id="recordsTable">
+              <thead>
+                <tr>
+                  <th class="chk-cell"><input type="checkbox" id="recSelectAll" aria-label="Select all records"></th>
+                  <th data-sort="merchant"><span class="th-inner">Merchant<span class="sort-carets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg></span></span></th>
+                  <th data-sort="amount"><span class="th-inner">Amount<span class="sort-carets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg></span></span></th>
+                  <th data-sort="status"><span class="th-inner">Status<span class="sort-carets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg></span></span></th>
+                  <th data-sort="reason"><span class="th-inner">Reason<span class="sort-carets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg></span></span></th>
+                  <th data-sort="ref"><span class="th-inner">Ref.<span class="sort-carets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg></span></span></th>
+                  <th data-sort="notes"><span class="th-inner">Notes<span class="sort-carets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg></span></span></th>
+                  <th data-sort="valueDate"><span class="th-inner">Value Date<span class="sort-carets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg></span></span></th>
+                  <th data-sort="createdAt"><span class="th-inner">Creation Date<span class="sort-carets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg></span></span></th>
+                  <th data-sort="updatedAt"><span class="th-inner">Updated At<span class="sort-carets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg></span></span></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="recordsBody"></tbody>
+            </table>
+          </div>
+
+          <div class="empty-state" id="recEmpty">
+            <svg viewBox="0 0 200 160" fill="none">
+              <circle cx="100" cy="80" r="70" fill="#F5F6F6"/>
+              <rect x="62" y="58" width="76" height="52" rx="6" fill="#fff" stroke="#B3BBBB" stroke-width="2"/>
+              <path d="M78 58V46a22 22 0 0 1 44 0v12" stroke="#556767" stroke-width="2" fill="none"/>
+              <circle cx="100" cy="82" r="7" fill="#E6E8E8"/>
+              <path d="M100 89v9" stroke="#839090" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+            <div class="empty-title">No On-Hold Records Found</div>
+            <div class="empty-sub">Try adjusting your search or filters.</div>
+          </div>
+
+          <div class="pagination-bar" id="recPaginationBar">
+            <div class="pagination-info" id="recPageInfo">0 - 0 Of 0</div>
+            <div style="display:flex; align-items:center; gap:20px;">
+              <div class="pagination" id="recPagination"></div>
+              <div class="rpp">
+                Rows per page:
+                <select id="recRpp">
+                  <option>5</option>
+                  <option selected>10</option>
+                  <option>20</option>
+                  <option>50</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= LOGS TAB ================= -->
+      <div class="tab-panel" id="panelLogs" role="tabpanel">
+        <div class="table-card">
+          <div class="table-toolbar">
+            <h2>Logs</h2>
+            <div class="search-input">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+              <input type="text" id="logSearch" placeholder="Search by merchant, ref., user or status...">
+            </div>
+            <div class="toolbar-right">
+              <button class="toolbar-link" id="logFilterBtn">
+                <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"/></svg>
+                Filter
+              </button>
+              <button class="toolbar-link" id="logExportBtn">
+                <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                Export
+              </button>
+            </div>
+          </div>
+
+          <div class="filter-panel" id="logFilterPanel">
+            <div>
+              <label class="field-label" for="logStatusFilter">Status</label>
+              <select class="fselect" id="logStatusFilter">
+                <option value="">All statuses</option>
+                <option value="On-Hold">On-Hold</option>
+                <option value="Released">Released</option>
+                <option value="Deducted">Deducted</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label" for="logActorFilter">Performed by</label>
+              <select class="fselect" id="logActorFilter">
+                <option value="">Everyone</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label" for="logFrom">From date</label>
+              <input class="finput" type="date" id="logFrom">
+            </div>
+            <div>
+              <label class="field-label" for="logTo">To date</label>
+              <input class="finput" type="date" id="logTo">
+            </div>
+            <div class="filter-footer">
+              <button class="btn-link" id="logClearFilters">Clear All</button>
+              <button class="btn btn-primary btn-sm" id="logSubmitFilters">Submit Filters</button>
+            </div>
+          </div>
+
+          <div class="table-scroll">
+            <table id="logsTable">
+              <thead>
+                <tr>
+                  <th data-sort="ts"><span class="th-inner">When<span class="sort-carets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg></span></span></th>
+                  <th data-sort="status"><span class="th-inner">Status<span class="sort-carets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg></span></span></th>
+                  <th data-sort="merchant"><span class="th-inner">Merchant<span class="sort-carets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg></span></span></th>
+                  <th data-sort="ref"><span class="th-inner">Ref.<span class="sort-carets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg></span></span></th>
+                  <th data-sort="amount"><span class="th-inner">Amount<span class="sort-carets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg></span></span></th>
+                  <th data-sort="actor"><span class="th-inner">Performed By<span class="sort-carets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg></span></span></th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody id="logsBody"></tbody>
+            </table>
+          </div>
+
+          <div class="empty-state" id="logEmpty">
+            <svg viewBox="0 0 200 160" fill="none">
+              <circle cx="100" cy="80" r="70" fill="#F5F6F6"/>
+              <rect x="66" y="44" width="68" height="84" rx="6" fill="#fff" stroke="#B3BBBB" stroke-width="2"/>
+              <path d="M80 64h40M80 80h40M80 96h24" stroke="#E6E8E8" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="124" cy="106" r="20" fill="#F5F6F6" stroke="#556767" stroke-width="2"/>
+              <path d="M124 96v10l6 4" stroke="#556767" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            </svg>
+            <div class="empty-title">No Log Entries Found</div>
+            <div class="empty-sub">Actions taken on on-hold amounts will appear here.</div>
+          </div>
+
+          <div class="pagination-bar" id="logPaginationBar">
+            <div class="pagination-info" id="logPageInfo">0 - 0 Of 0</div>
+            <div style="display:flex; align-items:center; gap:20px;">
+              <div class="pagination" id="logPagination"></div>
+              <div class="rpp">
+                Rows per page:
+                <select id="logRpp">
+                  <option>5</option>
+                  <option selected>10</option>
+                  <option>20</option>
+                  <option>50</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ---------- Manage modal ---------- -->
+  <div class="modal-backdrop" id="manageBackdrop">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>Manage On-Hold Amount</h2>
+        <button class="modal-close" id="manageClose" aria-label="Close">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="manageBody"></div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" id="manageCancel">Cancel</button>
+        <button class="btn btn-primary" id="manageConfirm">Confirm Action</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- Bulk release confirm modal ---------- -->
+  <div class="modal-backdrop" id="bulkBackdrop">
+    <div class="modal sm">
+      <div class="modal-head">
+        <h2>Bulk Release</h2>
+        <button class="modal-close" id="bulkClose" aria-label="Close">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert-info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
+          Releasing sends the held amount to the merchant's next settlement window. This cannot be undone.
+        </div>
+        <p class="confirm-text" id="bulkText"></p>
+        <div class="field" style="margin-top:18px">
+          <label class="lbl" for="bulkNote">Note <span style="font-weight:400; color:var(--cadet-05)">(optional — recorded in Logs)</span></label>
+          <textarea id="bulkNote" placeholder="e.g. Settlement file received from provider — releasing held BNPL amounts."></textarea>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" id="bulkCancel">Cancel</button>
+        <button class="btn btn-primary" id="bulkConfirm">Release Amounts</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  /* ---------- Current user (the actor written into every log entry) ---------- */
+  const currentUser = { name: 'Aya Muhammed', role: 'Balance Ops', initials: 'AM' };
+
+  /* ---------- Reference data ---------- */
+  const PROVIDERS = { valu: 'Valu', mega: 'Mega', souhoola: 'Souhoola', aman: 'Aman' };
+
+  /* An on-hold amount is only ever in one of these three states. Each log entry
+     records a transition into one of them — there are no other event types. */
+  const STATUSES = {
+    'On-Hold':  'badge-onhold',
+    'Released': 'badge-released',
+    'Deducted': 'badge-deducted',
+  };
+
+  /* Only On-Hold amounts can be acted on — Released and Deducted are terminal. */
+  const isActionable = r => r.status === 'On-Hold';
+
+  /* ---------- Mock on-hold records ---------- */
+  let records = [
+    { id: 'R-01', merchant: 'ZERO BIG SIZE',      mid: 'MID-30410-924', acc: 'ACC-30410-924-01', amount: 1241.04, status: 'On-Hold',  reason: 'Settlement Delay',   channel: 'online', provider: 'valu',     ref: 'STB-30410924179-01', notes: 'BNPL Settlement Delay', valueDate: '2026-07-26T06:00:00', createdAt: '2026-07-16T00:32:00', updatedAt: null },
+    { id: 'R-02', merchant: 'Sharaf Store',       mid: 'MID-44246-585', acc: 'ACC-44246-585-01', amount: 1661.24, status: 'On-Hold',  reason: 'Settlement Delay',   channel: 'online', provider: 'mega',     ref: 'STB-4424658509-01',  notes: 'BNPL Settlement Delay', valueDate: '2026-07-26T06:00:00', createdAt: '2026-07-16T00:32:00', updatedAt: null },
+    { id: 'R-03', merchant: 'MiniMore',           mid: 'MID-31664-818', acc: 'ACC-31664-818-01', amount: 5100.38, status: 'On-Hold',  reason: 'Settlement Delay',   channel: 'online', provider: 'souhoola', ref: 'STB-31664818380-01', notes: 'BNPL Settlement Delay', valueDate: '2026-07-26T06:00:00', createdAt: '2026-07-16T00:31:00', updatedAt: null },
+    { id: 'R-04', merchant: 'Kaftan Egypt',       mid: 'MID-47223-121', acc: 'ACC-47223-121-01', amount: 9547.24, status: 'On-Hold',  reason: 'Settlement Delay',   channel: 'online', provider: 'valu',     ref: 'STB-4722312102-01',  notes: 'BNPL Settlement Delay', valueDate: '2026-07-26T06:00:00', createdAt: '2026-07-16T00:31:00', updatedAt: null },
+    { id: 'R-05', merchant: 'Alshal Auto Service', mid: 'MID-23885-967', acc: 'ACC-23885-967-01', amount: 1856.68, status: 'On-Hold',  reason: 'Settlement Delay',   channel: 'pos',    provider: 'valu',     ref: 'STB-23885967370-01', notes: 'BNPL Settlement Delay', valueDate: '2026-07-26T06:00:00', createdAt: '2026-07-16T00:31:00', updatedAt: null },
+    { id: 'R-06', merchant: 'Nile Pharma',        mid: 'MID-51002-338', acc: 'ACC-51002-338-01', amount: 22430.00, status: 'On-Hold', reason: 'Risk Review',        channel: 'online', provider: 'valu',     ref: 'STB-51002338211-01', notes: 'Velocity spike flagged by risk engine', valueDate: '2026-07-24T06:00:00', createdAt: '2026-07-14T09:12:00', updatedAt: null },
+    { id: 'R-07', merchant: 'Cairo Electronics',  mid: 'MID-60771-402', acc: 'ACC-60771-402-01', amount: 84120.55, status: 'On-Hold', reason: 'Chargeback Reserve', channel: 'online', provider: 'mega',     ref: 'STB-60771402884-01', notes: 'Rolling reserve — 10% of monthly volume', valueDate: '2026-08-01T06:00:00', createdAt: '2026-07-13T14:45:00', updatedAt: null },
+    { id: 'R-08', merchant: 'Delta Grocers',      mid: 'MID-19338-110', acc: 'ACC-19338-110-01', amount: 3390.90, status: 'On-Hold',  reason: 'Compliance Check',   channel: 'pos',    provider: 'aman',     ref: 'STB-19338110455-01', notes: 'Awaiting updated commercial register', valueDate: '2026-07-28T06:00:00', createdAt: '2026-07-12T16:03:00', updatedAt: null },
+    { id: 'R-09', merchant: 'Maadi Home Decor',   mid: 'MID-77410-093', acc: 'ACC-77410-093-01', amount: 6720.10, status: 'On-Hold',  reason: 'Settlement Delay',   channel: 'online', provider: 'souhoola', ref: 'STB-77410093617-01', notes: 'BNPL Settlement Delay', valueDate: '2026-07-26T06:00:00', createdAt: '2026-07-16T00:30:00', updatedAt: null },
+    { id: 'R-10', merchant: 'Zamalek Books',      mid: 'MID-30188-745', acc: 'ACC-30188-745-01', amount: 941.75,  status: 'On-Hold',  reason: 'Settlement Delay',   channel: 'online', provider: 'valu',     ref: 'STB-30188745022-01', notes: 'BNPL Settlement Delay', valueDate: '2026-07-26T06:00:00', createdAt: '2026-07-16T00:30:00', updatedAt: null },
+    { id: 'R-11', merchant: 'Alex Fitness Hub',   mid: 'MID-88204-561', acc: 'ACC-88204-561-01', amount: 15280.00, status: 'On-Hold', reason: 'Risk Review',        channel: 'pos',    provider: 'mega',     ref: 'STB-88204561930-01', notes: 'Manual review — new merchant, high ticket', valueDate: '2026-07-25T06:00:00', createdAt: '2026-07-11T10:27:00', updatedAt: null },
+    { id: 'R-12', merchant: 'Tanta Textiles',     mid: 'MID-42990-207', acc: 'ACC-42990-207-01', amount: 7455.30, status: 'Released', reason: 'Settlement Delay',   channel: 'online', provider: 'souhoola', ref: 'STB-42990207148-01', notes: 'Released after provider file received', valueDate: '2026-07-20T06:00:00', createdAt: '2026-07-09T08:15:00', updatedAt: '2026-07-15T09:40:00' },
+    { id: 'R-13', merchant: 'Giza Sports Wear',   mid: 'MID-55621-874', acc: 'ACC-55621-874-01', amount: 2110.45, status: 'Released', reason: 'Compliance Check',   channel: 'online', provider: 'aman',     ref: 'STB-55621874309-01', notes: 'Documents verified by compliance', valueDate: '2026-07-18T06:00:00', createdAt: '2026-07-08T12:50:00', updatedAt: '2026-07-13T15:22:00' },
+    { id: 'R-14', merchant: 'Heliopolis Optics',  mid: 'MID-66103-419', acc: 'ACC-66103-419-01', amount: 4880.00, status: 'On-Hold',  reason: 'Chargeback Reserve', channel: 'online', provider: 'valu',     ref: 'STB-66103419772-01', notes: 'Reserve held pending dispute outcome', valueDate: '2026-07-30T06:00:00', createdAt: '2026-07-10T11:11:00', updatedAt: null },
+    { id: 'R-15', merchant: 'Obour Mobile Shop',  mid: 'MID-73450-682', acc: 'ACC-73450-682-01', amount: 12640.00, status: 'Deducted', reason: 'Chargeback Reserve', channel: 'online', provider: 'mega',    ref: 'STB-73450682514-01', notes: 'Deducted to cover chargeback CB-88213', valueDate: '2026-07-19T06:00:00', createdAt: '2026-07-07T09:34:00', updatedAt: '2026-07-14T16:48:00' },
+    { id: 'R-16', merchant: 'Rehab Beauty Bar',   mid: 'MID-29017-336', acc: 'ACC-29017-336-01', amount: 1975.60, status: 'Deducted', reason: 'Risk Review',        channel: 'pos',    provider: 'aman',    ref: 'STB-29017336208-01', notes: 'Deducted — confirmed fraudulent transactions', valueDate: '2026-07-17T06:00:00', createdAt: '2026-07-06T13:20:00', updatedAt: '2026-07-12T10:05:00' },
+  ];
+
+  /* ---------- Mock log entries (seeded history) ---------- */
+  let logs = [
+    { id: 'L-01', ts: '2026-07-16T00:32:10', status: 'On-Hold',  recordId: 'R-01', merchant: 'ZERO BIG SIZE',       mid: 'MID-30410-924', ref: 'STB-30410924179-01', amount: 1241.04,  actor: 'Settlement Engine', role: 'System',       system: true,  detail: 'Hold opened automatically — BNPL settlement file not received from Valu.' },
+    { id: 'L-02', ts: '2026-07-16T00:32:08', status: 'On-Hold',  recordId: 'R-02', merchant: 'Sharaf Store',        mid: 'MID-44246-585', ref: 'STB-4424658509-01',  amount: 1661.24,  actor: 'Settlement Engine', role: 'System',       system: true,  detail: 'Hold opened automatically — BNPL settlement file not received from Mega.' },
+    { id: 'L-03', ts: '2026-07-16T00:31:44', status: 'On-Hold',  recordId: 'R-03', merchant: 'MiniMore',            mid: 'MID-31664-818', ref: 'STB-31664818380-01', amount: 5100.38,  actor: 'Settlement Engine', role: 'System',       system: true,  detail: 'Hold opened automatically — BNPL settlement file not received from Souhoola.' },
+    { id: 'L-04', ts: '2026-07-16T00:31:20', status: 'On-Hold',  recordId: 'R-04', merchant: 'Kaftan Egypt',        mid: 'MID-47223-121', ref: 'STB-4722312102-01',  amount: 9547.24,  actor: 'Settlement Engine', role: 'System',       system: true,  detail: 'Hold opened automatically — BNPL settlement file not received from Valu.' },
+    { id: 'L-05', ts: '2026-07-16T00:31:02', status: 'On-Hold',  recordId: 'R-05', merchant: 'Alshal Auto Service', mid: 'MID-23885-967', ref: 'STB-23885967370-01', amount: 1856.68,  actor: 'Settlement Engine', role: 'System',       system: true,  detail: 'Hold opened automatically — BNPL settlement file not received from Valu.' },
+    { id: 'L-06', ts: '2026-07-16T00:30:51', status: 'On-Hold',  recordId: 'R-09', merchant: 'Maadi Home Decor',    mid: 'MID-77410-093', ref: 'STB-77410093617-01', amount: 6720.10,  actor: 'Settlement Engine', role: 'System',       system: true,  detail: 'Hold opened automatically — BNPL settlement file not received from Souhoola.' },
+    { id: 'L-07', ts: '2026-07-16T00:30:29', status: 'On-Hold',  recordId: 'R-10', merchant: 'Zamalek Books',       mid: 'MID-30188-745', ref: 'STB-30188745022-01', amount: 941.75,   actor: 'Settlement Engine', role: 'System',       system: true,  detail: 'Hold opened automatically — BNPL settlement file not received from Valu.' },
+    { id: 'L-08', ts: '2026-07-15T09:40:12', status: 'Released', recordId: 'R-12', merchant: 'Tanta Textiles',      mid: 'MID-42990-207', ref: 'STB-42990207148-01', amount: 7455.30,  actor: 'Aya Muhammed',      role: 'Balance Ops',  system: false, detail: 'Released to the next settlement window — provider file received and reconciled.' },
+    { id: 'L-09', ts: '2026-07-14T16:48:26', status: 'Deducted', recordId: 'R-15', merchant: 'Obour Mobile Shop',   mid: 'MID-73450-682', ref: 'STB-73450682514-01', amount: 12640.00, actor: 'Mona Adel',         role: 'Finance',      system: false, detail: 'Deducted from the held balance to cover chargeback CB-88213 — not returned to the merchant.' },
+    { id: 'L-10', ts: '2026-07-14T09:12:03', status: 'On-Hold',  recordId: 'R-06', merchant: 'Nile Pharma',         mid: 'MID-51002-338', ref: 'STB-51002338211-01', amount: 22430.00, actor: 'Risk Engine',       role: 'System',       system: true,  detail: 'Hold opened automatically — transaction velocity above merchant baseline.' },
+    { id: 'L-11', ts: '2026-07-13T15:22:41', status: 'Released', recordId: 'R-13', merchant: 'Giza Sports Wear',    mid: 'MID-55621-874', ref: 'STB-55621874309-01', amount: 2110.45,  actor: 'Nour Hassan',       role: 'Compliance',   system: false, detail: 'Released — commercial register and tax card verified.' },
+    { id: 'L-12', ts: '2026-07-13T14:45:00', status: 'On-Hold',  recordId: 'R-07', merchant: 'Cairo Electronics',   mid: 'MID-60771-402', ref: 'STB-60771402884-01', amount: 84120.55, actor: 'Mona Adel',         role: 'Finance',      system: false, detail: 'Rolling reserve opened — 10% of monthly processing volume.' },
+    { id: 'L-13', ts: '2026-07-12T16:03:27', status: 'On-Hold',  recordId: 'R-08', merchant: 'Delta Grocers',       mid: 'MID-19338-110', ref: 'STB-19338110455-01', amount: 3390.90,  actor: 'Nour Hassan',       role: 'Compliance',   system: false, detail: 'Hold opened — commercial register expired, awaiting renewal.' },
+    { id: 'L-14', ts: '2026-07-12T10:05:48', status: 'Deducted', recordId: 'R-16', merchant: 'Rehab Beauty Bar',    mid: 'MID-29017-336', ref: 'STB-29017336208-01', amount: 1975.60,  actor: 'Omar Fathy',        role: 'Risk Analyst', system: false, detail: 'Deducted in full — transactions confirmed fraudulent after investigation.' },
+    { id: 'L-15', ts: '2026-07-11T10:27:52', status: 'On-Hold',  recordId: 'R-11', merchant: 'Alex Fitness Hub',    mid: 'MID-88204-561', ref: 'STB-88204561930-01', amount: 15280.00, actor: 'Risk Engine',       role: 'System',       system: true,  detail: 'Hold opened automatically — new merchant with high average ticket.' },
+    { id: 'L-16', ts: '2026-07-10T11:11:09', status: 'On-Hold',  recordId: 'R-14', merchant: 'Heliopolis Optics',   mid: 'MID-66103-419', ref: 'STB-66103419772-01', amount: 4880.00,  actor: 'Mona Adel',         role: 'Finance',      system: false, detail: 'Reserve opened pending the outcome of an open dispute.' },
+    { id: 'L-17', ts: '2026-07-09T08:15:33', status: 'On-Hold',  recordId: 'R-12', merchant: 'Tanta Textiles',      mid: 'MID-42990-207', ref: 'STB-42990207148-01', amount: 7455.30,  actor: 'Settlement Engine', role: 'System',       system: true,  detail: 'Hold opened automatically — BNPL settlement file not received from Souhoola.' },
+    { id: 'L-18', ts: '2026-07-08T12:50:14', status: 'On-Hold',  recordId: 'R-13', merchant: 'Giza Sports Wear',    mid: 'MID-55621-874', ref: 'STB-55621874309-01', amount: 2110.45,  actor: 'Nour Hassan',       role: 'Compliance',   system: false, detail: 'Hold opened — KYC documents pending verification.' },
+    { id: 'L-19', ts: '2026-07-07T09:34:11', status: 'On-Hold',  recordId: 'R-15', merchant: 'Obour Mobile Shop',   mid: 'MID-73450-682', ref: 'STB-73450682514-01', amount: 12640.00, actor: 'Risk Engine',       role: 'System',       system: true,  detail: 'Hold opened automatically — open chargeback against this merchant.' },
+    { id: 'L-20', ts: '2026-07-06T13:20:37', status: 'On-Hold',  recordId: 'R-16', merchant: 'Rehab Beauty Bar',    mid: 'MID-29017-336', ref: 'STB-29017336208-01', amount: 1975.60,  actor: 'Risk Engine',       role: 'System',       system: true,  detail: 'Hold opened automatically — card-testing pattern detected on POS terminal.' },
+  ];
+
+  let logSeq = logs.length;
+
+  /* ---------- Formatting helpers ---------- */
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  const money = n => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  function initialsOf(name) {
+    return name.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+  }
+
+  function isSameDay(a, b) {
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  }
+
+  /* Read the clock on every call — actions taken during the session must date
+     against real time, not a value captured at load. */
+  const now = () => new Date();
+
+  function clockOf(d) {
+    let h = d.getHours();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${String(h).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} ${ampm}`;
+  }
+
+  /** "Today 12:32 AM" for today, otherwise "26 Jul 2026 06:00 AM". */
+  function formatDateTime(iso) {
+    if (!iso) return null;
+    const d = new Date(iso);
+    if (isSameDay(d, now())) return `Today ${clockOf(d)}`;
+    return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()} ${clockOf(d)}`;
+  }
+
+  function formatDateOnly(iso) {
+    const d = new Date(iso);
+    return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  }
+
+  /** "3 hours ago" / "in 2 days" — relative to right now. */
+  function relativeTime(iso) {
+    const diff = new Date(iso) - now();
+    const abs = Math.abs(diff);
+    const units = [['day', 86400000], ['hour', 3600000], ['minute', 60000]];
+    for (const [unit, ms] of units) {
+      if (abs >= ms) {
+        const v = Math.round(abs / ms);
+        const plural = v === 1 ? unit : unit + 's';
+        return diff < 0 ? `${v} ${plural} ago` : `in ${v} ${plural}`;
+      }
+    }
+    return 'just now';
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+  }
+
+  /* ---------- Toast ---------- */
+  let toastTimer;
+  function toast(msg) {
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  /* ---------- Log writer — every action on this page funnels through here ---------- */
+  function addLog({ status, record, detail, actor }) {
+    logSeq += 1;
+    const who = actor || currentUser;
+    logs.unshift({
+      id: `L-${String(logSeq).padStart(2, '0')}`,
+      ts: new Date().toISOString(),
+      status,
+      recordId: record ? record.id : null,
+      merchant: record ? record.merchant : '—',
+      mid: record ? record.mid : '',
+      ref: record ? record.ref : '—',
+      amount: record ? record.amount : 0,
+      actor: who.name,
+      role: who.role,
+      system: false,
+      detail,
+    });
+    renderLogs();
+    refreshCounts();
+  }
+
+  /* ================= TABS ================= */
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => {
+        const on = t === tab;
+        t.classList.toggle('active', on);
+        t.setAttribute('aria-selected', String(on));
+      });
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      $(tab.dataset.tab === 'records' ? 'panelRecords' : 'panelLogs').classList.add('active');
+      // Bulk Release only applies to the records table.
+      $('bulkReleaseBtn').style.display = tab.dataset.tab === 'records' ? '' : 'none';
+    });
+  });
+
+  function refreshCounts() {
+    $('recordsCount').textContent = records.filter(r => r.status === 'On-Hold').length;
+    $('logsCount').textContent = logs.length;
+  }
+
+  /* ================= RECORDS TABLE ================= */
+  const recState = { search: '', page: 1, perPage: 10, sortKey: 'createdAt', sortDir: 'desc',
+    amountFrom: null, amountTo: null, status: '', reason: '', provider: '' };
+  const selected = new Set();
+
+  function recFiltered() {
+    const q = recState.search.toLowerCase();
+    let out = records.filter(r => {
+      if (q && ![r.merchant, r.mid, r.acc, r.ref, r.notes, r.id].some(v => String(v).toLowerCase().includes(q))) return false;
+      if (recState.status && r.status !== recState.status) return false;
+      if (recState.reason && r.reason !== recState.reason) return false;
+      if (recState.provider && r.provider !== recState.provider) return false;
+      if (recState.amountFrom !== null && r.amount < recState.amountFrom) return false;
+      if (recState.amountTo !== null && r.amount > recState.amountTo) return false;
+      return true;
+    });
+    return sortRows(out, recState);
+  }
+
+  function sortRows(rows, state) {
+    const dir = state.sortDir === 'asc' ? 1 : -1;
+    return rows.sort((a, b) => {
+      let x = a[state.sortKey], y = b[state.sortKey];
+      if (x === null || x === undefined) x = '';
+      if (y === null || y === undefined) y = '';
+      if (typeof x === 'number' && typeof y === 'number') return (x - y) * dir;
+      return String(x).localeCompare(String(y)) * dir;
+    });
+  }
+
+  const CHANNEL_ICONS = {
+    online: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418"/></svg>',
+    pos:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>',
+  };
+
+  function statusBadge(status) {
+    return `<span class="badge ${STATUSES[status]}"><span class="dot"></span>${status}</span>`;
+  }
+
+  function renderRecords() {
+    const rows = recFiltered();
+    const total = rows.length;
+    const totalPages = Math.max(1, Math.ceil(total / recState.perPage));
+    if (recState.page > totalPages) recState.page = totalPages;
+    const start = (recState.page - 1) * recState.perPage;
+    const pageRows = rows.slice(start, start + recState.perPage);
+
+    $('recEmpty').classList.toggle('show', total === 0);
+    $('recordsTable').style.display = total === 0 ? 'none' : '';
+    $('recPaginationBar').style.display = total === 0 ? 'none' : 'flex';
+
+    $('recordsBody').innerHTML = pageRows.map(r => `
+      <tr>
+        <td class="chk-cell">
+          <input type="checkbox" class="rec-check" data-id="${r.id}" ${selected.has(r.id) ? 'checked' : ''}
+            ${isActionable(r) ? '' : 'disabled'} aria-label="Select ${escapeHtml(r.merchant)}">
+        </td>
+        <td>
+          <div class="merchant-name">${escapeHtml(r.merchant)}</div>
+          <div class="merchant-id">${r.mid}</div>
+          <div class="merchant-id">${r.acc}</div>
+        </td>
+        <td><span class="amount">${money(r.amount)}<span class="cur">EGP</span></span></td>
+        <td>${statusBadge(r.status)}</td>
+        <td class="reason-cell">
+          <div class="reason-label">${escapeHtml(r.reason)}</div>
+          <div class="reason-icons">
+            <span class="ch-icon" title="${r.channel === 'online' ? 'Online' : 'POS'}">${CHANNEL_ICONS[r.channel]}</span>
+            <span class="prov ${r.provider}">${PROVIDERS[r.provider]}</span>
+          </div>
+        </td>
+        <td><span class="ref">${r.ref}</span></td>
+        <td><div class="notes">${escapeHtml(r.notes)}</div></td>
+        <td class="date-cell">${formatDateTime(r.valueDate)}</td>
+        <td class="date-cell">${formatDateTime(r.createdAt)}</td>
+        <td class="date-cell">${r.updatedAt ? formatDateTime(r.updatedAt) : '<span class="muted-dash">-</span>'}</td>
+        <td style="text-align:right">
+          <button class="btn btn-outline btn-sm manage-btn" data-id="${r.id}">Manage</button>
+        </td>
+      </tr>
+    `).join('');
+
+    $('recPageInfo').textContent = `${total === 0 ? 0 : start + 1} - ${Math.min(start + recState.perPage, total)} Of ${total}`;
+    renderPagination($('recPagination'), recState, totalPages, renderRecords);
+
+    document.querySelectorAll('.manage-btn').forEach(b =>
+      b.addEventListener('click', () => openManage(b.dataset.id)));
+    document.querySelectorAll('.rec-check').forEach(c =>
+      c.addEventListener('change', () => {
+        c.checked ? selected.add(c.dataset.id) : selected.delete(c.dataset.id);
+        syncSelection();
+      }));
+    syncSelection();
+  }
+
+  function syncSelection() {
+    // Drop selections that are no longer releasable (e.g. released in the meantime).
+    [...selected].forEach(id => {
+      const r = records.find(x => x.id === id);
+      if (!r || !isActionable(r)) selected.delete(id);
+    });
+
+    const n = selected.size;
+    $('selBar').classList.toggle('show', n > 0);
+    const totalAmount = [...selected].reduce((sum, id) => sum + records.find(r => r.id === id).amount, 0);
+    $('selText').textContent = `${n} record${n === 1 ? '' : 's'} selected · ${money(totalAmount)} EGP`;
+    $('bulkReleaseBtn').disabled = n === 0;
+
+    const boxes = [...document.querySelectorAll('.rec-check:not(:disabled)')];
+    const allOn = boxes.length > 0 && boxes.every(b => b.checked);
+    $('recSelectAll').checked = allOn;
+    $('recSelectAll').indeterminate = !allOn && boxes.some(b => b.checked);
+  }
+
+  function renderPagination(el, state, totalPages, rerender) {
+    const btn = (label, page, opts = {}) =>
+      `<button class="page-btn ${opts.active ? 'active' : ''}" ${opts.disabled ? 'disabled' : ''} data-page="${page}">${label}</button>`;
+
+    const chevL = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>';
+    const chevR = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>';
+
+    let html = btn(chevL, state.page - 1, { disabled: state.page <= 1 });
+    for (let p = 1; p <= totalPages; p++) html += btn(p, p, { active: p === state.page });
+    html += btn(chevR, state.page + 1, { disabled: state.page >= totalPages });
+    el.innerHTML = html;
+
+    el.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => {
+      const p = Number(b.dataset.page);
+      if (p >= 1 && p <= totalPages) { state.page = p; rerender(); }
+    }));
+  }
+
+  /* Sorting — shared by both tables */
+  function wireSorting(tableId, state, rerender) {
+    $(tableId).querySelectorAll('th[data-sort]').forEach(th => {
+      th.querySelector('.th-inner').addEventListener('click', () => {
+        const key = th.dataset.sort;
+        if (state.sortKey === key) {
+          state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          state.sortKey = key;
+          state.sortDir = 'asc';
+        }
+        $(tableId).querySelectorAll('th').forEach(h => h.classList.remove('sorted'));
+        th.classList.add('sorted');
+        state.page = 1;
+        rerender();
+      });
+    });
+  }
+
+  /* Records toolbar wiring */
+  $('recSearch').addEventListener('input', e => { recState.search = e.target.value.trim(); recState.page = 1; renderRecords(); });
+  $('recRpp').addEventListener('change', e => { recState.perPage = Number(e.target.value); recState.page = 1; renderRecords(); });
+  $('recFilterBtn').addEventListener('click', () => {
+    const open = $('recFilterPanel').classList.toggle('open');
+    $('recFilterBtn').classList.toggle('on', open);
+  });
+  $('recSubmitFilters').addEventListener('click', () => {
+    recState.status = $('recStatusFilter').value;
+    recState.reason = $('recReasonFilter').value;
+    recState.provider = $('recProviderFilter').value;
+    recState.amountFrom = $('recAmountFrom').value === '' ? null : Number($('recAmountFrom').value);
+    recState.amountTo = $('recAmountTo').value === '' ? null : Number($('recAmountTo').value);
+    recState.page = 1;
+    renderRecords();
+  });
+  $('recClearFilters').addEventListener('click', () => {
+    ['recStatusFilter', 'recReasonFilter', 'recProviderFilter', 'recAmountFrom', 'recAmountTo'].forEach(id => $(id).value = '');
+    Object.assign(recState, { status: '', reason: '', provider: '', amountFrom: null, amountTo: null, page: 1 });
+    renderRecords();
+  });
+  $('recSelectAll').addEventListener('change', e => {
+    document.querySelectorAll('.rec-check:not(:disabled)').forEach(c => {
+      c.checked = e.target.checked;
+      c.checked ? selected.add(c.dataset.id) : selected.delete(c.dataset.id);
+    });
+    syncSelection();
+  });
+  $('selClear').addEventListener('click', () => {
+    selected.clear();
+    document.querySelectorAll('.rec-check').forEach(c => c.checked = false);
+    syncSelection();
+  });
+  wireSorting('recordsTable', recState, renderRecords);
+
+  /* ================= LOGS TABLE ================= */
+  const logState = { search: '', page: 1, perPage: 10, sortKey: 'ts', sortDir: 'desc', status: '', actor: '', from: '', to: '' };
+
+  function logFiltered() {
+    const q = logState.search.toLowerCase();
+    let out = logs.filter(l => {
+      if (q && ![l.merchant, l.mid, l.ref, l.actor, l.detail, l.status]
+        .some(v => String(v).toLowerCase().includes(q))) return false;
+      if (logState.status && l.status !== logState.status) return false;
+      if (logState.actor && l.actor !== logState.actor) return false;
+      if (logState.from && new Date(l.ts) < new Date(logState.from + 'T00:00:00')) return false;
+      if (logState.to && new Date(l.ts) > new Date(logState.to + 'T23:59:59')) return false;
+      return true;
+    });
+    return sortRows(out, logState);
+  }
+
+  function renderLogs() {
+    const rows = logFiltered();
+    const total = rows.length;
+    const totalPages = Math.max(1, Math.ceil(total / logState.perPage));
+    if (logState.page > totalPages) logState.page = totalPages;
+    const start = (logState.page - 1) * logState.perPage;
+    const pageRows = rows.slice(start, start + logState.perPage);
+
+    $('logEmpty').classList.toggle('show', total === 0);
+    $('logsTable').style.display = total === 0 ? 'none' : '';
+    $('logPaginationBar').style.display = total === 0 ? 'none' : 'flex';
+
+    $('logsBody').innerHTML = pageRows.map(l => `
+      <tr>
+        <td>
+          <div class="log-when">
+            <div class="abs">${formatDateTime(l.ts)}</div>
+            <div class="rel">${relativeTime(l.ts)}</div>
+          </div>
+        </td>
+        <td>${statusBadge(l.status)}</td>
+        <td>
+          <div class="merchant-name">${escapeHtml(l.merchant)}</div>
+          <div class="merchant-id">${l.mid}</div>
+        </td>
+        <td><span class="ref">${l.ref}</span></td>
+        <td><span class="amount">${money(l.amount)}<span class="cur">EGP</span></span></td>
+        <td>
+          <div class="actor">
+            <div class="av ${l.system ? 'system' : ''}">${l.system ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6.878V6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 0 0 4.5 9v.878m13.5-3A2.25 2.25 0 0 1 19.5 9v.878m0 0a2.246 2.246 0 0 0-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0 1 21 12v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6c0-.98.626-1.813 1.5-2.122"/></svg>' : initialsOf(l.actor)}</div>
+            <div class="who">
+              <div class="who-name">${escapeHtml(l.actor)}</div>
+              <div class="who-role">${escapeHtml(l.role)}</div>
+            </div>
+          </div>
+        </td>
+        <td><div class="log-detail">${escapeHtml(l.detail)}</div></td>
+      </tr>`).join('');
+
+    $('logPageInfo').textContent = `${total === 0 ? 0 : start + 1} - ${Math.min(start + logState.perPage, total)} Of ${total}`;
+    renderPagination($('logPagination'), logState, totalPages, renderLogs);
+  }
+
+  /* The status options are fixed; the actor list grows as people act on holds. */
+  function buildLogFilterOptions() {
+    const actorSel = $('logActorFilter');
+    const current = actorSel.value;
+    const actors = [...new Set(logs.map(l => l.actor))].sort();
+    actorSel.innerHTML = '<option value="">Everyone</option>' +
+      actors.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+    actorSel.value = current;
+  }
+
+  $('logSearch').addEventListener('input', e => { logState.search = e.target.value.trim(); logState.page = 1; renderLogs(); });
+  $('logRpp').addEventListener('change', e => { logState.perPage = Number(e.target.value); logState.page = 1; renderLogs(); });
+  $('logFilterBtn').addEventListener('click', () => {
+    const open = $('logFilterPanel').classList.toggle('open');
+    $('logFilterBtn').classList.toggle('on', open);
+  });
+  $('logSubmitFilters').addEventListener('click', () => {
+    logState.status = $('logStatusFilter').value;
+    logState.actor = $('logActorFilter').value;
+    logState.from = $('logFrom').value;
+    logState.to = $('logTo').value;
+    logState.page = 1;
+    renderLogs();
+  });
+  $('logClearFilters').addEventListener('click', () => {
+    ['logStatusFilter', 'logActorFilter', 'logFrom', 'logTo'].forEach(id => $(id).value = '');
+    Object.assign(logState, { status: '', actor: '', from: '', to: '', page: 1 });
+    renderLogs();
+  });
+  wireSorting('logsTable', logState, renderLogs);
+
+  /* ================= CSV export ================= */
+  function downloadCsv(filename, header, rows) {
+    const esc = v => `"${String(v).replace(/"/g, '""')}"`;
+    const csv = [header, ...rows].map(r => r.map(esc).join(',')).join('\r\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  $('recExportBtn').addEventListener('click', () => {
+    const rows = recFiltered();
+    downloadCsv('on-hold-records.csv',
+      ['Merchant', 'MID', 'Account', 'Amount (EGP)', 'Status', 'Reason', 'Provider', 'Ref.', 'Notes', 'Value Date', 'Creation Date', 'Updated At'],
+      rows.map(r => [r.merchant, r.mid, r.acc, money(r.amount), r.status, r.reason, PROVIDERS[r.provider], r.ref, r.notes,
+        formatDateTime(r.valueDate), formatDateTime(r.createdAt), r.updatedAt ? formatDateTime(r.updatedAt) : '-']));
+    toast(`Exported ${rows.length} record${rows.length === 1 ? '' : 's'}`);
+  });
+
+  $('logExportBtn').addEventListener('click', () => {
+    const rows = logFiltered();
+    downloadCsv('on-hold-logs.csv',
+      ['When', 'Status', 'Merchant', 'MID', 'Ref.', 'Amount (EGP)', 'Performed By', 'Role', 'Details'],
+      rows.map(l => [formatDateTime(l.ts), l.status, l.merchant, l.mid, l.ref, money(l.amount), l.actor, l.role, l.detail]));
+    toast(`Exported ${rows.length} log entr${rows.length === 1 ? 'y' : 'ies'}`);
+  });
+
+  /* ================= Manage modal ================= */
+  let manageId = null;
+
+  const HIST_ICONS = {
+    'On-Hold':  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>',
+    'Released': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>',
+    'Deducted': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 13.5H9m10.125 0a3.375 3.375 0 0 1-3.375 3.375h-1.5a1.125 1.125 0 0 0-1.125 1.125v1.5a3.375 3.375 0 0 1-3.375 3.375H9M21 6.75A2.25 2.25 0 0 0 18.75 4.5H5.25A2.25 2.25 0 0 0 3 6.75v10.5A2.25 2.25 0 0 0 5.25 19.5h3"/></svg>',
+  };
+
+  const HIST_DOT = { 'On-Hold': 'hold', 'Released': 'released', 'Deducted': 'deducted' };
+
+  function openManage(id) {
+    manageId = id;
+    const r = records.find(x => x.id === id);
+    const history = logs.filter(l => l.recordId === id);
+    const actionable = isActionable(r);
+
+    $('manageBody').innerHTML = `
+      <div class="rec-summary">
+        <div class="rec-summary-head">
+          <div>
+            <div class="rs-name">${escapeHtml(r.merchant)}</div>
+            <div class="rs-ids">${r.mid} · ${r.acc}</div>
+          </div>
+          ${statusBadge(r.status)}
+        </div>
+        <div class="rec-rows">
+          <div class="rec-row"><span class="rr-label">Held amount</span><span class="rr-value">${money(r.amount)} EGP</span></div>
+          <div class="rec-row"><span class="rr-label">Reason</span><span class="rr-value">${escapeHtml(r.reason)}</span></div>
+          <div class="rec-row"><span class="rr-label">Reference</span><span class="rr-value">${r.ref}</span></div>
+          <div class="rec-row"><span class="rr-label">Value date</span><span class="rr-value">${formatDateOnly(r.valueDate)}</span></div>
+          <div class="rec-row"><span class="rr-label">Created</span><span class="rr-value">${formatDateTime(r.createdAt)}</span></div>
+        </div>
+      </div>
+
+      ${actionable ? `
+        <div class="alert-info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
+          Releasing sends ${money(r.amount)} EGP to the merchant's next settlement window. This cannot be undone.
+        </div>
+
+        <div class="field">
+          <label class="lbl" for="manageNote">Note <span style="font-weight:400; color:var(--cadet-05)">(optional — recorded in Logs)</span></label>
+          <textarea id="manageNote" placeholder="Add context for the audit log, e.g. provider settlement file received."></textarea>
+        </div>
+      ` : `
+        <div class="alert-info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
+          This amount has already been ${r.status.toLowerCase()}. Its history is read-only.
+        </div>
+      `}
+
+      <div class="hist-title">Record history (${history.length})</div>
+      ${history.length === 0 ? '<p class="hist-empty">No actions recorded for this hold yet.</p>' : `
+        <div class="hist">
+          ${history.map(l => `
+            <div class="hist-item">
+              <div class="hist-dot ${HIST_DOT[l.status]}">${HIST_ICONS[l.status]}</div>
+              <div class="hist-body">
+                <div class="hist-action">${l.status}</div>
+                <div class="hist-meta">${escapeHtml(l.actor)} · ${l.role} · ${formatDateTime(l.ts)}</div>
+                <div class="hist-note">${escapeHtml(l.detail)}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `}
+    `;
+
+    $('manageConfirm').style.display = actionable ? '' : 'none';
+    $('manageCancel').textContent = actionable ? 'Cancel' : 'Close';
+
+    $('manageBackdrop').classList.add('open');
+  }
+
+  function closeManage() {
+    $('manageBackdrop').classList.remove('open');
+    manageId = null;
+  }
+
+  $('manageClose').addEventListener('click', closeManage);
+  $('manageCancel').addEventListener('click', closeManage);
+  $('manageBackdrop').addEventListener('click', e => { if (e.target === $('manageBackdrop')) closeManage(); });
+
+  $('manageConfirm').addEventListener('click', () => {
+    const r = records.find(x => x.id === manageId);
+    const note = $('manageNote').value.trim();
+
+    r.status = 'Released';
+    r.updatedAt = new Date().toISOString();
+    addLog({ status: 'Released', record: r, detail: releaseDetail(note) });
+
+    closeManage();
+    renderRecords();
+    buildLogFilterOptions();
+    toast(`Released ${money(r.amount)} EGP to ${r.merchant}`);
+  });
+
+  /* The log line must stand on its own when the user skips the optional note. */
+  function releaseDetail(note) {
+    const base = 'Released to the next settlement window.';
+    return note ? `${base} ${note}` : base;
+  }
+
+  /* ================= Bulk release ================= */
+  $('bulkReleaseBtn').addEventListener('click', openBulk);
+  $('selRelease').addEventListener('click', openBulk);
+
+  function openBulk() {
+    if (selected.size === 0) return;
+    const rows = [...selected].map(id => records.find(r => r.id === id));
+    const total = rows.reduce((s, r) => s + r.amount, 0);
+    $('bulkText').innerHTML = `You are about to release <b>${rows.length} on-hold amount${rows.length === 1 ? '' : 's'}</b>
+      totalling <b>${money(total)} EGP</b> across <b>${new Set(rows.map(r => r.mid)).size} merchant${new Set(rows.map(r => r.mid)).size === 1 ? '' : 's'}</b>.`;
+    $('bulkNote').value = '';
+    $('bulkBackdrop').classList.add('open');
+  }
+
+  function closeBulk() { $('bulkBackdrop').classList.remove('open'); }
+  $('bulkClose').addEventListener('click', closeBulk);
+  $('bulkCancel').addEventListener('click', closeBulk);
+  $('bulkBackdrop').addEventListener('click', e => { if (e.target === $('bulkBackdrop')) closeBulk(); });
+
+  $('bulkConfirm').addEventListener('click', () => {
+    const note = $('bulkNote').value.trim();
+    const rows = [...selected].map(id => records.find(r => r.id === id));
+    const total = rows.reduce((s, r) => s + r.amount, 0);
+    const nowIso = new Date().toISOString();
+
+    // One log entry per record, so each hold carries its own auditable history.
+    rows.forEach(r => {
+      r.status = 'Released';
+      r.updatedAt = nowIso;
+      addLog({ status: 'Released', record: r,
+        detail: `${releaseDetail(note)} Part of a bulk release of ${rows.length} amounts (${money(total)} EGP total).` });
+    });
+
+    selected.clear();
+    closeBulk();
+    renderRecords();
+    buildLogFilterOptions();
+    toast(`Released ${rows.length} amount${rows.length === 1 ? '' : 's'} · ${money(total)} EGP`);
+  });
+
+  /* ================= Shell ================= */
+  function openSidebar() { $('sidebar').classList.add('open'); $('overlay').classList.add('open'); }
+  function closeSidebar() { $('sidebar').classList.remove('open'); $('overlay').classList.remove('open'); }
+  $('hamburger').addEventListener('click', openSidebar);
+  $('overlay').addEventListener('click', closeSidebar);
+
+  $('balanceHead').addEventListener('click', () => {
+    const sub = $('balanceSub');
+    const chev = $('balanceHead').querySelector('svg');
+    const collapsed = sub.style.display === 'none';
+    sub.style.display = collapsed ? 'flex' : 'none';
+    chev.style.transform = collapsed ? '' : 'rotate(180deg)';
+  });
+
+  $('langBtn').addEventListener('click', () => {
+    const btn = $('langBtn');
+    const toAr = btn.textContent === 'عربي';
+    btn.textContent = toAr ? 'English' : 'عربي';
+    toast(toAr ? 'تم التبديل إلى العربية (عرض توضيحي)' : 'Switched to English');
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeManage(); closeBulk(); closeSidebar(); }
+  });
+
+  /* ================= Init ================= */
+  buildLogFilterOptions();
+  renderRecords();
+  renderLogs();
+  refreshCounts();
+</script>
+<script>
+  /* Documents nav group */
+  (function () {
+    const head = document.getElementById('documentsHead');
+    const sub = document.getElementById('documentsSub');
+    if (!head || !sub) return;
+    head.addEventListener('click', () => {
+      const chev = head.querySelector('svg');
+      const open = sub.style.display !== 'none';
+      sub.style.display = open ? 'none' : 'flex';
+      if (chev) chev.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+    });
+  })();
+</script>
+</body>
+</html>

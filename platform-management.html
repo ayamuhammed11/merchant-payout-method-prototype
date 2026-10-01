@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kashier | Platform Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --primary: #001F5F;
+    --primary-hover: #103788;
+    --primary-10: #F1F6FF;
+    --link: #2955B1;
+    --accent: #00BCB4;
+    --destructive: #A50017;
+    --warning: #FBAF1F;
+    --success: #4AAB4E;
+
+    --foreground: #202020;
+    --border: #E6E8E8;
+    --border-subtle: #F5F6F6;
+    --muted: #F5F6F6;
+    --muted-foreground: #637373;
+    --cadet-base: #556767;
+    --cadet-04: #839090;
+    --cadet-05: #919C9C;
+    --cadet-06: #B3BBBB;
+    --bg: #F8F9F9;
+
+    --alert-warning-bg: #FFF7E8; --alert-warning-border: #FFE6B6; --alert-warning-text: #513500;
+    --alert-error-bg: #FFEAED; --alert-error-border: #FFBBC4; --alert-error-text: #A50017;
+
+    --badge-approved-bg: #E1F7E4; --badge-approved-text: #1B7F37;
+    --badge-pending-bg: #FFF7E8; --badge-pending-text: #92620A;
+    --badge-rejected-bg: #FDE7EA; --badge-rejected-text: #A50017;
+
+    --radius: 4px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Noto Sans', Arial, sans-serif;
+    background: #fff;
+    color: var(--foreground);
+    display: flex;
+    font-size: 14px;
+  }
+  h1, h2, h3, h4 { font-family: 'Outfit', Arial, sans-serif; margin: 0; font-weight: 700; }
+  a { text-decoration: none; }
+  button { font-family: inherit; }
+
+  .hi { width: 18px; height: 18px; flex-shrink: 0; }
+  .hi-sm { width: 16px; height: 16px; flex-shrink: 0; }
+  .hi-xs { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar { width: 240px; background: var(--bg); min-height: 100vh; padding: 20px 16px; border-right: 1px solid var(--border-subtle);
+    position: sticky; top: 0; align-self: flex-start; max-height: 100vh; overflow-y: auto; flex-shrink: 0; }
+  .profile { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+  .avatar { width: 36px; height: 36px; background: var(--primary); color: #fff; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center; font-weight: bold; }
+  .profile .name { font-weight: 600; font-size: 14px; }
+  .profile .mid { font-size: 11px; color: var(--cadet-base); border: 1px solid var(--border);
+    border-radius: 4px; padding: 1px 6px; display: inline-block; }
+  .nav-section { margin-top: 18px; }
+  .nav-section .label { font-size: 11px; font-weight: 700; color: #9aa5a5; letter-spacing: .04em; margin: 8px 0 4px 8px; }
+  .nav-link { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px;
+    color: var(--primary); text-decoration: none; font-size: 14px; }
+  .nav-link.active { color: var(--cadet-base); font-weight: 600; }
+  .nav-link:hover { background: rgba(0,31,95,0.06); }
+
+  /* ---------- Main ---------- */
+  .main { flex: 1; padding: 24px 32px; min-width: 0; }
+
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 16px; flex-wrap: wrap; }
+  .top-actions { display: flex; align-items: center; gap: 14px; }
+  .lang { color: var(--cadet-base); font-size: 14px; cursor: pointer; }
+  .currency { display: flex; align-items: center; gap: 4px; border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 12px; font-size: 14px; background: #fff; cursor: pointer; }
+  .test-mode { display: flex; align-items: center; gap: 10px; background: var(--alert-warning-bg);
+    border: 1px solid var(--alert-warning-border); border-radius: 4px; padding: 9px 13px; font-size: 13px;
+    font-weight: 600; color: var(--alert-warning-text); }
+  .toggle { position: relative; width: 32px; height: 16px; border-radius: 48px; background: #FFD484;
+    flex-shrink: 0; cursor: pointer; border: none; padding: 0; }
+  .toggle .knob { position: absolute; top: -2px; left: 0; width: 20px; height: 20px; border-radius: 100%;
+    background: #FDFDFD; border: 1px solid var(--cadet-05); transition: left .15s ease; }
+  .toggle.on { background: var(--primary); }
+  .toggle.on .knob { left: 12px; }
+  .icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-subtle);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--cadet-base); background: #fff; }
+  .icon-btn:hover { background: var(--muted); }
+
+  /* Breadcrumb + heading */
+  .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--cadet-05); margin-bottom: 10px; }
+  .breadcrumb a { color: var(--link); }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb svg { width: 14px; height: 14px; color: var(--cadet-06); }
+  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 24px; flex-wrap: wrap; }
+  .page-head h1 { font-size: 28px; margin-bottom: 4px; }
+  .page-head p { margin: 0; font-size: 14px; color: var(--cadet-base); max-width: 620px; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; font-weight: 600;
+    border-radius: var(--radius); cursor: pointer; border: none; padding: 0 18px; height: 40px;
+    transition: background .12s ease, border-color .12s ease; white-space: nowrap; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-outline { background: #fff; border: 1.5px solid var(--primary); color: var(--primary); }
+  .btn-outline:hover { background: var(--primary-10); }
+  .btn-sm { height: 34px; padding: 0 14px; font-size: 12px; }
+  .btn-danger-ghost { background: none; border: 1.5px solid var(--destructive); color: var(--destructive); }
+  .btn-danger-ghost:hover { background: #FDE7EA; }
+  .btn-success-ghost { background: none; border: 1.5px solid var(--success); color: #1B7F37; }
+  .btn-success-ghost:hover { background: #E1F7E4; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--border-subtle); margin-bottom: 20px; }
+  .tab-btn { display: flex; align-items: center; gap: 8px; padding: 12px 18px; font-size: 13px; font-weight: 600;
+    color: var(--muted-foreground); background: none; border: none; border-bottom: 2px solid transparent;
+    margin-bottom: -2px; cursor: pointer; }
+  .tab-btn:hover { color: var(--foreground); }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .tab-count { background: var(--bg); color: var(--cadet-base); font-size: 11px; font-weight: 700; border-radius: 999px;
+    padding: 1px 7px; line-height: 1.5; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Table card */
+  .table-card { background: #fff; border: 1px solid var(--border-subtle); border-radius: var(--radius); overflow: hidden; margin-bottom: 28px; }
+  .table-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px; flex-wrap: wrap; }
+  .table-toolbar h2 { font-size: 16px; color: var(--cadet-base); }
+  .table-toolbar .hint { font-size: 12px; color: var(--cadet-05); font-weight: 400; margin-top: 2px; }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 640px; }
+  thead th { height: 40px; padding: 0 16px; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle);
+    background: var(--muted); font-size: 11px; font-weight: 700; color: var(--cadet-base); text-transform: uppercase;
+    letter-spacing: .3px; text-align: left; white-space: nowrap; }
+  tbody tr:nth-child(even) { background: rgba(248,249,249,.6); }
+  tbody td { height: 60px; padding: 0 16px; font-size: 13px; font-weight: 400; color: var(--foreground); vertical-align: middle;
+    border-bottom: 1px solid var(--border-subtle); }
+  tbody tr:last-child td { border-bottom: none; }
+  .biz-name { font-weight: 600; color: var(--foreground); }
+  .biz-sub { font-size: 12px; color: var(--cadet-05); margin-top: 2px; }
+  .role-chip { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; color: var(--primary);
+    background: var(--primary-10); border-radius: 4px; padding: 3px 9px; }
+  .badge { display: inline-flex; align-items: center; gap: 4px; border-radius: 4px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .3px; padding: 4px 10px; }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .badge-approved { background: var(--badge-approved-bg); color: var(--badge-approved-text); }
+  .badge-pending { background: var(--badge-pending-bg); color: var(--badge-pending-text); }
+  .badge-rejected { background: var(--badge-rejected-bg); color: var(--badge-rejected-text); }
+  .row-menu-wrap { position: relative; text-align: right; }
+  .row-menu-btn { width: 28px; height: 28px; border-radius: 6px; border: none; background: none; color: var(--cadet-base);
+    display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+  .row-menu-btn:hover { background: var(--muted); }
+  .row-menu { position: fixed; background: #fff; border: 1px solid var(--border-subtle);
+    border-radius: var(--radius); box-shadow: 0 4px 16px rgba(0,0,0,.14); min-width: 170px; z-index: 999; padding: 6px; display: none; }
+  .row-menu.open { display: block; }
+  .row-menu button { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: none; border: none;
+    padding: 9px 10px; font-size: 13px; border-radius: 4px; cursor: pointer; color: var(--foreground); }
+  .row-menu button:hover { background: var(--muted); }
+  .row-menu button.danger { color: var(--destructive); }
+  .row-menu svg { width: 15px; height: 15px; }
+
+  /* Invitation requests (embedded per tab) */
+  .requests-section { margin-bottom: 8px; }
+  .requests-heading { font-size: 16px; color: var(--cadet-base); margin-bottom: 14px; }
+  .invite-group { margin-bottom: 24px; }
+  .invite-group-title { font-size: 13px; font-weight: 700; color: var(--cadet-base); text-transform: uppercase;
+    letter-spacing: .3px; margin-bottom: 10px; }
+  .invite-row { display: flex; align-items: center; gap: 16px; padding: 14px 16px; background: #fff;
+    border: 1px solid var(--border-subtle); border-radius: var(--radius); }
+  .invite-row + .invite-row { margin-top: 8px; }
+  .invite-avatar { width: 38px; height: 38px; border-radius: 4px; background: var(--primary); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+  .invite-info { flex: 1; min-width: 0; }
+  .invite-info .biz-name { display: block; }
+  .invite-meta { font-size: 12px; color: var(--cadet-05); margin-top: 2px; }
+  .invite-type { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; color: var(--primary);
+    background: var(--primary-10); border-radius: 4px; padding: 2px 8px; margin-top: 4px; }
+  .invite-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+  /* Empty state */
+  .empty-state { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 50px 20px 60px; text-align: center; }
+  .empty-state.show { display: flex; }
+  .empty-state svg { width: 150px; height: 120px; margin-bottom: 16px; }
+  .empty-state .empty-title { font-size: 14px; font-weight: 600; color: var(--cadet-base); }
+
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(32,32,32,.45); display: none;
+    align-items: center; justify-content: center; z-index: 50; padding: 20px; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: #fff; border-radius: 8px; width: 100%; max-width: 460px; box-shadow: 0 4px 16px rgba(0,0,0,.18); }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--border-subtle); }
+  .modal-header h3 { font-size: 18px; }
+  .modal-close { width: 30px; height: 30px; border-radius: 50%; border: none; background: none; color: var(--cadet-base);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .modal-close:hover { background: var(--muted); }
+  .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .modal-body p.desc { margin: 0; font-size: 13px; color: var(--cadet-base); }
+  .field-label { display: block; font-size: 13px; font-weight: 600; color: var(--foreground); margin-bottom: 6px; }
+  .field-input { width: 100%; height: 42px; border: 1.5px solid var(--border); border-radius: var(--radius);
+    padding: 0 12px; font-family: inherit; font-size: 13px; color: var(--foreground); background: #fff; }
+  .field-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,31,95,.12); }
+  .field-input.error { border-color: var(--destructive); }
+  .field-input.error:focus { box-shadow: 0 0 0 3px rgba(165,0,23,.12); }
+  .field-hint { font-size: 12px; color: var(--cadet-05); margin-top: 6px; }
+  .split-note { display: flex; gap: 10px; background: var(--muted); border: 1px solid var(--border-subtle); border-radius: var(--radius);
+    padding: 12px; }
+  .split-note svg { width: 18px; height: 18px; color: var(--cadet-04); flex-shrink: 0; margin-top: 1px; }
+  .split-note strong { display: block; font-size: 13px; color: var(--foreground); margin-bottom: 2px; }
+  .split-note span { font-size: 12px; color: var(--cadet-base); }
+
+  /* Modal inline alert (duplicate-invite guard) */
+  .modal-alert { display: none; gap: 8px; padding: 12px; border: 1px solid var(--alert-error-border);
+    border-radius: 5px; background: var(--alert-error-bg); color: var(--alert-error-text); }
+  .modal-alert.show { display: flex; }
+  .modal-alert svg { width: 20px; height: 20px; flex-shrink: 0; }
+  .modal-alert p { margin: 0; font-size: 13px; font-weight: 400; line-height: 1.35; }
+  .modal-alert-action { display: inline-block; margin-top: 4px; background: none; border: none; padding: 0;
+    font-size: 12px; font-weight: 700; color: var(--alert-error-text); text-decoration: underline; cursor: pointer; }
+
+  .modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--border-subtle); }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(8px); background: var(--foreground);
+    color: #fff; font-size: 13px; font-weight: 600; padding: 12px 20px; border-radius: var(--radius); box-shadow: 0 4px 16px rgba(0,0,0,.2);
+    opacity: 0; pointer-events: none; transition: opacity .18s ease, transform .18s ease; z-index: 60; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 760px) {
+    .invite-row { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="profile">
+      <div class="avatar">A</div>
+      <div>
+        <div class="name">Azazy</div>
+        <span class="mid">MID-14531-398</span>
+      </div>
+    </div>
+
+    <a class="nav-link" href="home.html">
+      <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+      Home
+    </a>
+    <a class="nav-link" href="payments.html">
+      <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5M21 16.5 16.5 21m0 0L12 16.5m4.5 4.5V7.5"/></svg>
+      Payments
+    </a>
+
+    <div class="nav-section">
+      <div class="label">PAYMENT LINKS</div>
+      <a class="nav-link" href="payment-links.html">
+        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/></svg>
+        Payment Links
+      </a>
+      <a class="nav-link" href="#">
+        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
+        Payment Pages
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="label">MANAGE</div>
+      <a class="nav-link" href="#">
+        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg>
+        Products
+      </a>
+      <a class="nav-link" href="#">
+        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg>
+        Categories
+      </a>
+      <a class="nav-link" href="#">
+        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>
+        Customers
+      </a>
+      <a class="nav-link" href="#">
+        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
+        Terminals
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="label">BALANCE MANAGMENT</div>
+      <a class="nav-link" href="#">Transfers</a>
+      <a class="nav-link" href="#">Schedule Transfers</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="label">TEAM</div>
+      <a class="nav-link" href="#">
+        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg>
+        Roles
+      </a>
+      <a class="nav-link" href="#">
+        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>
+        Users
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="label">DEVELOPERS</div>
+      <a class="nav-link" href="#">
+        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 0 1-.657.643 48.39 48.39 0 0 1-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 0 1-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 0 0-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 0 1-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 0 0 .657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 0 1-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 0 0 5.427-.63 48.05 48.05 0 0 0 .582-4.717.532.532 0 0 0-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.96.401v0a.656.656 0 0 0 .658-.663 48.422 48.422 0 0 0-.37-5.36c-1.548.183-3.087.291-4.61.29Z"/></svg>
+        Integrations
+      </a>
+      <a class="nav-link" href="#">
+        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg>
+        Docs
+      </a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="breadcrumb">
+          <a href="settings.html">Settings</a>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg>
+          <span>Platform Management</span>
+        </div>
+      </div>
+      <div class="top-actions">
+        <span class="lang">عربي</span>
+        <div class="currency">EGP
+          <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+        </div>
+        <div class="test-mode">
+          Test Mode
+          <button class="toggle on" id="testToggle" aria-pressed="true"><span class="knob"></span></button>
+        </div>
+        <div class="icon-btn" title="Help">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg>
+        </div>
+        <a class="icon-btn" href="settings.html" title="Settings">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="page-head">
+      <div>
+        <h1>Platform Management</h1>
+        <p>Connect other Kashier accounts as sub-accounts under your platform, or connect your account under a parent platform. Manage relationships and invitation requests here.</p>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="my-platform">My Platform</button>
+      <button class="tab-btn" data-tab="parent-accounts">Parent Accounts</button>
+    </div>
+
+    <!-- ============ TAB 1: MY PLATFORM ============ -->
+    <div class="tab-panel active" id="tab-my-platform">
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div>
+            <h2>Sub-accounts under your platform</h2>
+            <div class="hint">Accounts connected as sub-accounts. You can create payments and split settlements on their behalf.</div>
+          </div>
+          <button class="btn btn-primary btn-sm" id="openInviteSub">
+            <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Invite account
+          </button>
+        </div>
+        <div class="table-scroll">
+          <table id="myPlatformTable">
+            <thead>
+              <tr>
+                <th>Business</th>
+                <th>Merchant ID</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Connected on</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="myPlatformEmpty">
+          <svg viewBox="0 0 200 160" fill="none">
+            <circle cx="100" cy="80" r="70" fill="#F5F6F6"/>
+            <rect x="55" y="55" width="90" height="62" rx="4" fill="#fff" stroke="#556767" stroke-width="2"/>
+            <path d="M55 105 L45 125 L155 125 L145 105 Z" fill="#fff" stroke="#556767" stroke-width="2"/>
+            <circle cx="128" cy="72" r="18" fill="#fff" stroke="#839090" stroke-width="2"/>
+            <line x1="140" y1="84" x2="150" y2="94" stroke="#839090" stroke-width="2" stroke-linecap="round"/>
+            <path d="M68 70h30M68 80h20" stroke="#B3BBBB" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <div class="empty-title">You don't have any sub-accounts connected yet.</div>
+        </div>
+      </div>
+
+      <div class="requests-section" id="myPlatformRequests">
+        <h2 class="requests-heading">Invitation requests</h2>
+        <div class="invite-group" id="myPlatformIncomingGroup">
+          <div class="invite-group-title">Incoming</div>
+          <div id="myPlatformIncomingList"></div>
+        </div>
+        <div class="invite-group" id="myPlatformOutgoingGroup">
+          <div class="invite-group-title">Outgoing &middot; Pending</div>
+          <div id="myPlatformOutgoingList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ TAB 2: PARENT ACCOUNTS ============ -->
+    <div class="tab-panel" id="tab-parent-accounts">
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div>
+            <h2>Platforms you're connected to</h2>
+            <div class="hint">Parent platforms that manage payments and settlement on your behalf as a sub-account.</div>
+          </div>
+          <button class="btn btn-outline btn-sm" id="openRequestParent">
+            <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Request to join a platform
+          </button>
+        </div>
+        <div class="table-scroll">
+          <table id="parentAccountsTable">
+            <thead>
+              <tr>
+                <th>Business</th>
+                <th>Merchant ID</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Connected on</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="parentAccountsEmpty">
+          <svg viewBox="0 0 200 160" fill="none">
+            <circle cx="100" cy="80" r="70" fill="#F5F6F6"/>
+            <rect x="55" y="55" width="90" height="62" rx="4" fill="#fff" stroke="#556767" stroke-width="2"/>
+            <path d="M55 105 L45 125 L155 125 L145 105 Z" fill="#fff" stroke="#556767" stroke-width="2"/>
+            <circle cx="128" cy="72" r="18" fill="#fff" stroke="#839090" stroke-width="2"/>
+            <line x1="140" y1="84" x2="150" y2="94" stroke="#839090" stroke-width="2" stroke-linecap="round"/>
+            <path d="M68 70h30M68 80h20" stroke="#B3BBBB" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <div class="empty-title">You're not connected under a parent platform yet.</div>
+        </div>
+      </div>
+
+      <div class="requests-section" id="parentAccountsRequests">
+        <h2 class="requests-heading">Invitation requests</h2>
+        <div class="invite-group" id="parentAccountsIncomingGroup">
+          <div class="invite-group-title">Incoming</div>
+          <div id="parentAccountsIncomingList"></div>
+        </div>
+        <div class="invite-group" id="parentAccountsOutgoingGroup">
+          <div class="invite-group-title">Outgoing &middot; Pending</div>
+          <div id="parentAccountsOutgoingList"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ============ INVITE / REQUEST MODAL ============ -->
+  <div class="modal-overlay" id="inviteModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Invite an account</h3>
+        <button class="modal-close" id="modalClose" type="button">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="desc" id="modalDesc">They'll receive an invitation to connect as a sub-account under your platform.</p>
+
+        <div class="modal-alert" id="modalAlert"></div>
+
+        <div>
+          <label class="field-label" for="inviteInput">Merchant ID or account email</label>
+          <input class="field-input" id="inviteInput" type="text" placeholder="e.g. MID-00-000 or business@email.com">
+          <div class="field-hint">The invited account will need to accept before the connection is active.</div>
+        </div>
+        <div class="split-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
+          <div>
+            <strong>Settlement split</strong>
+            <span>Configured after the invite is accepted, from the connection's details.</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline btn-sm" id="modalCancel" type="button">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="modalSend" type="button">Send invitation</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Invitation sent.</div>
+
+<script>
+  // Test mode toggle
+  const testToggle = document.getElementById('testToggle');
+  testToggle.addEventListener('click', () => {
+    testToggle.classList.toggle('on');
+    testToggle.setAttribute('aria-pressed', testToggle.classList.contains('on'));
+  });
+
+  // =====================================================================
+  // Data model
+  // Each record represents one relationship thread with another account.
+  //   role   : 'sub'    -> lives under "My Platform" tab (they are/would be MY sub-account)
+  //            'parent' -> lives under "Parent Accounts" tab (they are/would be MY parent)
+  //   status : 'active' | 'pending-incoming' (they asked, I decide) | 'pending-outgoing' (I asked, they decide)
+  // =====================================================================
+  let recordSeq = 0;
+  const records = [
+    { id: 'r' + recordSeq++, identifier: 'mid-00-021', name: 'Red Dragons Store', mid: 'MID-00-021',
+      role: 'sub', status: 'active', date: 'May 02, 2026' },
+    { id: 'r' + recordSeq++, identifier: 'mid-00-044', name: 'Blue Whales Trading', mid: 'MID-00-044',
+      role: 'sub', status: 'pending-outgoing', date: 'Jul 01, 2026' },
+    { id: 'r' + recordSeq++, identifier: 'mid-00-077', name: 'Nour Bakery', mid: 'MID-00-077',
+      role: 'sub', status: 'pending-incoming', date: 'Jul 09, 2026' },
+    { id: 'r' + recordSeq++, identifier: 'mid-00-010', name: 'Kashier Retail Group', mid: 'MID-00-010',
+      role: 'parent', status: 'active', date: 'Apr 15, 2026' },
+    { id: 'r' + recordSeq++, identifier: 'mid-00-003', name: 'Kashier Enterprise HQ', mid: 'MID-00-003',
+      role: 'parent', status: 'pending-incoming', date: 'Jul 10, 2026' },
+  ];
+
+  function findRecord(id) { return records.find(r => r.id === id); }
+  function removeRecord(id) { const i = records.findIndex(r => r.id === id); if (i > -1) records.splice(i, 1); }
+  function findByIdentifier(identifier) { return records.find(r => r.identifier === identifier); }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+  function initials(name) {
+    const parts = String(name).trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return '—';
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  const MENU_ICON = '<svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"/></svg>';
+  const VIEW_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>';
+  const DISCONNECT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.181 8.68a4.503 4.503 0 0 1 2.31 5.686m-9.768-2.782L3.56 14.06a4.5 4.5 0 0 0 6.364 6.365l3.129-3.13m5.614-5.614 1.757-1.757a4.5 4.5 0 0 0-6.364-6.365l-1.124 1.124M8.898 8.898l6.993 6.993M2.991 2.991l18.018 18.018"/></svg>';
+  const CANCEL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>';
+
+  function activeRowHtml(rec) {
+    const roleLabel = rec.role === 'parent' ? 'Parent' : 'Sub-account';
+    return `
+      <tr data-record-row="${rec.id}">
+        <td class="biz-name">${escapeHtml(rec.name)}</td>
+        <td>${rec.mid || '—'}</td>
+        <td><span class="role-chip">${roleLabel}</span></td>
+        <td><span class="badge badge-approved"><span class="badge-dot"></span>Active</span></td>
+        <td>${rec.date}</td>
+        <td class="row-menu-wrap">
+          <button class="row-menu-btn" type="button">${MENU_ICON}</button>
+          <div class="row-menu">
+            <button type="button" data-action="view" data-id="${rec.id}">${VIEW_ICON}View account</button>
+            <button type="button" class="danger" data-action="disconnect" data-id="${rec.id}">${DISCONNECT_ICON}Disconnect</button>
+          </div>
+        </td>
+      </tr>`;
+  }
+
+  function incomingRowHtml(rec) {
+    const typeLabel = rec.role === 'sub' ? 'Wants to join as your sub-account' : 'Invited you to join as their sub-account';
+    return `
+      <div class="invite-row" data-record-row="${rec.id}">
+        <div class="invite-avatar">${initials(rec.name)}</div>
+        <div class="invite-info">
+          <span class="biz-name">${escapeHtml(rec.name)}</span>
+          <div class="invite-meta">${rec.mid || '—'} &middot; Received ${rec.date}</div>
+          <span class="invite-type">${typeLabel}</span>
+        </div>
+        <div class="invite-actions">
+          <button class="btn btn-danger-ghost btn-sm" type="button" data-action="reject" data-id="${rec.id}">Reject</button>
+          <button class="btn btn-success-ghost btn-sm" type="button" data-action="accept" data-id="${rec.id}">Accept</button>
+        </div>
+      </div>`;
+  }
+
+  function outgoingRowHtml(rec) {
+    const typeLabel = rec.role === 'sub' ? 'Invitation to join your platform' : 'Request to join as their sub-account';
+    return `
+      <div class="invite-row" data-record-row="${rec.id}">
+        <div class="invite-avatar">${initials(rec.name)}</div>
+        <div class="invite-info">
+          <span class="biz-name">${escapeHtml(rec.name)}</span>
+          <div class="invite-meta">${rec.mid || '—'} &middot; Sent ${rec.date}</div>
+          <span class="invite-type">${typeLabel}</span>
+        </div>
+        <div class="invite-actions">
+          <span class="badge badge-pending"><span class="badge-dot"></span>Pending</span>
+          <button class="btn btn-danger-ghost btn-sm" type="button" data-action="cancel" data-id="${rec.id}">Cancel</button>
+        </div>
+      </div>`;
+  }
+
+  function setTabBadge(tabKey, count) {
+    const btn = document.querySelector(`.tab-btn[data-tab="${tabKey}"]`);
+    let badge = btn.querySelector('.tab-count');
+    if (count > 0) {
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'tab-count';
+        btn.appendChild(badge);
+      }
+      badge.textContent = count;
+    } else if (badge) {
+      badge.remove();
+    }
+  }
+
+  function renderTab(role) {
+    const isSubTab = role === 'sub';
+    const tableId = isSubTab ? 'myPlatformTable' : 'parentAccountsTable';
+    const emptyId = isSubTab ? 'myPlatformEmpty' : 'parentAccountsEmpty';
+    const requestsWrapId = isSubTab ? 'myPlatformRequests' : 'parentAccountsRequests';
+    const incomingGroupId = isSubTab ? 'myPlatformIncomingGroup' : 'parentAccountsIncomingGroup';
+    const outgoingGroupId = isSubTab ? 'myPlatformOutgoingGroup' : 'parentAccountsOutgoingGroup';
+    const incomingListId = isSubTab ? 'myPlatformIncomingList' : 'parentAccountsIncomingList';
+    const outgoingListId = isSubTab ? 'myPlatformOutgoingList' : 'parentAccountsOutgoingList';
+
+    const activeRecs = records.filter(r => r.role === role && r.status === 'active');
+    const incomingRecs = records.filter(r => r.role === role && r.status === 'pending-incoming');
+    const outgoingRecs = records.filter(r => r.role === role && r.status === 'pending-outgoing');
+
+    const table = document.getElementById(tableId);
+    table.querySelector('tbody').innerHTML = activeRecs.map(activeRowHtml).join('');
+    table.closest('.table-scroll').style.display = activeRecs.length ? '' : 'none';
+    document.getElementById(emptyId).classList.toggle('show', activeRecs.length === 0);
+
+    document.getElementById(incomingListId).innerHTML = incomingRecs.map(incomingRowHtml).join('');
+    document.getElementById(outgoingListId).innerHTML = outgoingRecs.map(outgoingRowHtml).join('');
+    document.getElementById(incomingGroupId).style.display = incomingRecs.length ? '' : 'none';
+    document.getElementById(outgoingGroupId).style.display = outgoingRecs.length ? '' : 'none';
+    document.getElementById(requestsWrapId).style.display = (incomingRecs.length + outgoingRecs.length) ? '' : 'none';
+
+    return incomingRecs.length;
+  }
+
+  function renderAll() {
+    setTabBadge('my-platform', renderTab('sub'));
+    setTabBadge('parent-accounts', renderTab('parent'));
+  }
+
+  // ---------- Tabs ----------
+  function activateTab(key) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === key));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + key));
+  }
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => activateTab(btn.dataset.tab));
+  });
+
+  // ---------- Flash-highlight a row after "View" from the duplicate-guard alert ----------
+  function flashRow(el) {
+    if (!el) return;
+    const original = el.style.backgroundColor;
+    el.style.transition = 'background-color .3s ease';
+    el.style.backgroundColor = '#FFF3CD';
+    setTimeout(() => { el.style.backgroundColor = original; }, 1500);
+  }
+  function focusRecord(rec) {
+    closeModal();
+    activateTab(rec.role === 'parent' ? 'parent-accounts' : 'my-platform');
+    requestAnimationFrame(() => {
+      const el = document.querySelector(`[data-record-row="${rec.id}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        flashRow(el);
+      }
+    });
+  }
+
+  // ---------- Row menus + row/invite actions (event delegation, works after re-render) ----------
+  document.addEventListener('click', (e) => {
+    const menuBtn = e.target.closest('.row-menu-btn');
+    if (menuBtn) {
+      e.stopPropagation();
+      const menu = menuBtn.parentElement.querySelector('.row-menu');
+      const isOpen = menu.classList.contains('open');
+      document.querySelectorAll('.row-menu.open').forEach(m => { m.classList.remove('open'); m.style.top = ''; m.style.left = ''; });
+      if (!isOpen) {
+        const rect = menuBtn.getBoundingClientRect();
+        // Make visible but invisible to measure width
+        menu.style.visibility = 'hidden';
+        menu.style.display = 'block';
+        const menuW = menu.offsetWidth;
+        menu.style.display = '';
+        menu.style.visibility = '';
+        // Align right edge of menu to right edge of button, clamped to viewport
+        let left = rect.right - menuW;
+        if (left < 8) left = 8;
+        if (left + menuW > window.innerWidth - 8) left = window.innerWidth - menuW - 8;
+        menu.style.top = (rect.bottom + 4) + 'px';
+        menu.style.left = left + 'px';
+        menu.classList.add('open');
+      }
+      return;
+    }
+    if (!e.target.closest('.row-menu-wrap')) {
+      document.querySelectorAll('.row-menu.open').forEach(m => m.classList.remove('open'));
+    }
+
+    const actionBtn = e.target.closest('[data-action]');
+    if (!actionBtn) return;
+    const rec = findRecord(actionBtn.dataset.id);
+    if (!rec) return;
+
+    switch (actionBtn.dataset.action) {
+      case 'accept':
+        rec.status = 'active';
+        rec.date = 'Today';
+        renderAll();
+        showToast(rec.name + ' is now connected.');
+        break;
+      case 'reject':
+        removeRecord(rec.id);
+        renderAll();
+        showToast('Invitation from ' + rec.name + ' rejected.');
+        break;
+      case 'cancel':
+        removeRecord(rec.id);
+        renderAll();
+        showToast('Invitation cancelled.');
+        break;
+      case 'disconnect':
+        removeRecord(rec.id);
+        renderAll();
+        showToast('Connection updated.');
+        break;
+      case 'view':
+        showToast('Viewing ' + rec.name + ' (demo only).');
+        break;
+    }
+  });
+
+  // ---------- Invite / Request modal ----------
+  const inviteModal = document.getElementById('inviteModal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalDesc = document.getElementById('modalDesc');
+  const modalAlert = document.getElementById('modalAlert');
+  const inviteInput = document.getElementById('inviteInput');
+  let modalMode = 'invite-sub';
+
+  function showModalError(message, actionLabel, actionFn) {
+    inviteInput.classList.add('error');
+    modalAlert.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
+      <div>
+        <p>${escapeHtml(message)}</p>
+        ${actionLabel ? `<button type="button" class="modal-alert-action" id="modalAlertAction">${escapeHtml(actionLabel)}</button>` : ''}
+      </div>`;
+    modalAlert.classList.add('show');
+    if (actionLabel) {
+      document.getElementById('modalAlertAction').addEventListener('click', actionFn);
+    }
+  }
+  function clearModalError() {
+    inviteInput.classList.remove('error');
+    modalAlert.classList.remove('show');
+    modalAlert.innerHTML = '';
+  }
+
+  function openModal(mode) {
+    modalMode = mode;
+    inviteInput.value = '';
+    clearModalError();
+    if (mode === 'invite-sub') {
+      modalTitle.textContent = 'Invite an account';
+      modalDesc.textContent = "They'll receive an invitation to connect as a sub-account under your platform.";
+    } else {
+      modalTitle.textContent = 'Request to join a platform';
+      modalDesc.textContent = "Enter the platform's Merchant ID. They'll receive your request to connect your account as their sub-account.";
+    }
+    inviteModal.classList.add('open');
+    inviteInput.focus();
+  }
+  function closeModal() { inviteModal.classList.remove('open'); }
+
+  document.getElementById('openInviteSub').addEventListener('click', () => openModal('invite-sub'));
+  document.getElementById('openRequestParent').addEventListener('click', () => openModal('request-parent'));
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('modalCancel').addEventListener('click', closeModal);
+  inviteModal.addEventListener('click', (e) => { if (e.target === inviteModal) closeModal(); });
+  inviteInput.addEventListener('input', clearModalError);
+
+  document.getElementById('modalSend').addEventListener('click', () => {
+    const raw = inviteInput.value.trim();
+    if (!raw) { inviteInput.focus(); return; }
+    const identifier = raw.toLowerCase();
+
+    // Guard: is there already any relationship thread with this exact account?
+    const existing = findByIdentifier(identifier);
+    if (existing) {
+      if (existing.status === 'active') {
+        showModalError(
+          'This account is already connected to your platform.',
+          'View connection', () => focusRecord(existing));
+      } else if (existing.status === 'pending-outgoing') {
+        showModalError(
+          `You already sent an invitation to this account on ${existing.date}. It's still pending their response.`,
+          'View invitation', () => focusRecord(existing));
+      } else {
+        showModalError(
+          `This account already sent you an invitation on ${existing.date}. Review it below instead of sending a new one.`,
+          'View invitation', () => focusRecord(existing));
+      }
+      return;
+    }
+
+    const role = modalMode === 'invite-sub' ? 'sub' : 'parent';
+    const looksLikeMid = /^mid[-\s]?/i.test(raw);
+    records.push({
+      id: 'r' + (recordSeq++),
+      identifier,
+      name: raw,
+      mid: looksLikeMid ? raw.toUpperCase() : '—',
+      role,
+      status: 'pending-outgoing',
+      date: 'Today',
+    });
+    renderAll();
+    closeModal();
+    showToast(modalMode === 'invite-sub' ? 'Invitation sent.' : 'Request sent to platform.');
+  });
+
+  // ---------- Toast ----------
+  let toastTimer;
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+  }
+
+  renderAll();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kashier | Settings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #001F5F;
+    --primary-hover: #103788;
+    --primary-10: #F1F6FF;
+    --link: #2955B1;
+    --accent: #00BCB4;
+    --destructive: #A50017;
+    --foreground: #202020;
+    --border: #E6E8E8;
+    --border-subtle: #F5F6F6;
+    --muted: #F5F6F6;
+    --cadet-base: #556767;
+    --cadet-04: #839090;
+    --cadet-05: #919C9C;
+    --bg: #F8F9F9;
+    --alert-warning-bg: #FFF7E8; --alert-warning-border: #FFE6B6; --alert-warning-text: #513500;
+    --radius: 4px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Noto Sans', Arial, sans-serif; background: #fff; color: var(--foreground); display: flex; font-size: 14px; min-height: 100vh; }
+  h1, h2, h3, h4 { font-family: 'Outfit', Arial, sans-serif; margin: 0; font-weight: 700; }
+  a { text-decoration: none; color: inherit; }
+  button { font-family: inherit; }
+  .hi { width: 18px; height: 18px; flex-shrink: 0; }
+  .hi-sm { width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* Sidebar */
+  .sidebar { width: 232px; background: var(--bg); min-height: 100vh; padding: 20px 14px; border-right: 1px solid var(--border-subtle);
+    position: sticky; top: 0; align-self: flex-start; max-height: 100vh; overflow-y: auto; flex-shrink: 0; }
+  .profile { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; padding: 0 6px; }
+  .avatar { width: 38px; height: 38px; background: #1F8A4C; color: #fff; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-family: 'Outfit', sans-serif; font-size: 13px; flex-shrink: 0; }
+  .profile .name { font-weight: 700; font-size: 14px; font-family: 'Outfit', sans-serif; }
+  .profile .mid { font-size: 11px; color: var(--cadet-05); }
+  .profile .chev { margin-left: auto; color: var(--cadet-05); }
+  .nav-link { display: flex; align-items: center; gap: 11px; padding: 9px 12px; border-radius: 8px; color: var(--primary); font-size: 14px; margin-bottom: 1px; }
+  .nav-link:hover { background: rgba(0,31,95,0.06); }
+  .nav-section { margin-top: 16px; }
+  .nav-section .label { font-size: 11px; font-weight: 700; color: #9aa5a5; letter-spacing: .05em; margin: 8px 0 4px 12px; }
+
+  /* Main */
+  .main { flex: 1; padding: 22px 34px 50px; min-width: 0; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 26px; }
+  .topbar h1 { font-size: 30px; color: var(--foreground); }
+  .top-actions { display: flex; align-items: center; gap: 14px; }
+  .dev-link { color: var(--primary); font-weight: 600; font-size: 14px; cursor: pointer; }
+  .test-mode { display: flex; align-items: center; gap: 10px; background: var(--alert-warning-bg);
+    border: 1px solid var(--alert-warning-border); border-radius: 6px; padding: 8px 13px; font-size: 13px; font-weight: 600; color: var(--alert-warning-text); }
+  .toggle { position: relative; width: 32px; height: 16px; border-radius: 48px; background: #FFD484; flex-shrink: 0; cursor: pointer; border: none; padding: 0; }
+  .toggle .knob { position: absolute; top: -2px; left: 12px; width: 20px; height: 20px; border-radius: 100%; background: #FDFDFD; border: 1px solid var(--cadet-05); transition: left .15s ease; }
+  .toggle:not(.on) .knob { left: 0; }
+  .toggle.on { background: #E7A008; }
+  .icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--cadet-base); background: #fff; }
+  .icon-btn:hover { background: var(--muted); }
+  .icon-btn.active { background: var(--primary-10); border-color: var(--primary-10); color: var(--primary); }
+  .add-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; }
+  .add-btn:hover { background: var(--primary-hover); }
+
+  /* Settings grid */
+  .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px 60px; max-width: 1120px; }
+  .setting-item { display: flex; gap: 16px; align-items: flex-start; padding: 8px; border-radius: 10px; transition: background .12s ease; }
+  a.setting-item:hover, .setting-item.logout:hover { background: var(--muted); }
+  .setting-icon { flex-shrink: 0; background: var(--primary); border-radius: 9px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
+  .setting-icon svg { width: 24px; height: 24px; color: #fff; }
+  .setting-icon.destructive { background: var(--destructive); }
+  .setting-text h3 { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 3px; }
+  .setting-text p { font-size: 13px; line-height: 1.45; color: var(--cadet-base); margin: 0; max-width: 380px; }
+  .setting-item.logout { align-items: center; cursor: pointer; grid-column: 1 / -1; }
+  .setting-item.logout .setting-text h3 { color: var(--destructive); margin: 0; }
+  .settings-divider { grid-column: 1 / -1; height: 1px; background: var(--border-subtle); margin: 6px 0; }
+
+  @media (max-width: 860px) { .settings-grid { grid-template-columns: 1fr; gap: 22px; } .setting-text p { max-width: none; } }
+  @media (max-width: 620px) { .main { padding: 18px 18px 40px; } .topbar h1 { font-size: 26px; } }
+</style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="profile">
+      <div class="avatar">ME</div>
+      <div>
+        <div class="name">Misr Elkheir</div>
+        <span class="mid">MID-123456</span>
+      </div>
+      <span class="chev"><svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg></span>
+    </div>
+
+    <a class="nav-link" href="home.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>Home</a>
+    <a class="nav-link" href="payments.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg>Payments</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.375m0 0H3.375c-.621 0-1.125-.504-1.125-1.125V15m1.5 1.5v-.375c0-.621-.504-1.125-1.125-1.125H2.25M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg>Balances</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>Customers</a>
+    <a class="nav-link" href="payment-links.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/></svg>Payment Links</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"/></svg>Vatrina</a>
+
+    <div class="nav-section">
+      <div class="label">MANAGE</div>
+      <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg>Products</a>
+      <a class="nav-link" href="terminals.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>Terminals</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h1>Settings</h1>
+      <div class="top-actions">
+        <span class="dev-link">Developers</span>
+        <div class="test-mode">Test mode <button class="toggle on" id="testToggle" aria-pressed="true"><span class="knob"></span></button></div>
+        <div class="icon-btn" title="Help">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg>
+        </div>
+        <div class="icon-btn" title="Notifications">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>
+        </div>
+        <div class="icon-btn active" title="Settings">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+        </div>
+        <button class="add-btn" title="Create">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="settings-grid">
+
+      <!-- Business -->
+      <a class="setting-item" href="business-info.html">
+        <div class="setting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"/></svg></div>
+        <div class="setting-text"><h3>Business</h3><p>Account type, account health, business details, public info, payouts, and more.</p></div>
+      </a>
+
+      <!-- Profile -->
+      <a class="setting-item" href="#">
+        <div class="setting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></div>
+        <div class="setting-text"><h3>Profile</h3><p>Personal details, passwords, communication preferences, and active sessions.</p></div>
+      </a>
+
+      <!-- Documents  → opens the documents upload page -->
+      <a class="setting-item" href="documents-upload.html">
+        <div class="setting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13"/></svg></div>
+        <div class="setting-text"><h3>Documents</h3><p>View and upload documents, and PCI compliance.</p></div>
+      </a>
+
+      <!-- Team and security -->
+      <a class="setting-item" href="#">
+        <div class="setting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/></svg></div>
+        <div class="setting-text"><h3>Team and security</h3><p>Team members, roles, account security, authorized apps, and shared resources.</p></div>
+      </a>
+
+      <!-- Payments -->
+      <a class="setting-item" href="payments.html">
+        <div class="setting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg></div>
+        <div class="setting-text"><h3>Payments</h3><p>Payment methods, payments acceptance, orders, recipient payouts, and more.</p></div>
+      </a>
+
+      <!-- Card Issuing -->
+      <a class="setting-item" href="#">
+        <div class="setting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75A2.25 2.25 0 0 1 6 4.5h12a2.25 2.25 0 0 1 2.25 2.25v10.5A2.25 2.25 0 0 1 18 19.5H6a2.25 2.25 0 0 1-2.25-2.25V6.75Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.75h16.5M6.75 14.25h4.5"/></svg></div>
+        <div class="setting-text"><h3>Card Issuing</h3><p>Manage virtual cards for users, providing flexible payment options and streamlined expense tracking.</p></div>
+      </a>
+
+      <!-- Maker and checker -->
+      <a class="setting-item" href="#">
+        <div class="setting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75"/></svg></div>
+        <div class="setting-text"><h3>Maker and checker</h3><p>Control who creates and who review, approve, or reject a specific request on different modules.</p></div>
+      </a>
+
+      <!-- Communication and notifications -->
+      <a class="setting-item" href="#">
+        <div class="setting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A6.011 6.011 0 0 1 5.25 4.973"/></svg></div>
+        <div class="setting-text"><h3>Communication and notifications</h3><p>Choose how you want to receive important updates about payments, refunds, and account activity.</p></div>
+      </a>
+
+      <div class="settings-divider"></div>
+
+      <div class="setting-item logout">
+        <div class="setting-icon destructive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75"/></svg></div>
+        <div class="setting-text"><h3>Logout</h3></div>
+      </div>
+
+    </div>
+  </main>
+
+<script>
+  const testToggle = document.getElementById('testToggle');
+  testToggle.addEventListener('click', () => {
+    testToggle.classList.toggle('on');
+    testToggle.setAttribute('aria-pressed', testToggle.classList.contains('on'));
+  });
+</script>
+
+</body>
+</html>

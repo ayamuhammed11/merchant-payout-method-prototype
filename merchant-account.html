@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kashier | Merchant Account</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    /* Kashier design tokens */
+    --primary: #001F5F;          /* Ocean 100 */
+    --primary-hover: #103788;    /* Ocean 90  */
+    --ocean-10: #F1F6FF;         /* Ocean 10  */
+    --ocean-07: #C0D5FF;         /* Ocean 07  */
+    --link: #2955B1;             /* Ocean 80  */
+    --accent: #00BCB4;           /* Kashier Teal (brand) */
+    --accent-10: #EAFFFE;        /* Kashier 10 */
+    --destructive: #A50017;      /* Watermelon base */
+    --destructive-hover: #830012;/* Watermelon 90 */
+    --destructive-bg: #FFEAED;   /* Watermelon 10 */
+    --destructive-border: #FFBBC4;
+    --success: #4AAB4E;          /* Lemon base */
+    --success-bg: #F3FFF4;       /* Lemon 10 */
+    --success-border: #AEFFB2;   /* Lemon 07 */
+    --success-text: #1A541D;     /* Lemon 100 */
+    --warning: #FBAF1F;          /* Mango base */
+    --warning-bg: #FFF7E8;       /* Mango 10 */
+    --warning-border: #FFD484;   /* Mango 07 */
+    --warning-text: #513500;     /* Mango 100 */
+
+    --foreground: #202020;       /* Cadet black */
+    --border: #E6E8E8;           /* Neutral 08 */
+    --border-subtle: #F5F6F6;    /* Neutral 09 */
+    --muted: #F5F6F6;
+    --cadet-base: #556767;       /* Neutral base */
+    --cadet-02: #697979;
+    --cadet-04: #839090;
+    --cadet-05: #919C9C;
+    --cadet-06: #B3BBBB;
+
+    --radius: 4px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Noto Sans', Arial, sans-serif;
+    background: #fff;
+    color: var(--foreground);
+    display: flex;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+  h1, h2, h3, h4 { font-family: 'Outfit', Arial, sans-serif; margin: 0; font-weight: 700; }
+  a { text-decoration: none; }
+  button { font-family: inherit; }
+
+  .hi { width: 20px; height: 20px; flex-shrink: 0; }
+  .hi-sm { width: 16px; height: 16px; flex-shrink: 0; }
+  .hi-xs { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar { width: 232px; background: #fff; min-height: 100vh; padding: 22px 14px 30px;
+    border-right: 1px solid var(--border-subtle);
+    position: sticky; top: 0; align-self: flex-start; max-height: 100vh; overflow-y: auto; flex-shrink: 0; z-index: 60; }
+  .brand { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 26px; color: var(--accent);
+    padding: 0 10px; margin-bottom: 26px; letter-spacing: -.01em; }
+  .nav-link { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 8px;
+    color: var(--cadet-base); text-decoration: none; font-size: 14px; margin-bottom: 2px; position: relative; }
+  .nav-link svg { color: var(--cadet-04); }
+  .nav-link.active { background: #EEF1FB; color: var(--primary); font-weight: 600; }
+  .nav-link.active svg { color: var(--primary); }
+  .nav-link:not(.active):hover { background: #F7F8F8; }
+  .nav-section { margin-top: 14px; }
+  .nav-section .section-head { display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 12px; color: var(--primary); font-weight: 600; font-size: 13px; cursor: pointer; user-select: none; }
+  .nav-section .section-head svg { color: var(--cadet-05); }
+  .nav-sub { display: flex; flex-direction: column; }
+  .nav-sub a { padding: 9px 12px; border-radius: 8px; color: var(--cadet-base); font-size: 14px; }
+  .nav-sub a:hover { background: #F7F8F8; }
+  .nav-sub a.active { background: #EEF1FB; color: var(--primary); font-weight: 600; }
+
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(16,24,40,.45); z-index: 55; }
+  .overlay.open { display: block; }
+
+  /* ---------- Main ---------- */
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .topbar { display: flex; justify-content: flex-end; align-items: center; gap: 18px;
+    padding: 14px 34px; position: sticky; top: 0; background: #fff; z-index: 40; }
+  .topbar-right { display: flex; align-items: center; gap: 18px; }
+  .lang { color: var(--cadet-base); font-size: 14px; cursor: pointer; background: none; border: none; padding: 0; }
+  .lang:hover { color: var(--primary); }
+  .user { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .user .name { font-weight: 600; font-size: 14px; color: var(--foreground); }
+  .user .gear { color: var(--cadet-04); display: flex; }
+  .hamburger { display: none; width: 40px; height: 40px; border: 1px solid var(--border); border-radius: 8px;
+    background: #fff; color: var(--cadet-base); align-items: center; justify-content: center; cursor: pointer; }
+
+  .content { padding: 8px 34px 60px; max-width: 1600px; width: 100%; }
+
+  /* Page head */
+  .page-head { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+  .page-title-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .page-head h1 { font-size: 28px; color: var(--foreground); }
+  .page-head h1 .mid { color: var(--cadet-05); font-weight: 700; }
+  .status-pill { display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+    background: var(--border-subtle); border-radius: 10px; padding: 8px 16px; }
+  .status-pill .lbl { font-size: 12px; color: var(--cadet-base); }
+  .status-pill .val { font-size: 14px; font-weight: 700; color: var(--success); }
+  .head-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 600;
+    border-radius: var(--radius); cursor: pointer; border: 1.5px solid transparent; padding: 0 18px; height: 40px;
+    transition: background .12s ease, border-color .12s ease, color .12s ease, opacity .12s ease; white-space: nowrap; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-outline { background: #fff; color: var(--primary); border-color: var(--primary); }
+  .btn-outline:hover { background: var(--ocean-10); }
+  .btn-ghost { background: transparent; color: var(--primary); border-color: transparent; }
+  .btn-ghost:hover { background: var(--ocean-10); }
+  .btn-danger { background: var(--destructive); color: #fff; }
+  .btn-danger:hover { background: var(--destructive-hover); }
+  .btn-danger-outline { background: #fff; color: var(--destructive); border-color: var(--destructive); }
+  .btn-danger-outline:hover { background: var(--destructive-bg); }
+  .btn[disabled] { opacity: .42; cursor: not-allowed; pointer-events: none; }
+  .btn-sm { height: 36px; padding: 0 14px; font-size: 13px; }
+
+  /* ---------- Tabs ---------- */
+  .tabbar { background: var(--ocean-10); border-radius: 10px; padding: 8px; display: flex; flex-wrap: wrap;
+    gap: 4px; margin-bottom: 26px; }
+  .tab { padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; letter-spacing: .3px;
+    text-transform: uppercase; color: var(--cadet-base); background: transparent; border: none; cursor: pointer; }
+  .tab:hover { color: var(--primary); }
+  .tab.active { background: var(--primary); color: #fff; }
+
+  /* ---------- Section / Cards ---------- */
+  .card { background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 26px 28px; }
+  .section-title { font-size: 22px; color: var(--foreground); margin-bottom: 22px; }
+  .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 40px; }
+  .grid-halves { display: grid; grid-template-columns: 1.3fr 1fr; gap: 28px; align-items: start; }
+
+  /* Form fields */
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field > label { font-size: 13px; font-weight: 600; color: var(--cadet-base); }
+  .field .opt { color: var(--cadet-05); font-weight: 400; }
+  .inp { height: 44px; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0 12px;
+    font-family: inherit; font-size: 14px; color: var(--foreground); background: #fff; width: 100%; }
+  .inp::placeholder { color: var(--cadet-05); }
+  .inp:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,31,95,.1); }
+  .inp:read-only, .inp[readonly] { background: var(--muted); color: var(--cadet-base); }
+  .inp.locked { background: var(--muted); color: var(--cadet-base); }
+  .inp.error { border-color: var(--destructive); }
+  .inp.error:focus { box-shadow: 0 0 0 3px rgba(165,0,23,.12); }
+  .field-err { display: none; font-size: 12px; color: var(--destructive); }
+  .field-err.show { display: block; }
+
+  /* Phone / prefixed group */
+  .pgroup { display: flex; align-items: stretch; }
+  .pgroup .prefix { display: flex; align-items: center; padding: 0 14px; background: var(--muted);
+    border: 1.5px solid var(--border); border-right: none; border-radius: var(--radius) 0 0 var(--radius);
+    font-size: 14px; font-weight: 600; color: var(--cadet-base); }
+  .pgroup .inp { border-radius: 0; }
+  .pgroup .btn { border-radius: 0 var(--radius) var(--radius) 0; }
+
+  /* Owner email row */
+  .owner-email-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .email-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 2px; }
+
+  /* Sales account owner */
+  .owner-chip { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--border);
+    border-radius: 8px; background: #fff; }
+  .owner-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--primary); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-weight: 700;
+    font-size: 16px; letter-spacing: .5px; flex-shrink: 0; }
+  .owner-avatar.empty { background: var(--muted); color: var(--cadet-05); }
+  .owner-avatar.empty svg { width: 22px; height: 22px; }
+  .owner-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .owner-info .nm { font-weight: 600; font-size: 14px; color: var(--foreground); }
+  .owner-info .em { font-size: 13px; color: var(--cadet-base); word-break: break-all; }
+  .owner-info .empty-t { font-weight: 600; font-size: 14px; color: var(--cadet-base); }
+  .owner-info .empty-s { font-size: 12.5px; color: var(--cadet-05); }
+  .assign-group { display: flex; align-items: stretch; max-width: 480px; }
+  .assign-group .inp { border-radius: var(--radius) 0 0 var(--radius); border-right: none; }
+  .assign-group .btn { border-radius: 0 var(--radius) var(--radius) 0; }
+
+  /* Badge */
+  .badge { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; font-size: 11px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: .3px; padding: 4px 10px; }
+  .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .badge.warning { background: var(--warning-bg); color: var(--warning-text); }
+  .badge.success { background: var(--success-bg); color: var(--success-text); }
+  .badge.neutral { background: var(--border-subtle); color: var(--cadet-02); }
+  .badge.error { background: var(--destructive-bg); color: var(--destructive); }
+  .badge.primary { background: var(--ocean-10); color: var(--primary); }
+  .badge.accent { background: var(--accent-10); color: #006A66; }
+
+  /* ---------- Invitation tracking ---------- */
+  .track-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .track-meta { font-size: 13px; color: var(--cadet-base); margin: 8px 0 16px; }
+  .track-meta b { color: var(--foreground); word-break: break-all; }
+  .track-table { width: 100%; border-collapse: collapse; }
+  .track-table th { text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
+    color: var(--cadet-base); background: var(--muted); padding: 10px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .track-table td { font-size: 13.5px; color: var(--foreground); padding: 12px; border-bottom: 1px solid var(--border-subtle);
+    vertical-align: middle; }
+  .track-table tr:last-child td { border-bottom: none; }
+  .track-table .num { color: var(--cadet-05); font-weight: 700; }
+  .track-table .badge { font-size: 10px; }
+  .inv-email { font-weight: 600; color: var(--foreground); word-break: break-all; }
+  .inv-sub { font-size: 11.5px; color: var(--cadet-05); margin-top: 3px; }
+  .inv-src { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+  .inv-src .actor { font-size: 11.5px; color: var(--cadet-base); white-space: nowrap; }
+
+  /* Alert (Kashier component: full border, 5px radius) */
+  .alert { display: none; align-items: flex-start; gap: 8px; border: 1px solid; border-radius: 5px;
+    padding: 12px; margin-top: 16px; font-size: 14px; line-height: 1.35; }
+  .alert.show { display: flex; }
+  .alert svg { width: 22px; height: 22px; flex-shrink: 0; margin-top: 1px; }
+  .alert .a-title { font-weight: 700; }
+  .alert.success { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
+  .alert.info { background: var(--ocean-10); border-color: var(--ocean-07); color: var(--primary); }
+  .alert.warning { background: var(--warning-bg); border-color: var(--warning-border); color: var(--warning-text); }
+
+  /* Sub-block card inside business info */
+  .subcard { border: 1px solid var(--border-subtle); border-radius: 8px; padding: 22px 24px; }
+  .subcard + .subcard { margin-top: 22px; }
+  .subcard h3 { font-size: 18px; color: var(--foreground); margin-bottom: 20px; }
+
+  /* Radio */
+  .radio-row { display: flex; gap: 34px; flex-wrap: wrap; }
+  .radio { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--foreground); cursor: pointer; }
+  .radio input { accent-color: var(--primary); width: 18px; height: 18px; }
+
+  /* Terms / textarea */
+  .ta { width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px 12px;
+    font-family: inherit; font-size: 14px; color: var(--foreground); background: #fff; resize: vertical; min-height: 96px; line-height: 1.5; }
+  .ta:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,31,95,.08); }
+
+  /* ---------- Events / audit log ---------- */
+  .events-card { display: flex; flex-direction: column; }
+  .events-desc { font-size: 13px; color: var(--cadet-base); margin: -12px 0 18px; line-height: 1.5; }
+  .events-list { display: flex; flex-direction: column; }
+  .event-item { display: flex; gap: 12px; padding-bottom: 20px; position: relative; }
+  .event-item:not(:last-child)::before { content: ''; position: absolute; left: 15px; top: 34px; bottom: 0;
+    width: 1px; background: var(--border); }
+  .event-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; z-index: 1; }
+  .event-icon svg { width: 17px; height: 17px; }
+  .event-icon.change { background: var(--ocean-10); color: var(--primary); }
+  .event-icon.cancel { background: var(--destructive-bg); color: var(--destructive); }
+  .event-icon.resend { background: var(--warning-bg); color: #92620A; }
+  .event-icon.verify { background: var(--success-bg); color: var(--success-text); }
+  .event-icon.assign { background: var(--accent-10); color: #006A66; }
+  .event-body { min-width: 0; padding-top: 2px; }
+  .event-action { font-size: 13.5px; color: var(--foreground); line-height: 1.4; }
+  .event-action b { font-weight: 700; }
+  .event-meta { font-size: 12px; color: var(--cadet-05); margin-top: 4px; }
+  .event-values { font-size: 12.5px; color: var(--cadet-base); margin-top: 8px; background: var(--muted);
+    border-radius: 6px; padding: 8px 11px; display: flex; flex-direction: column; gap: 4px; }
+  .event-values .vrow { display: flex; gap: 6px; align-items: baseline; }
+  .event-values .k { color: var(--cadet-05); min-width: 92px; white-space: nowrap; }
+  .event-values .v { color: var(--foreground); font-weight: 600; word-break: break-all; }
+  .events-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+    padding: 30px 10px; color: var(--cadet-05); }
+  .events-empty svg { width: 44px; height: 44px; color: var(--cadet-06); margin-bottom: 12px; }
+  .events-empty .t { font-size: 14px; font-weight: 600; color: var(--cadet-base); }
+  .events-empty .s { font-size: 12.5px; margin-top: 4px; max-width: 240px; line-height: 1.5; }
+
+  /* Prototype helper */
+  .proto { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--border); }
+  .proto .plabel { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
+    color: var(--cadet-05); margin-bottom: 8px; }
+  .proto-link { background: none; border: none; color: var(--link); font-size: 13px; font-weight: 600;
+    cursor: pointer; padding: 0; text-decoration: underline; }
+  .proto-link:disabled { color: var(--cadet-06); cursor: not-allowed; text-decoration: none; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--primary);
+    color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; z-index: 100; opacity: 0;
+    pointer-events: none; transition: opacity .2s ease, transform .2s ease; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 1100px) { .grid-halves { grid-template-columns: 1fr; } }
+  @media (max-width: 820px) {
+    .grid-2col { grid-template-columns: 1fr; }
+    .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%);
+      transition: transform .22s ease; box-shadow: 0 10px 40px rgba(0,0,0,.18); }
+    .sidebar.open { transform: translateX(0); }
+    .hamburger { display: flex; }
+    .content { padding: 8px 20px 60px; }
+    .topbar { padding: 12px 20px; }
+  }
+
+  /* ---------- Merchant module: onboarding stages ---------- */
+  [hidden] { display: none !important; }
+  .role-switch { display: flex; align-items: center; gap: 8px; }
+  .role-switch label { font-size: 12px; color: var(--cadet-04); }
+  .role-switch select { height: 32px; border: 1px solid var(--border); border-radius: var(--radius); background: #fff;
+    color: var(--foreground); font-family: inherit; font-size: 13px; padding: 0 8px; color-scheme: light; cursor: pointer; }
+  .mx-crumb { font-size: 13px; color: var(--cadet-04); margin: 8px 0 12px; }
+  .mx-crumb a { color: var(--link); }
+  .mx-crumb .sep { margin: 0 6px; color: var(--cadet-06); }
+
+  /* Account status pill carrying the stage actions, as in the Merchant module */
+  .acct-status { display: flex; align-items: center; gap: 18px; background: var(--border-subtle); border-radius: 999px;
+    padding: 8px 8px 8px 24px; min-height: 64px; }
+  .acct-status .lbl { font-size: 15px; color: var(--cadet-base); }
+  .acct-status .val { font-size: 16px; font-weight: 600; margin-top: 2px; }
+  .acct-status .val.warn { color: var(--warning); }
+  .acct-status .val.danger { color: var(--destructive); }
+  .acct-status .val.success { color: var(--success); }
+  .stage-actions { display: flex; align-items: center; gap: 8px; }
+  .round-btn { width: 46px; height: 46px; border-radius: 50%; border: none; display: inline-flex; align-items: center;
+    justify-content: center; cursor: pointer; transition: transform .1s ease, background .12s ease; }
+  .round-btn svg { width: 22px; height: 22px; }
+  .round-btn.reject { background: #E9ECEC; color: #fff; }
+  .round-btn.reject:hover { background: var(--destructive); }
+  .round-btn.approve { background: var(--success); color: #fff; }
+  .round-btn.approve:hover { background: var(--success-80); }
+  .round-btn:disabled, .golive-btn:disabled { opacity: .45; cursor: not-allowed; }
+  .round-btn:disabled:hover { background: #E9ECEC; }
+  .round-btn.approve:disabled:hover { background: var(--success); }
+  .golive-btn { display: inline-flex; align-items: center; gap: 8px; height: 50px; padding: 0 24px; border-radius: 999px; border: none;
+    background: var(--success); color: #fff; font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; }
+  .golive-btn:hover { background: var(--success-80); }
+  .golive-btn svg { width: 20px; height: 20px; }
+
+  .stage-note { display: flex; gap: 10px; align-items: flex-start; border-radius: 8px; padding: 12px 16px; margin: -6px 0 20px;
+    font-size: 13px; line-height: 1.5; background: var(--ocean-10); color: var(--primary); }
+  .stage-note svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+  .stage-note.warn { background: var(--warning-bg); color: var(--warning-text); }
+  .stage-note.danger { background: var(--destructive-bg); color: var(--destructive); }
+  .stage-note.success { background: var(--success-bg); color: var(--success-text); }
+  .stage-note a { color: inherit; text-decoration: underline; font-weight: 600; }
+
+  /* Tab panels */
+  .panel-empty { text-align: center; padding: 70px 20px 60px; color: var(--cadet-05); }
+  .panel-empty svg { width: 64px; height: 64px; color: var(--cadet-06); margin-bottom: 14px; }
+  .panel-empty h3 { font-size: 20px; color: var(--cadet-base); margin-bottom: 4px; }
+  .kv-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 40px; }
+  .kv .k { font-size: 13px; font-weight: 600; color: var(--cadet-base); margin-bottom: 6px; }
+  .kv .v { height: 44px; display: flex; align-items: center; padding: 0 12px; border-radius: var(--radius);
+    background: var(--muted); color: var(--foreground); font-size: 14px; }
+  .kv .v a { color: var(--link); }
+  .subsection { font-size: 16px; color: var(--foreground); margin: 28px 0 14px; }
+
+  .doc-row { display: flex; align-items: center; gap: 14px; padding: 14px 4px; border-bottom: 1px solid var(--border-subtle); }
+  .doc-row:last-child { border-bottom: none; }
+  .doc-icon { width: 38px; height: 38px; border-radius: 8px; background: var(--ocean-10); color: var(--primary);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .doc-icon svg { width: 18px; height: 18px; }
+  .doc-info { flex: 1; min-width: 0; }
+  .doc-name { font-size: 14px; font-weight: 600; color: var(--foreground); }
+  .doc-file { font-size: 12.5px; color: var(--cadet-05); margin-top: 2px; }
+  .doc-state { font-size: 12px; font-weight: 600; color: var(--success-text); background: var(--success-bg); border-radius: 999px; padding: 3px 10px; }
+
+  .cfg-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 14px; }
+  .cfg-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .cfg-name { font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 700; color: var(--foreground); }
+  .cfg-rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 30px; margin-top: 12px; }
+  .cfg-rows .k { font-size: 12px; color: var(--cadet-05); }
+  .cfg-rows .v { font-size: 14px; font-weight: 600; color: var(--foreground); margin-top: 2px; }
+  .cfg-rates { margin-top: 14px; border-top: 1px solid var(--border-subtle); padding-top: 12px; }
+  .cfg-rate { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 13.5px; }
+  .cfg-rate .name { color: var(--foreground); }
+  .cfg-rate .pct { font-family: 'Outfit', sans-serif; font-weight: 700; }
+  .cfg-rate .std { color: var(--cadet-05); font-size: 12.5px; margin-left: 6px; }
+  .rate-state { font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 2px 9px; }
+  .rate-state.approved { background: var(--success-bg); color: var(--success-text); }
+  .rate-state.pending { background: var(--warning-bg); color: var(--warning-text); }
+  .rate-state.rejected { background: var(--destructive-bg); color: var(--destructive); }
+  .cfg-foot { font-size: 12.5px; color: var(--cadet-05); margin-top: 8px; }
+
+  .log-item { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border-subtle); }
+  .log-item:last-child { border-bottom: none; }
+  .log-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); margin-top: 5px; flex-shrink: 0; }
+  .log-text { font-size: 14px; color: var(--foreground); }
+  .log-meta { font-size: 12.5px; color: var(--cadet-05); margin-top: 2px; }
+
+  /* Sub-tabs (Tabs pattern: underline, primary when active) */
+  .subtabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin: 28px 0 16px; }
+  .subtab { display: flex; align-items: center; gap: 8px; padding: 10px 20px; margin-bottom: -2px; font-family: inherit; font-size: 14px; font-weight: 600;
+    color: #637373; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: color .12s ease; }
+  .subtab:hover { color: var(--foreground); }
+  .subtab:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+  .subtab.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .subtab.active .mx-count { background: var(--ocean-10); color: var(--primary); }
+
+  /* Payout change activity — Card (border-subtle, 4px), Data Table header, Alert tokens */
+  .pc-item { background: #fff; border: 1px solid var(--border-subtle); border-radius: var(--radius); padding: 16px; margin-bottom: 16px;
+    display: flex; flex-direction: column; gap: 16px; }
+  .pc-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle); }
+  .pc-title { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 700; line-height: 1.2; color: var(--cadet-base); }
+  .pc-meta { font-size: 12px; color: var(--cadet-04); margin-top: 4px; }
+  .pc-account { display: flex; flex-direction: column; gap: 8px; }
+  .pc-account + .pc-account { padding-top: 16px; border-top: 1px solid var(--border-subtle); }
+  .pc-account-name { font-size: 16px; font-weight: 700; color: var(--cadet-base); }
+  .pc-account-name span { font-size: 12px; font-weight: 400; color: var(--cadet-04); margin-inline-start: 6px; }
+  .pc-tablewrap { border-radius: var(--radius); overflow: hidden; overflow-x: auto;
+    box-shadow: 0 0 0 1px rgba(152,161,178,.1), 0 1px 4px 0 rgba(69,75,87,.12), 0 0 2px 0 rgba(0,0,0,.08); }
+  .pc-table { width: 100%; border-collapse: collapse; background: #fff; }
+  .pc-table th { height: 40px; padding: 0 8px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .44px;
+    color: #464F60; background: rgba(245,246,246,.75); border-bottom: 1px solid #E9EDF5; }
+  .pc-table td { height: 49px; padding: 0 8px; font-size: 14px; color: var(--foreground); vertical-align: middle; word-break: break-word; }
+  .pc-table tbody tr:nth-child(even) { background: rgba(248,249,249,.75); }
+  .pc-field { width: 30%; color: var(--cadet-base); }
+  .pc-old { color: var(--cadet-02); }
+  .pc-new { font-weight: 600; }
+  .pc-none { color: var(--cadet-05); }
+  .pc-outcome { border: 1px solid; border-radius: 5px; padding: 12px; font-size: 14px; line-height: 1.35; }
+  .pc-outcome.pending { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    background: var(--warning-bg); border-color: var(--warning-border); color: var(--warning-text); }
+  .pc-outcome.approved { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
+  .pc-outcome.rejected { background: var(--destructive-bg); border-color: var(--destructive-border); color: var(--destructive); }
+  .pc-actions { display: flex; justify-content: flex-end; gap: 8px; }
+  .pc-reason { margin-top: 6px; }
+  .alert.error { background: var(--destructive-bg); border-color: var(--destructive-border); color: var(--destructive); }
+
+  /* Merchants list */
+  .mx-tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--border-subtle); margin-bottom: 16px; }
+  .mx-tab { display: flex; align-items: center; gap: 8px; padding: 11px 14px; font-family: inherit; font-size: 13px; font-weight: 600;
+    color: var(--cadet-base); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; margin-bottom: -1px; }
+  .mx-tab:hover { color: var(--foreground); }
+  .mx-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .mx-count { font-size: 11px; font-weight: 700; background: var(--muted); color: var(--cadet-02); border-radius: 999px; padding: 1px 8px; }
+  .mx-tab.active .mx-count { background: var(--ocean-10); color: var(--primary); }
+  .mx-search { height: 40px; width: 320px; max-width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius);
+    padding: 0 12px; font-family: inherit; font-size: 14px; background: #fff; color: var(--foreground); color-scheme: light; margin-bottom: 14px; }
+  .mx-table-wrap { border: 1px solid var(--border-subtle); border-radius: 8px; overflow-x: auto; background: #fff; }
+  .mx-table { width: 100%; border-collapse: collapse; min-width: 900px; }
+  .mx-table th { text-align: left; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--cadet-05); background: #FAFBFB; padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); }
+  .mx-table td { padding: 14px 16px; font-size: 13.5px; color: var(--foreground); border-bottom: 1px solid var(--border-subtle); vertical-align: middle; }
+  .mx-table tr:last-child td { border-bottom: none; }
+  .mx-table tbody tr { cursor: pointer; }
+  .mx-table tbody tr:hover { background: var(--ocean-10); }
+  .mx-name { font-weight: 600; }
+  .mx-sub { font-size: 12px; color: var(--cadet-05); margin-top: 2px; }
+  .mx-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .03em; border-radius: 999px; padding: 4px 10px; white-space: nowrap; }
+  .mx-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .mx-badge.warn { background: var(--warning-bg); color: var(--warning-text); }
+  .mx-badge.danger { background: var(--destructive-bg); color: var(--destructive); }
+  .mx-badge.success { background: var(--success-bg); color: var(--success-text); }
+  .mx-empty { text-align: center; padding: 40px 20px; color: var(--cadet-05); font-size: 14px; }
+
+  /* Modals + toast */
+  .mx-backdrop { position: fixed; inset: 0; background: rgba(2,10,34,.45); display: none; align-items: center;
+    justify-content: center; z-index: 100; padding: 20px; }
+  .mx-backdrop.open { display: flex; }
+  .mx-modal { background: #fff; border-radius: 8px; width: 100%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,20,60,.25); }
+  .mx-modal-head { display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; border-bottom: 1px solid var(--border-subtle); }
+  .mx-modal-head h3 { font-size: 17px; color: var(--foreground); }
+  .mx-close { background: none; border: none; font-size: 18px; color: var(--cadet-05); cursor: pointer; }
+  .mx-modal-body { padding: 20px 22px; font-size: 14px; color: var(--foreground); line-height: 1.55; }
+  .mx-modal-body p { margin: 0 0 12px; }
+  .mx-modal-body textarea { width: 100%; min-height: 90px; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px 12px;
+    font-family: inherit; font-size: 14px; resize: vertical; color: var(--foreground); background: #fff; color-scheme: light; }
+  .mx-modal-body textarea.invalid { border-color: var(--destructive); }
+  .mx-err { font-size: 12.5px; color: var(--destructive); margin-top: 6px; }
+  .mx-check { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; background: var(--muted); border-radius: 8px; padding: 12px 14px; cursor: pointer; }
+  .mx-check input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--success); }
+  .mx-list { margin: 0 0 12px; padding-left: 18px; font-size: 13.5px; color: var(--cadet-base); }
+  .mx-modal-foot { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 22px; border-top: 1px solid var(--border-subtle); }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-success:hover { background: var(--success-80); }
+  .mx-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(8px); background: var(--foreground); color: #fff;
+    font-size: 13px; font-weight: 600; padding: 12px 20px; border-radius: var(--radius); opacity: 0; pointer-events: none;
+    transition: opacity .18s ease, transform .18s ease; z-index: 120; }
+  .mx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @media (max-width: 800px) { .kv-grid, .cfg-rows { grid-template-columns: 1fr; } .acct-status { border-radius: 16px; } }
+</style>
+</head>
+<body>
+
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">kashier</div>
+    <a class="nav-link" href="home.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>Home</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>BIN Management</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>Financial Institutions</a>
+    <a class="nav-link active" href="merchants.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"/></svg>Merchant</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h6m-6 3h6m-6 3h6M10.5 21v-3.75a1.5 1.5 0 0 1 3 0V21"/></svg>Business Industries</a>
+    <a class="nav-link" href="document-types.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>PCC Templates</a>
+    <a class="nav-link" href="terminals.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25"/></svg>Terminals</a>
+    <a class="nav-link" href="document-rules.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75"/></svg>Document Rules</a>
+
+    <div class="nav-section">
+      <div class="section-head">Balance Management
+        <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
+      </div>
+      <div class="nav-sub">
+        <a href="#">Settlement Windows</a>
+        <a href="account-details.html">Accounts</a>
+        <a href="on-hold.html">On-Hold</a>
+        <a href="#">Vacations</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+      </button>
+      <div class="topbar-right">
+        <div class="role-switch">
+          <label for="roleSelect">Viewing as</label>
+          <select id="roleSelect">
+            <option value="sales">Salesperson</option>
+            <option value="manager">Sales Manager</option>
+            <option value="head">Head of Sales</option>
+            <option value="onboarding">Onboarding Team</option>
+          </select>
+        </div>
+        <button class="lang">عربي</button>
+        <div class="user">
+          <span class="name" id="userName">Aya Muhammed</span>
+          <span class="gear"><svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="mx-crumb"><a href="merchants.html">Merchants</a><span class="sep">/</span><span id="crumbName">Account</span></div>
+
+      <div id="accountView" hidden>
+        <div class="page-head">
+          <div class="page-title-row">
+            <h1 id="acctTitle">Merchant <span class="mid"></span></h1>
+            <div class="acct-status">
+              <div>
+                <div class="lbl">Account status</div>
+                <div class="val" id="acctStatus">—</div>
+              </div>
+              <div class="stage-actions" id="stageActions"></div>
+            </div>
+          </div>
+          <div class="head-actions">
+            <button class="btn btn-primary" type="button">
+              <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              Add Container
+            </button>
+            <button class="btn btn-danger" type="button">
+              <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+              Terminate
+            </button>
+          </div>
+        </div>
+
+        <div class="stage-note" id="stageNote" hidden></div>
+
+        <div class="tabbar" id="tabbar"></div>
+        <section class="card" id="panel"></section>
+      </div>
+
+      <div class="card" id="notFound" hidden>
+        <div class="panel-empty">
+          <h3>Merchant account not found</h3>
+          <p>This link doesn't match a submitted application.</p>
+          <a class="btn btn-primary" href="merchants.html">Back to Merchants</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="mx-toast" id="toast"></div>
+
+  <!-- Stage 1 ✓ -->
+  <div class="mx-backdrop" id="approveModal">
+    <div class="mx-modal">
+      <div class="mx-modal-head"><h3>Approve application</h3><button class="mx-close" data-close>&#10005;</button></div>
+      <div class="mx-modal-body">
+        <p id="approveText"></p>
+        <ul class="mx-list" id="approveBanks"></ul>
+        <p style="margin:0">The status changes to <b>Pending Configurations</b> until the bank/vendor approval and credentials arrive.</p>
+      </div>
+      <div class="mx-modal-foot">
+        <button class="btn btn-outline btn-sm" data-close>Cancel</button>
+        <button class="btn btn-success btn-sm" id="approveConfirm">Approve &amp; Send to Bank</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 1 ✗ -->
+  <div class="mx-backdrop" id="rejectModal">
+    <div class="mx-modal">
+      <div class="mx-modal-head"><h3>Reject application</h3><button class="mx-close" data-close>&#10005;</button></div>
+      <div class="mx-modal-body">
+        <p id="rejectText"></p>
+        <textarea id="rejectReason" placeholder="What needs fixing? The salesperson sees this on the lead."></textarea>
+        <div class="mx-err" id="rejectError" hidden>Add a reason — the salesperson needs to know what to change.</div>
+      </div>
+      <div class="mx-modal-foot">
+        <button class="btn btn-outline btn-sm" data-close>Cancel</button>
+        <button class="btn btn-danger btn-sm" id="rejectConfirm">Reject &amp; Return to Sales</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payout change ✗ -->
+  <div class="mx-backdrop" id="pcRejectModal">
+    <div class="mx-modal">
+      <div class="mx-modal-head"><h3>Reject account change</h3><button class="mx-close" data-close>&#10005;</button></div>
+      <div class="mx-modal-body">
+        <p>This account keeps its current payout details. Say why the change was rejected.</p>
+        <textarea id="pcRejectReason" placeholder="e.g. The account holder name does not match the business owner."></textarea>
+        <div class="mx-err" id="pcRejectError" hidden>Add a reason for the rejection.</div>
+      </div>
+      <div class="mx-modal-foot">
+        <button class="btn btn-outline btn-sm" data-close>Cancel</button>
+        <button class="btn btn-danger btn-sm" id="pcRejectConfirm">Reject</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 2 -->
+  <div class="mx-backdrop" id="liveModal">
+    <div class="mx-modal">
+      <div class="mx-modal-head"><h3>Go live</h3><button class="mx-close" data-close>&#10005;</button></div>
+      <div class="mx-modal-body">
+        <p id="liveText"></p>
+        <label class="mx-check"><input type="checkbox" id="liveConfirmBox"> <span>The bank/vendor approval and credentials have been received and configured for every service.</span></label>
+        <div class="mx-err" id="liveError" hidden>Confirm the bank/vendor approval first.</div>
+      </div>
+      <div class="mx-modal-foot">
+        <button class="btn btn-outline btn-sm" data-close>Cancel</button>
+        <button class="btn btn-success btn-sm" id="liveConfirm">Go Live</button>
+      </div>
+    </div>
+  </div>
+
+<script src="rate-decisions.js"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+  const K = window.KashierRates;
+  const { ROLES, TIER_OWNER } = K;
+  let role = K.getRole();
+  const APP_ID = new URLSearchParams(location.search).get('app') || '';
+
+  const TABS = ['Business Info', 'Change Requests', 'Documents', 'Payment Configurations', 'Payout Method',
+    'Features Flagging', 'Connected Accounts', 'Shipping', 'Terminals', 'Discounts', 'Bundle', 'Logs'];
+  let activeTab = 'Business Info';
+
+  const ICON = {
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>',
+    doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>',
+    empty: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25"/></svg>',
+  };
+
+  function fmtDate(iso) {
+    return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+  function fmtDateTime(iso) {
+    return new Date(iso).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+  function current() { return K.findAccount(APP_ID); }
+  const isOnboarding = () => role === 'onboarding';
+
+  /* ── Header: status and the stage's actions ── */
+  function renderHead(acct) {
+    const { app, mid, status, meta, record } = acct;
+    document.title = `Kashier | ${app.biz}`;
+    $('crumbName').textContent = app.biz;
+    $('acctTitle').innerHTML = `${esc(app.biz)} <span class="mid">(${esc(mid || 'MID pending')})</span>`;
+    $('acctStatus').className = 'val ' + meta.tone;
+    $('acctStatus').textContent = meta.label;
+
+    const gate = isOnboarding() ? '' : ' disabled title="Only the Onboarding team can take this action"';
+    if (status === 'submitted' || status === 'rate-approval') {
+      // Stage 1: shown from submission, usable once rates are through.
+      const locked = status === 'rate-approval' ? ' disabled title="Waiting for rate approval"' : gate;
+      $('stageActions').innerHTML = `
+        <button class="round-btn reject" id="rejectBtn" aria-label="Reject application"${locked}>${ICON.x}</button>
+        <button class="round-btn approve" id="approveBtn" aria-label="Approve application"${locked}>${ICON.check}</button>`;
+    } else if (status === 'pending-configurations') {
+      $('stageActions').innerHTML = `<button class="golive-btn" id="goLiveBtn"${gate}>${ICON.check} Go Live</button>`;
+    } else if (status === 'live') {
+      $('stageActions').innerHTML = `<button class="round-btn approve" aria-label="Live" disabled style="opacity:1;cursor:default">${ICON.check}</button>`;
+    } else {
+      $('stageActions').innerHTML = '';
+    }
+
+    // One line saying where the account stands and what happens next.
+    const pendingRates = pendingRateSummary(app);
+    const notes = {
+      'rate-approval': ['warn', `Waiting for rate approval — ${pendingRates}. The underwriting review opens once every rate is decided.`],
+      'returned': ['danger', `Rates were rejected, so the application is back with ${esc(app.actor)} for revision.`],
+      'submitted': isOnboarding()
+        ? ['info', 'Review Business Info, Documents and Payment Configurations, then approve to send the application to the bank — or reject it with a reason.']
+        : ['info', 'Waiting on the Onboarding team to review this application.'],
+      'pending-configurations': ['warn', `Approved internally by ${esc(record.by || 'the Onboarding team')}${record.approvedTs ? ' on ' + esc(fmtDate(record.approvedTs)) : ''} and sent to the bank. ${isOnboarding() ? 'Click <b>Go Live</b> once the bank/vendor approval and credentials arrive.' : 'Waiting on the bank/vendor approval.'}`],
+      'rejected': ['danger', `Rejected by ${esc(record.by)} on ${esc(fmtDate(record.ts))}: ${esc(record.reason)} — the application went back to ${esc(app.actor)}.`],
+      'live': ['success', `Live since ${esc(fmtDate(record.ts))}.`],
+    };
+    const [tone, html] = notes[status];
+    $('stageNote').className = 'stage-note ' + tone;
+    $('stageNote').innerHTML = ICON.info + `<div>${html}</div>`;
+    $('stageNote').hidden = status === 'live';
+  }
+
+  function pendingRateSummary(app) {
+    const reqs = K.approvalRequests().filter(r => r.app.id === app.id && r.state === 'pending');
+    if (!reqs.length) return 'no requests open';
+    return reqs.map(r => `<a href="${K.requestURL(app.id, r.tier)}">${r.lines.length} rate${r.lines.length === 1 ? '' : 's'} with the ${esc(TIER_OWNER[r.tier])}</a>`).join(' and ');
+  }
+
+  /* ── Tabs ── */
+  function renderTabs() {
+    $('tabbar').innerHTML = TABS.map(t => `<button class="tab${t === activeTab ? ' active' : ''}" data-tab="${esc(t)}">${esc(t)}</button>`).join('');
+  }
+
+  function emptyPanel(title, text) {
+    return `<h2 class="section-title">${esc(title)}</h2>
+      <div class="panel-empty">${ICON.empty}<h3>No ${esc(title)} Data</h3><p>${esc(text || 'Nothing has been configured here yet.')}</p></div>`;
+  }
+
+  function kv(k, v, html) {
+    return `<div class="kv"><div class="k">${esc(k)}</div><div class="v">${html ? v : esc(v || '—')}</div></div>`;
+  }
+
+  function panelBusinessInfo(acct) {
+    const { app, mid } = acct, s = app.summary;
+    return `<h2 class="section-title">Business Info</h2>
+      <div class="kv-grid">
+        ${kv('Business Name', app.biz)}
+        ${kv('Kashier MID', mid)}
+        ${kv('Merchant Type', s.entity)}
+        ${kv('Industry (primary)', s.industry)}
+        ${(app.altIndustries || []).length ? kv('Activities', (app.altIndustries || []).map((a, i) =>
+          `<div>${i + 1}. ${esc(a.activity || a.industry)}${a.activity && a.industry && a.activity !== a.industry ? ` <span style="color:var(--cadet-05)">\u00b7 ${esc(a.industry)}</span>` : ''}</div>`).join(''), true) : ''}
+        ${kv('Contact Email', s.email)}
+        ${kv('Contact Phone', s.phone)}
+        ${app.website ? kv('Website', `<a href="${esc(/^https?:/i.test(app.website) ? app.website : 'https://' + app.website)}" target="_blank" rel="noopener">${esc(app.website)}</a>`, true) : ''}
+      </div>
+      <h3 class="subsection">Sales Application</h3>
+      <div class="kv-grid">
+        ${kv('Sales Account Owner', app.actor)}
+        ${kv('Submitted', fmtDateTime(app.ts))}
+        ${kv('Lead', app.leadId ? `<a href="${K.applicationURL(app.leadId)}">${esc(app.leadId)}</a>` : '—', true)}
+        ${kv('Application', `<a href="${K.applicationURL(app.leadId)}">${esc(app.id)}</a>`, true)}
+      </div>`;
+  }
+
+  function panelDocuments(acct) {
+    const { app } = acct, s = app.summary;
+    if (!app.documents.length) {
+      return Number(s.docsTotal)
+        ? `<h2 class="section-title">Documents</h2><div class="panel-empty">${ICON.doc}<h3>${esc(s.docsDone)} of ${esc(s.docsTotal)} documents uploaded</h3><p>Uploaded by Sales with the application.</p></div>`
+        : emptyPanel('Documents');
+    }
+    return `<h2 class="section-title">Documents</h2>
+      <p style="margin:-10px 0 14px;color:var(--cadet-05);font-size:13px">${app.documents.length} document${app.documents.length === 1 ? '' : 's'} uploaded by ${esc(app.actor)} with the application.</p>
+      ${app.documents.map(d => `<div class="doc-row">
+        <div class="doc-icon">${ICON.doc}</div>
+        <div class="doc-info"><div class="doc-name">${esc(d.name)}</div><div class="doc-file">${esc(d.file || '')}</div></div>
+        <span class="doc-state">Uploaded</span>
+        <button class="btn btn-outline btn-sm" type="button">Download</button>
+      </div>`).join('')}`;
+  }
+
+  let payoutTab = 'new';
+  const PC_STATE = { pending: ['warning', 'Pending'], approved: ['success', 'Approved'], rejected: ['error', 'Rejected'], partial: ['primary', 'Partially approved'] };
+
+  function payoutRows(p) {
+    return p.method === 'wallet'
+      ? kv('Method', 'E-Wallet') + kv('Wallet Provider', p.provider) + kv('Wallet Mobile Number', p.number) + kv('Wallet Holder Name', p.holder)
+      : kv('Method', 'Bank Account') + kv('Bank Name', p.bankName) + kv('Bank Branch Name', p.branch) + kv('Account Holder Name', p.holder) + kv('Account Number', p.account);
+  }
+
+  /* One change request: what changed (old → new), who asked, who decided and when, and why it was rejected. */
+  function payoutChangeItem(r, canDecide) {
+    const [tone, label] = PC_STATE[r.state];
+    const multi = r.items.length > 1;
+    const diffTable = it => `<div class="pc-tablewrap"><table class="pc-table"><thead><tr><th>Field</th><th>Old</th><th>New</th></tr></thead><tbody>${
+      K.payoutDiff(it.from, it.to).map(d => `<tr>
+        <td class="pc-field">${esc(d.label)}</td>
+        <td class="pc-old">${d.from ? esc(d.from) : '<span class="pc-none">Not set</span>'}</td>
+        <td class="pc-new">${esc(d.to)}</td></tr>`).join('')}</tbody></table></div>`;
+    const gate = canDecide ? '' : ' disabled title="Only the Onboarding team can decide this request"';
+    const itemOutcome = it => it.state === 'pending'
+      ? `<div class="pc-actions">
+          <button class="btn btn-danger-outline btn-sm" type="button" data-pc-reject="${esc(it.id)}"${gate}>Reject</button>
+          <button class="btn btn-success btn-sm" type="button" data-pc-approve="${esc(it.id)}"${gate}>Approve</button>
+        </div>`
+      : `<div class="pc-outcome ${it.state}">
+          <div><b>${it.state === 'approved' ? 'Approved' : 'Rejected'}</b> by ${esc(it.decidedBy)} · ${esc(fmtDateTime(it.decidedTs))}</div>
+          ${it.state === 'rejected' ? `<div class="pc-reason"><b>Reason:</b> ${esc(it.reason)}</div>` : ''}
+        </div>`;
+    const diff = r.items.map(it => `<div class="pc-account">
+        ${multi ? `<div class="pc-account-name">${esc(it.account)} <span>${esc(PAYOUT_LABEL[it.from.method])} → ${esc(PAYOUT_LABEL[it.to.method])}</span></div>` : ''}
+        ${diffTable(it)}${itemOutcome(it)}</div>`).join('');
+    return `<div class="pc-item">
+      <div class="pc-head">
+        <div><div class="pc-title">${multi ? r.items.length + ' accounts' : esc(PAYOUT_LABEL[r.items[0].from.method]) + ' → ' + esc(PAYOUT_LABEL[r.items[0].to.method])}</div>
+          <div class="pc-meta"><b>${esc(r.ref)}</b> · Requested by the merchant · ${esc(fmtDateTime(r.ts))}</div></div>
+        <span class="badge ${tone}"><span class="dot"></span>${label}</span>
+      </div>
+      ${diff}
+    </div>`;
+  }
+  const PAYOUT_LABEL = { bank: 'Bank Account', wallet: 'E-Wallet' };
+
+  function panelPayout(acct) {
+    const p = K.currentPayout(acct.app);
+    if (!p || !p.method) return `<h2 class="section-title">Payout Method</h2><div class="kv-grid">${kv('Primary payout method', 'Not provided')}</div>`;
+    const changes = K.payoutChanges(acct.app);
+    const pending = changes.filter(r => r.state === 'pending'), history = changes.filter(r => r.state !== 'pending');
+    return `<h2 class="section-title">Payout Method</h2>
+      <div class="subtabs" role="tablist" style="margin-top:0">
+        <button class="subtab${payoutTab === 'new' ? ' active' : ''}" role="tab" data-ptab="new">New Request${pending.length ? `<span class="mx-count">${pending.length}</span>` : ''}</button>
+        <button class="subtab${payoutTab === 'history' ? ' active' : ''}" role="tab" data-ptab="history">History of Changes<span class="mx-count">${history.length}</span></button>
+      </div>
+      ${payoutTab === 'new'
+        ? (pending.length ? pending.map(r => payoutChangeItem(r, isOnboarding())).join('')
+          : `<div class="panel-empty" style="padding:30px 20px">${ICON.empty}<h3>No pending request</h3><p>There is no payout change waiting for a decision.</p></div>`)
+        : (history.length ? history.map(r => payoutChangeItem(r, isOnboarding())).join('')
+          : `<div class="panel-empty" style="padding:30px 20px">${ICON.empty}<h3>No payout changes yet</h3><p>The payout method is still the one submitted with the application.</p></div>`)}`;
+  }
+
+  function panelPayment(acct) {
+    const { app } = acct;
+    const configs = app.summary.serviceConfigs || [];
+    if (!configs.length) return emptyPanel('Payment Configurations', 'No payment methods were submitted with the application.');
+    const decisions = K.decisionsFor(app.id);
+    const cards = [];
+    configs.forEach(sc => (sc.configs || [{ bank: '', module: '' }]).forEach(cfg => {
+      // Transfers carry a version and their own selling fees instead of rate lines.
+      if (sc.service === 'Transfers') {
+        const t = app.transfers || { fees: {} };
+        const fees = [['wallet', 'Wallet'], ['bank', 'Bank'], ['card', 'Card']].map(([k, label]) => {
+          const f = (t.fees || {})[k] || {};
+          const range = [f.min !== '' && f.min != null ? `min ${esc(f.min)}` : '', f.max !== '' && f.max != null ? `max ${esc(f.max)}` : ''].filter(Boolean).join(' · ');
+          return `<div class="cfg-rate"><span class="name">${label}</span>
+            <span><span class="pct">${esc(f.percentage || '—')}% + ${esc(f.flat || '—')}</span>${range ? `<span class="std">${range}</span>` : ''}</span></div>`;
+        }).join('');
+        cards.push(`<div class="cfg-card">
+          <div class="cfg-head"><span class="cfg-name">Transfers</span></div>
+          <div class="cfg-rows">
+            <div><div class="k">Financial Institution</div><div class="v">${esc(cfg.bank || '—')}</div></div>
+            <div><div class="k">Version</div><div class="v">${esc(cfg.module || '—')}</div></div>
+          </div>
+          <div class="cfg-rates"><div class="k" style="font-size:12px;color:var(--cadet-05);margin-bottom:4px">Selling Fees</div>${fees}</div>
+        </div>`);
+        return;
+      }
+      const lines = app.requests.filter(r => r.service === sc.service && (r.bank || '') === (cfg.bank || ''));
+      const rates = lines.map(l => {
+        const d = decisions[l.id];
+        const state = d ? d.decision : 'pending';
+        const label = d ? (d.decision === 'approved' ? `Approved · ${esc(d.by)}` : `Rejected · ${esc(d.by)}`) : `With ${esc(TIER_OWNER[l.tier])}`;
+        return `<div class="cfg-rate">
+          <span class="name">${esc(l.rate)}</span>
+          <span><span class="pct">${esc(l.requested)}%</span><span class="std">standard ${esc(l.standard)}%</span></span>
+          <span class="rate-state ${state}">${label}</span>
+        </div>`;
+      }).join('');
+      cards.push(`<div class="cfg-card">
+        <div class="cfg-head"><span class="cfg-name">${esc(sc.service)}</span></div>
+        <div class="cfg-rows">
+          <div><div class="k">Settlement Type</div><div class="v">${esc(cfg.module || '—')}</div></div>
+          <div><div class="k">Financial Institution</div><div class="v">${esc(cfg.bank || 'Not required')}</div></div>
+        </div>
+        ${rates ? `<div class="cfg-rates">${rates}</div>` : ''}
+        <div class="cfg-foot">${rates ? 'All other rates at standard pricing.' : 'All rates at standard pricing.'}</div>
+      </div>`);
+    }));
+    return `<h2 class="section-title">Payment Configurations</h2>${cards.join('')}`;
+  }
+
+  function panelTerminals(acct) {
+    const n = Number(acct.app.summary.posTerminals || 0);
+    if (!n) return emptyPanel('Terminals', 'No POS terminals were requested with this application.');
+    return `<h2 class="section-title">Terminals</h2>
+      <p style="margin:-10px 0 14px;color:var(--cadet-05);font-size:13px">${n} POS terminal${n === 1 ? '' : 's'} requested by Sales. Serial numbers are assigned once the bank issues the terminal IDs.</p>
+      ${Array.from({ length: n }, (_, i) => `<div class="doc-row">
+        <div class="doc-icon">${ICON.doc}</div>
+        <div class="doc-info"><div class="doc-name">Terminal ${i + 1}</div><div class="doc-file">${acct.status === 'live' ? 'Assigned' : 'To be assigned'}</div></div>
+      </div>`).join('')}`;
+  }
+
+  function panelLogs(acct) {
+    const events = K.accountLog(acct.app);
+    return `<h2 class="section-title">Logs</h2>
+      ${events.map(e => `<div class="log-item"><span class="log-dot"></span><div>
+        <div class="log-text">${esc(e.text)}</div>
+        <div class="log-meta">${esc(e.who || '')} · ${esc(fmtDateTime(e.ts))}</div>
+      </div></div>`).join('')}`;
+  }
+
+  function renderPanel(acct) {
+    const map = {
+      'Business Info': panelBusinessInfo, 'Documents': panelDocuments, 'Payment Configurations': panelPayment, 'Payout Method': panelPayout,
+      'Terminals': panelTerminals, 'Logs': panelLogs,
+    };
+    $('panel').innerHTML = map[activeTab] ? map[activeTab](acct) : emptyPanel(activeTab);
+  }
+
+  function render() {
+    const acct = current();
+    $('accountView').hidden = !acct;
+    $('notFound').hidden = !!acct;
+    if (!acct) return;
+    renderHead(acct);
+    renderTabs();
+    renderPanel(acct);
+  }
+
+  $('tabbar').addEventListener('click', e => {
+    const b = e.target.closest('[data-tab]');
+    if (!b) return;
+    activeTab = b.dataset.tab;
+    render();
+  });
+
+  /* ── Payout change decisions ── */
+  let pcRejectId = '';
+  $('panel').addEventListener('click', e => {
+    const pt = e.target.closest('[data-ptab]');
+    if (pt) { payoutTab = pt.dataset.ptab; render(); return; }
+    const acct = current();
+    if (!acct || !isOnboarding()) return;
+    const ok = e.target.closest('[data-pc-approve]'), no = e.target.closest('[data-pc-reject]');
+    if (ok && K.decidePayoutChange({ app: acct.app, id: ok.dataset.pcApprove, role, decision: 'approved' })) {
+      render();
+      toast('Account approved.');
+    } else if (no) {
+      pcRejectId = no.dataset.pcReject;
+      $('pcRejectReason').value = '';
+      $('pcRejectReason').classList.remove('invalid');
+      $('pcRejectError').hidden = true;
+      open('pcRejectModal');
+      $('pcRejectReason').focus();
+    }
+  });
+  $('pcRejectReason').addEventListener('input', () => { $('pcRejectReason').classList.remove('invalid'); $('pcRejectError').hidden = true; });
+  $('pcRejectConfirm').addEventListener('click', () => {
+    const reason = $('pcRejectReason').value.trim();
+    if (!reason) { $('pcRejectReason').classList.add('invalid'); $('pcRejectError').hidden = false; $('pcRejectReason').focus(); return; }
+    const acct = current();
+    closeAll();
+    if (acct && K.decidePayoutChange({ app: acct.app, id: pcRejectId, role, decision: 'rejected', reason })) {
+      render();
+      toast('Account rejected.');
+    }
+  });
+
+  /* ── Stage actions ── */
+  function open(id) { $(id).classList.add('open'); }
+  function closeAll() { document.querySelectorAll('.mx-backdrop').forEach(m => m.classList.remove('open')); }
+  document.querySelectorAll('.mx-backdrop').forEach(m => m.addEventListener('click', e => {
+    if (e.target === m || e.target.closest('[data-close]')) closeAll();
+  }));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
+
+  $('stageActions').addEventListener('click', e => {
+    const acct = current();
+    if (!acct || !isOnboarding()) return;
+    if (e.target.closest('#approveBtn')) {
+      $('approveText').innerHTML = `Approve <b>${esc(acct.app.biz)}</b> internally and send the application to the bank to proceed with onboarding:`;
+      const banks = [];
+      (acct.app.summary.serviceConfigs || []).forEach(sc => (sc.configs || []).forEach(c =>
+        banks.push(`${sc.service}${c.bank ? ' — ' + c.bank : ''}${c.module ? ' (' + c.module + ')' : ''}`)));
+      $('approveBanks').innerHTML = banks.map(b => `<li>${esc(b)}</li>`).join('');
+      open('approveModal');
+    } else if (e.target.closest('#rejectBtn')) {
+      $('rejectText').innerHTML = `Reject <b>${esc(acct.app.biz)}</b>'s application? It goes back to ${esc(acct.app.actor)} with your reason.`;
+      $('rejectReason').value = '';
+      $('rejectReason').classList.remove('invalid');
+      $('rejectError').hidden = true;
+      open('rejectModal');
+      $('rejectReason').focus();
+    } else if (e.target.closest('#goLiveBtn')) {
+      $('liveText').innerHTML = `Make <b>${esc(acct.app.biz)}</b> (${esc(acct.mid)}) live for real transactions?`;
+      $('liveConfirmBox').checked = false;
+      $('liveError').hidden = true;
+      open('liveModal');
+    }
+  });
+
+  $('approveConfirm').addEventListener('click', () => {
+    const acct = current();
+    closeAll();
+    if (acct && K.approveAccount({ app: acct.app, role })) {
+      render();
+      toast(`${acct.app.biz} approved and sent to the bank.`);
+    }
+  });
+  $('rejectReason').addEventListener('input', () => { $('rejectReason').classList.remove('invalid'); $('rejectError').hidden = true; });
+  $('rejectConfirm').addEventListener('click', () => {
+    const reason = $('rejectReason').value.trim();
+    if (!reason) { $('rejectReason').classList.add('invalid'); $('rejectError').hidden = false; $('rejectReason').focus(); return; }
+    const acct = current();
+    closeAll();
+    if (acct && K.rejectAccount({ app: acct.app, role, reason })) {
+      render();
+      toast(`Application rejected — returned to ${acct.app.actor}.`);
+    }
+  });
+  $('liveConfirmBox').addEventListener('change', () => { $('liveError').hidden = true; });
+  $('liveConfirm').addEventListener('click', () => {
+    if (!$('liveConfirmBox').checked) { $('liveError').hidden = false; return; }
+    const acct = current();
+    closeAll();
+    if (acct && K.goLiveAccount({ app: acct.app, role })) {
+      render();
+      toast(`${acct.app.biz} is live.`);
+    }
+  });
+
+  let toastTimer;
+  function toast(msg) {
+    const t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  function renderRole() {
+    $('roleSelect').value = role;
+    $('userName').textContent = ROLES[role].name;
+  }
+  $('roleSelect').addEventListener('change', e => {
+    role = e.target.value;
+    K.setRole(role);
+    renderRole();
+    render();
+  });
+
+  renderRole();
+  render();
+
+  // Sidebar collapsible sections
+  document.querySelectorAll('.nav-section .section-head').forEach(head => {
+    const sub = head.nextElementSibling;
+    if (!sub) return;
+    head.addEventListener('click', () => { sub.hidden = !sub.hidden; });
+  });
+  // Mobile sidebar toggle
+  const hamburger = $('hamburger'), sidebar = $('sidebar'), overlay = $('overlay');
+  if (hamburger) hamburger.addEventListener('click', () => { sidebar.classList.add('open'); overlay.classList.add('open'); });
+  if (overlay) overlay.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('open'); });
+</script>
+
+</body>
+</html>

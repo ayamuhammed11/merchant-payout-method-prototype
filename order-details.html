@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kashier | Order Details</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #001F5F; --primary-hover: #103788; --primary-10: #F1F6FF; --link: #2955B1;
+    --destructive: #A50017; --success: #4AAB4E;
+    --foreground: #202020; --border: #E6E8E8; --border-subtle: #F5F6F6; --muted: #F5F6F6;
+    --muted-foreground: #637373; --cadet-base: #556767; --cadet-05: #919C9C; --bg: #F8F9F9;
+    --alert-warning-bg: #FFF7E8; --alert-warning-border: #FFE6B6; --alert-warning-text: #513500;
+    --badge-paid-bg: #E1F7E4; --badge-paid-text: #1B7F37;
+    --radius: 4px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Noto Sans', Arial, sans-serif; background: #fff; color: var(--foreground); display: flex; font-size: 14px; }
+  h1, h2, h3, h4 { font-family: 'Outfit', Arial, sans-serif; margin: 0; font-weight: 700; }
+  a { text-decoration: none; }
+
+  .hi { width: 18px; height: 18px; flex-shrink: 0; }
+  .hi-sm { width: 16px; height: 16px; flex-shrink: 0; }
+
+  .sidebar { width: 240px; background: var(--bg); min-height: 100vh; padding: 20px 16px; border-right: 1px solid var(--border-subtle);
+    position: sticky; top: 0; align-self: flex-start; max-height: 100vh; overflow-y: auto; flex-shrink: 0; }
+  .profile { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+  .avatar { width: 36px; height: 36px; background: var(--primary); color: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+  .profile .name { font-weight: 600; font-size: 14px; }
+  .profile .mid { font-size: 11px; color: var(--cadet-base); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; display: inline-block; }
+  .nav-section { margin-top: 18px; }
+  .nav-section .label { font-size: 11px; font-weight: 700; color: #9aa5a5; letter-spacing: .04em; margin: 8px 0 4px 8px; }
+  .nav-link { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; color: var(--primary); text-decoration: none; font-size: 14px; }
+  .nav-link.active { color: var(--cadet-base); font-weight: 600; }
+  .nav-link:hover { background: rgba(0,31,95,0.06); }
+
+  .main { flex: 1; padding: 24px 32px; min-width: 0; }
+  .topbar { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 20px; gap: 16px; flex-wrap: wrap; }
+  .top-actions { display: flex; align-items: center; gap: 14px; }
+  .lang { color: var(--cadet-base); font-size: 14px; }
+  .currency { display: flex; align-items: center; gap: 4px; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-size: 14px; background: #fff; }
+  .test-mode { display: flex; align-items: center; gap: 10px; background: var(--alert-warning-bg); border: 1px solid var(--alert-warning-border);
+    border-radius: 4px; padding: 9px 13px; font-size: 13px; font-weight: 600; color: var(--alert-warning-text); }
+  .toggle { position: relative; width: 32px; height: 16px; border-radius: 48px; background: var(--primary); flex-shrink: 0; border: none; padding: 0; }
+  .toggle .knob { position: absolute; top: -2px; left: 12px; width: 20px; height: 20px; border-radius: 100%; background: #FDFDFD; border: 1px solid var(--cadet-05); }
+  .icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center; color: var(--cadet-base); background: #fff; }
+
+  .alert { background: var(--alert-warning-bg); border: 1px solid var(--alert-warning-border); border-radius: 5px; padding: 16px 20px; margin-bottom: 20px; }
+  .alert h3 { display: flex; align-items: center; gap: 8px; font-size: 16px; color: var(--alert-warning-text); margin-bottom: 6px; }
+  .alert p { font-size: 13px; color: var(--alert-warning-text); margin: 0 0 12px; max-width: 700px; }
+  .alert-actions { display: flex; align-items: center; gap: 20px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; font-weight: 600; border-radius: var(--radius);
+    cursor: pointer; border: none; padding: 0 18px; height: 40px; white-space: nowrap; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-link { background: none; border: none; color: var(--primary-hover); font-size: 13px; font-weight: 600; cursor: pointer; }
+
+  .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; margin-bottom: 16px; }
+  .breadcrumb a { color: var(--link); }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb .sep { color: var(--cadet-05); }
+  .breadcrumb .current { color: var(--cadet-base); }
+
+  .page-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .page-head .amt { font-size: 28px; }
+  .badge { display: inline-flex; align-items: center; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .3px; padding: 4px 10px; background: var(--badge-paid-bg); color: var(--badge-paid-text); }
+
+  .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  .card { background: #fff; border: 1px solid var(--border-subtle); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+  .card h3 { font-size: 17px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 16px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
+  .info-row .k { font-size: 12px; color: var(--cadet-base); margin-bottom: 3px; }
+  .info-row .v { font-size: 14px; font-weight: 700; color: var(--foreground); word-break: break-all; }
+  .info-row .v.link { color: var(--link); }
+
+  .history-scroll { max-height: 320px; overflow-y: auto; padding-right: 6px; }
+  .tl-item { display: flex; gap: 12px; padding-bottom: 18px; position: relative; }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-item:not(:last-child)::before { content: ''; position: absolute; left: 13px; top: 28px; bottom: 0; width: 2px; background: var(--border-subtle); }
+  .tl-icon { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .tl-icon.success { background: var(--success); color: #fff; }
+  .tl-icon.neutral { background: var(--muted); color: var(--cadet-base); border: 1px solid var(--border); }
+  .tl-icon svg { width: 14px; height: 14px; }
+  .tl-badge { margin-bottom: 6px; }
+  .tl-meta { font-size: 12px; color: var(--muted-foreground); margin-bottom: 3px; }
+  .tl-meta .txn-link { color: var(--link); font-weight: 700; }
+  .tl-desc { font-size: 13px; color: var(--foreground); }
+
+  .meta-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid var(--border-subtle);
+    font-size: 13px; font-weight: 600; cursor: pointer; }
+  .meta-row:last-child { border-bottom: none; }
+  .meta-row svg { width: 15px; height: 15px; color: var(--cadet-base); }
+
+  /* Platform section (parent/sub-account relationship) */
+  .platform-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .03em; padding: 3px 8px; border-radius: 999px; border: 1px solid; white-space: nowrap; margin-bottom: 12px; }
+  .platform-chip svg { width: 11px; height: 11px; }
+  .platform-chip.sub { color: #92620A; border-color: #FBAF1F; background: #FFF7E8; }
+  .platform-chip.parent { color: var(--primary); border-color: var(--primary); background: var(--primary-10); }
+
+  @media (max-width: 900px) { .columns { grid-template-columns: 1fr; } .info-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="profile">
+      <div class="avatar">A</div>
+      <div><div class="name">Azazy</div><span class="mid">MID-14531-398</span></div>
+    </div>
+    <a class="nav-link" href="home.html">
+      <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+      Home
+    </a>
+    <a class="nav-link active" href="payments.html">
+      <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5M21 16.5 16.5 21m0 0L12 16.5m4.5 4.5V7.5"/></svg>
+      Payments
+    </a>
+    <div class="nav-section">
+      <div class="label">PAYMENT LINKS</div>
+      <a class="nav-link" href="payment-links.html">Payment Links</a>
+      <a class="nav-link" href="#">Payment Pages</a>
+    </div>
+    <div class="nav-section">
+      <div class="label">MANAGE</div>
+      <a class="nav-link" href="#">Products</a>
+      <a class="nav-link" href="#">Categories</a>
+      <a class="nav-link" href="#">Customers</a>
+      <a class="nav-link" href="terminals.html">Terminals</a>
+    </div>
+    <div class="nav-section">
+      <div class="label">BALANCE MANAGMENT</div>
+      <a class="nav-link" href="#">Transfers</a>
+      <a class="nav-link" href="#">Schedule Transfers</a>
+    </div>
+    <div class="nav-section">
+      <div class="label">TEAM</div>
+      <a class="nav-link" href="#">Roles</a>
+      <a class="nav-link" href="#">Users</a>
+    </div>
+    <div class="nav-section">
+      <div class="label">DEVELOPERS</div>
+      <a class="nav-link" href="#">Integrations</a>
+      <a class="nav-link" href="#">Docs</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="top-actions">
+        <span class="lang">عربي</span>
+        <div class="currency">EGP
+          <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+        </div>
+        <div class="test-mode">Test Mode<button class="toggle" aria-pressed="true"><span class="knob"></span></button></div>
+        <div class="icon-btn"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></div>
+        <div class="icon-btn"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></div>
+      </div>
+    </div>
+
+    <div class="alert">
+      <h3>
+        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
+        Your application is incomplete!
+      </h3>
+      <p>Please complete your application to get activated and be able to use our services in live mode to start your real growth journey with Kashier payment solutions.</p>
+      <div class="alert-actions">
+        <button class="btn btn-primary">Complete Application
+          <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
+        </button>
+        <button class="btn-link">Review Application</button>
+      </div>
+    </div>
+
+    <div class="breadcrumb">
+      <a href="payments-order-view.html">Payments</a>
+      <span class="sep">&rsaquo;</span>
+      <span class="current">Order Details</span>
+    </div>
+
+    <div class="page-head">
+      <span class="amt" id="pageAmount">500,000.00 EGP</span>
+      <span class="badge">PAID</span>
+    </div>
+
+    <div class="columns">
+      <div>
+        <div class="card">
+          <h3>Order Details</h3>
+          <div class="info-grid">
+            <div class="info-row"><div class="k">Merchant order ID</div><div class="v" id="merchantOrderId">68bfde52-6810-40cc-972b-4cbe74c28220</div></div>
+            <div class="info-row"><div class="k">Kashier order ID</div><div class="v" id="kashierOrderId">6d4207cc-802a-453e-87d8-b79ebddc68ac</div></div>
+            <div class="info-row"><div class="k">Payment Method</div><div class="v">Card</div></div>
+            <div class="info-row"><div class="k">Last Update</div><div class="v">06 Jul 2026 05:03 AM</div></div>
+            <div class="info-row"><div class="k">Channel</div><div class="v">online</div></div>
+            <div class="info-row"><div class="k">Last transaction type</div><div class="v">pay</div></div>
+            <div class="info-row"><div class="k">Origin</div><div class="v" id="origin">PP-1453139801</div></div>
+            <div class="info-row"><div class="k">Merchant Type</div><div class="v">PF</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Platform</h3>
+          <span class="platform-chip sub">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
+            Sub-account
+          </span>
+          <div class="info-grid">
+            <div class="info-row"><div class="k">Business Name</div><div class="v">Red Dragons Store</div></div>
+            <div class="info-row"><div class="k">Merchant ID</div><div class="v">MID-00-021</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Card Payment Details</h3>
+          <div class="info-grid">
+            <div class="info-row"><div class="k">Card holder Name</div><div class="v">Seven Samurai</div></div>
+            <div class="info-row"><div class="k">Card Type</div><div class="v">Mastercard</div></div>
+            <div class="info-row"><div class="k">Card number</div><div class="v">511111******1118</div></div>
+            <div class="info-row"><div class="k">Expiry Date</div><div class="v">23 / 11</div></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <h3>Payment History</h3>
+          <div class="history-scroll" id="historyList">
+            <div class="tl-item">
+              <div class="tl-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75 10.5 18.75 19.5 5.25"/></svg></div>
+              <div>
+                <div class="tl-badge"><span class="badge">SUCCESSFUL</span></div>
+                <div class="tl-meta">13 Sep 2023 &bull; 08:40:53 PM &bull; <span class="txn-link">TX-1453139803</span></div>
+                <div class="tl-desc">Successful payment using Mastercard 511111******1118</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-icon neutral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286Z"/></svg></div>
+              <div>
+                <div class="tl-meta">13 Sep 2023 &bull; 08:39:52 PM &bull; <span class="txn-link">TX-1453139801</span></div>
+                <div class="tl-desc">Successful 3DS authentication attempt using Mastercard 511111******1118</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-icon neutral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg></div>
+              <div>
+                <div class="tl-meta">13 Sep 2023 &bull; 08:39:52 PM</div>
+                <div class="tl-desc">New payment started</div>
+              </div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-icon neutral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></div>
+              <div>
+                <div class="tl-meta">13 Sep 2023 &bull; 08:39:52 PM</div>
+                <div class="tl-desc">Session created</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Metadata</h3>
+          <div class="meta-row"><span>kashierOriginType</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></div>
+          <div class="meta-row"><span>kashierOriginDetails</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></div>
+          <div class="meta-row"><span>termsAndConditions</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+  if (id) {
+    document.getElementById('merchantOrderId').textContent = id;
+  }
+</script>
+
+</body>
+</html>

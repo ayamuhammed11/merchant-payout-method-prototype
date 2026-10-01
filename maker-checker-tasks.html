@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kashier | Maker &amp; Checker Tasks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Kashier design tokens */
+    --primary: #001F5F;          /* Ocean 100 */
+    --primary-hover: #103788;    /* Ocean 90  */
+    --primary-10: #F1F6FF;       /* Ocean 10  */
+    --ocean-10: #F1F6FF;
+    --ocean-20: #D9E5FF;
+    --link: #2955B1;             /* Ocean 80  */
+    --accent: #00BCB4;           /* Kashier Teal (brand) */
+    --accent-10: #EAFFFE;        /* Kashier 10 */
+    --accent-100: #006A66;       /* Kashier 100 */
+    --destructive: #A50017;      /* Watermelon base */
+    --destructive-hover: #830012;/* Watermelon 90 */
+    --destructive-bg: #FFEAED;   /* Watermelon 10 */
+    --destructive-border: #FFBBC4;
+    --success: #4AAB4E;          /* Lemon base */
+    --success-bg: #F3FFF4;       /* Lemon 10 */
+    --success-border: #AEFFB2;
+    --success-text: #1A541D;     /* Lemon 100 */
+    --warning: #FBAF1F;          /* Mango base */
+    --warning-bg: #FFF7E8;       /* Mango 10 */
+    --warning-border: #FFD484;   /* Mango 30 */
+    --warning-text: #513500;     /* Mango 100 */
+    --warning-deep: #92620A;
+
+    --foreground: #202020;       /* Cadet black */
+    --border: #E6E8E8;           /* Neutral 08 */
+    --border-subtle: #F5F6F6;    /* Neutral 09 */
+    --muted: #F5F6F6;
+    --cadet-base: #556767;       /* Neutral base */
+    --cadet-02: #697979;
+    --cadet-04: #839090;
+    --cadet-05: #919C9C;
+    --cadet-06: #B3BBBB;
+    --cadet-07: #D5D9D9;
+
+    --pill-bg: #F5F6F6;          /* Neutral 09 */
+    --pill-text: #697979;        /* Neutral 02 */
+
+    --radius: 4px;               /* Figma default */
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Noto Sans', Arial, sans-serif;
+    background: #fff;
+    color: var(--foreground);
+    display: flex;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+  h1, h2, h3, h4 { font-family: 'Outfit', Arial, sans-serif; margin: 0; font-weight: 700; }
+  a { text-decoration: none; }
+  button { font-family: inherit; }
+
+  .hi { width: 20px; height: 20px; flex-shrink: 0; }
+  .hi-sm { width: 16px; height: 16px; flex-shrink: 0; }
+  .hi-xs { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar { width: 232px; background: #fff; min-height: 100vh; padding: 22px 14px 30px;
+    border-right: 1px solid var(--border-subtle);
+    position: sticky; top: 0; align-self: flex-start; max-height: 100vh; overflow-y: auto; flex-shrink: 0; z-index: 60; }
+  .brand { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 26px; color: var(--accent);
+    padding: 0 10px; margin-bottom: 26px; letter-spacing: -.01em; }
+  .nav-link { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 8px;
+    color: var(--cadet-base); text-decoration: none; font-size: 14px; margin-bottom: 2px; position: relative; }
+  .nav-link svg { color: var(--cadet-04); }
+  .nav-link.active { background: #EEF1FB; color: var(--primary); font-weight: 600; }
+  .nav-link.active svg { color: var(--primary); }
+  .nav-link:not(.active):hover { background: #F7F8F8; }
+  .nav-section { margin-top: 14px; }
+  .nav-section .section-head { display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 12px; color: var(--primary); font-weight: 600; font-size: 13px; cursor: pointer; user-select: none; }
+  .nav-section .section-head svg { color: var(--cadet-05); transition: transform .2s ease; }
+  .nav-sub { display: flex; flex-direction: column; overflow: hidden; }
+  .nav-sub a { padding: 9px 12px; border-radius: 8px; color: var(--cadet-base); font-size: 14px;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .nav-sub a:hover { background: #F7F8F8; }
+  .nav-sub a.active { background: #EEF1FB; color: var(--primary); font-weight: 600; }
+  .nav-badge { font-size: 11px; font-weight: 700; border-radius: 999px; padding: 2px 7px;
+    background: var(--warning-bg); color: var(--warning-deep); }
+
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(16,24,40,.45); z-index: 55; }
+  .overlay.open { display: block; }
+
+  /* ---------- Main ---------- */
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+  .topbar { display: flex; justify-content: space-between; align-items: center; gap: 18px;
+    padding: 14px 34px; border-bottom: 1px solid var(--border-subtle); position: sticky; top: 0; background: #fff; z-index: 40; }
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .hamburger { display: none; width: 40px; height: 40px; border: 1px solid var(--border); border-radius: 8px;
+    background: #fff; color: var(--cadet-base); align-items: center; justify-content: center; cursor: pointer; }
+  .hamburger:hover { background: var(--muted); }
+  .topbar-right { display: flex; align-items: center; gap: 18px; }
+  .lang { color: var(--cadet-base); font-size: 14px; cursor: pointer; background: none; border: none; padding: 0; }
+  .lang:hover { color: var(--primary); }
+  .divider { width: 1px; height: 22px; background: var(--border); }
+  .user { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .user .avatar { width: 30px; height: 30px; background: #E7ECF7; color: var(--primary); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; font-family: 'Outfit', sans-serif; }
+  .user .name { font-weight: 600; font-size: 14px; color: var(--foreground); }
+  .user .gear { color: var(--cadet-04); display: flex; }
+
+  .content { padding: 28px 34px 60px; max-width: 1500px; width: 100%; }
+
+  .breadcrumb { font-size: 13px; color: var(--cadet-04); margin-bottom: 12px; }
+  .breadcrumb .sep { margin: 0 6px; color: var(--cadet-06); }
+  .breadcrumb .current { color: var(--cadet-base); }
+
+  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+  .page-head h1 { font-size: 30px; color: var(--primary); margin-bottom: 8px; }
+  .page-head .sub { font-size: 14px; color: var(--cadet-base); max-width: 620px; line-height: 1.5; margin: 0; }
+  .head-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  /* Acting-as role switcher — prototype device for previewing each approver's inbox */
+  .acting { display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--border); border-radius: var(--radius);
+    height: 40px; padding: 0 4px 0 12px; background: #fff; }
+  .acting .acting-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--cadet-05); }
+  .acting select { border: none; background: none; font-family: inherit; font-size: 14px; font-weight: 600;
+    color: var(--primary); cursor: pointer; height: 36px; padding: 0 6px; }
+  .acting select:focus { outline: none; }
+
+  /* Buttons — Kashier design-system variants */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 600;
+    border-radius: var(--radius); cursor: pointer; border: 1.5px solid transparent; padding: 0 18px; height: 40px;
+    transition: background .12s ease, border-color .12s ease, color .12s ease; white-space: nowrap; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-outline { background: #fff; color: var(--primary); border-color: var(--primary); }
+  .btn-outline:hover { background: var(--ocean-10); }
+  .btn-ghost { background: transparent; color: var(--primary); border-color: transparent; }
+  .btn-ghost:hover { background: var(--ocean-10); }
+  .btn-danger { background: var(--destructive); color: #fff; }
+  .btn-danger:hover { background: var(--destructive-hover); }
+  .btn-danger-outline { background: #fff; color: var(--destructive); border-color: var(--destructive); }
+  .btn-danger-outline:hover { background: var(--destructive-bg); }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-success:hover { background: #388E3B; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .btn-sm { height: 36px; padding: 0 14px; font-size: 13px; }
+  .btn-link { background: none; border: none; color: var(--primary-hover); font-size: 13px; font-weight: 600; cursor: pointer; }
+
+  /* ---------- KPI bar (styleguide §10c) ---------- */
+  .kpi-bar { display: flex; border-radius: var(--radius); overflow: hidden; margin-bottom: 24px; flex-wrap: wrap; }
+  .kpi { flex: 1; min-width: 220px; background: #fff; border: 1px solid var(--border-subtle); padding: 16px;
+    display: flex; flex-direction: column; gap: 6px; margin-left: -1px; }
+  .kpi:first-child { margin-left: 0; border-top-left-radius: var(--radius); border-bottom-left-radius: var(--radius); }
+  .kpi:last-child { border-top-right-radius: var(--radius); border-bottom-right-radius: var(--radius); }
+  .kpi .k-label { font-size: 12px; font-weight: 600; color: var(--cadet-base); text-transform: uppercase; letter-spacing: .04em; }
+  .kpi .k-value { font-family: 'Outfit', sans-serif; font-size: 31px; font-weight: 700; color: var(--foreground); line-height: 1.1; }
+  .kpi .k-value.warn { color: var(--warning-deep); }
+  .kpi .k-value.bad { color: var(--destructive); }
+  .kpi .k-desc { font-size: 12px; color: var(--cadet-06); }
+  .kpi .k-desc-bad { color: var(--destructive); font-weight: 600; }
+
+  /* ---------- Tabs ---------- */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 22px; }
+  .tab { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; font-size: 14px; font-weight: 600;
+    color: var(--cadet-base); background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -2px;
+    cursor: pointer; transition: color .12s ease, border-color .12s ease; white-space: nowrap; }
+  .tab:hover { color: var(--foreground); }
+  .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .tab .tab-count { font-size: 11px; font-weight: 700; border-radius: 999px; padding: 2px 7px;
+    background: var(--pill-bg); color: var(--pill-text); }
+  .tab.active .tab-count { background: var(--primary-10); color: var(--primary); }
+  .tab .tab-count.urgent { background: var(--warning-bg); color: var(--warning-deep); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ---------- Table card ---------- */
+  .table-card { background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden; }
+  .table-toolbar { display: flex; align-items: center; gap: 16px; padding: 16px; flex-wrap: wrap; }
+  .table-toolbar h2 { font-size: 18px; color: var(--cadet-base); flex-shrink: 0; }
+  .search-input { position: relative; flex: 1; min-width: 240px; }
+  .search-input input { width: 100%; height: 38px; border: none; border-radius: var(--radius);
+    padding: 0 12px 0 30px; font-family: 'Noto Sans', sans-serif; font-size: 13px; color: var(--foreground); background: transparent; }
+  .search-input input:focus { outline: none; }
+  .search-input input::placeholder { color: var(--cadet-05); }
+  .search-input svg { position: absolute; left: 6px; top: 50%; transform: translateY(-50%); color: var(--cadet-05); width: 16px; height: 16px; }
+  .toolbar-right { display: flex; align-items: center; gap: 20px; margin-left: auto; }
+  .toolbar-link { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--foreground);
+    background: none; border: none; cursor: pointer; }
+  .toolbar-link:hover { color: var(--primary); }
+  .toolbar-link svg { color: var(--cadet-base); }
+  .toolbar-link.on { color: var(--primary); }
+  .toolbar-link.on svg { color: var(--primary); }
+
+  /* Filter panel */
+  .filter-panel { display: none; border-top: 1px solid var(--border-subtle); padding: 18px 16px;
+    grid-template-columns: repeat(4, 1fr); gap: 18px 20px; }
+  .filter-panel.open { display: grid; }
+  .filter-panel .field-label { font-size: 13px; font-weight: 600; color: var(--foreground); margin-bottom: 8px; display: block; }
+  .fselect { height: 36px; width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius); background: #fff;
+    padding: 0 10px; font-size: 13px; color: var(--foreground); cursor: pointer; font-family: inherit; }
+  .fselect:focus { outline: none; border-color: var(--primary); }
+  .finput { height: 36px; width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius); background: #fff;
+    padding: 0 10px; font-size: 13px; color: var(--foreground); font-family: inherit; }
+  .finput:focus { outline: none; border-color: var(--primary); }
+  .filter-footer { grid-column: 1 / -1; display: flex; justify-content: flex-end; align-items: center; gap: 18px; margin-top: 4px; }
+
+  /* Selection bar */
+  .sel-bar { display: none; align-items: center; gap: 16px; padding: 12px 16px; background: var(--primary-10);
+    border-top: 1px solid var(--border-subtle); }
+  .sel-bar.show { display: flex; }
+  .sel-bar .sel-text { font-size: 13px; font-weight: 600; color: var(--primary); }
+  .sel-bar .sel-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+  /* ---------- Table ---------- */
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  .task-table { min-width: 940px; }
+  thead th { height: 42px; padding: 0 10px; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle);
+    background: var(--muted); font-size: 11px; font-weight: 700; color: var(--cadet-base); text-transform: uppercase;
+    letter-spacing: .3px; text-align: left; white-space: nowrap; }
+  th .th-inner { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; }
+  th .th-inner:hover { color: var(--primary); }
+  th .sort-carets { display: inline-flex; color: var(--cadet-06); }
+  th .sort-carets svg { width: 11px; height: 11px; }
+  th.sorted .sort-carets { color: var(--primary); }
+  tbody tr:nth-child(even) { background: rgba(248,249,249,.6); }
+  tbody tr:hover { background: var(--primary-10); }
+  tbody td { padding: 12px 10px; font-size: 13px; font-weight: 400; color: var(--foreground); vertical-align: middle;
+    border-bottom: 1px solid var(--border-subtle); }
+  tbody tr:last-child td { border-bottom: none; }
+  .chk-cell { width: 40px; }
+  .chk-cell input, thead .chk-cell input { accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer; }
+
+  /* Request cell — merchant on top, type and id underneath */
+  .req-name { font-weight: 600; color: var(--foreground); font-size: 13.5px; }
+  .req-meta { display: flex; align-items: center; gap: 5px; margin-top: 4px; font-size: 12px; color: var(--cadet-04); }
+  .req-meta svg { width: 14px; height: 14px; color: var(--cadet-05); flex-shrink: 0; }
+
+  /* Requested-by cell */
+  .by-name { font-weight: 600; color: var(--foreground); font-size: 13px; white-space: nowrap; }
+  .by-role { color: var(--cadet-04); font-size: 12px; margin-top: 3px; white-space: nowrap; }
+
+  /* Approval cell — badge with the current step underneath */
+  .step-sub { color: var(--cadet-04); font-size: 12px; margin-top: 5px; white-space: nowrap; }
+
+  /* Requested change — from → to */
+  .change-cell { min-width: 180px; }
+  .change-label { font-size: 11.5px; color: var(--cadet-05); margin-bottom: 4px; }
+  .diff { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+  .diff .from { color: var(--cadet-04); text-decoration: line-through; font-size: 13px; }
+  /* Cost → selling price is a margin, not a replaced value — no strike-through. */
+  .diff.plain .from { text-decoration: none; }
+  .diff .arrow { color: var(--cadet-06); display: flex; }
+  .diff .arrow svg { width: 13px; height: 13px; }
+  .diff .to { color: var(--foreground); font-weight: 700; font-size: 13.5px; }
+
+  /* Badges */
+  .badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 4px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .3px; padding: 4px 9px; white-space: nowrap; }
+  .badge .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+  .badge-pending   { background: var(--warning-bg); color: var(--warning-deep); }
+  .badge-approved  { background: var(--success-bg); color: var(--success-text); }
+  .badge-rejected  { background: var(--destructive-bg); color: var(--destructive); }
+  .badge-info      { background: var(--ocean-10); color: var(--primary); }
+  .badge-cancelled { background: var(--pill-bg); color: var(--pill-text); }
+  .badge-waiting   { background: var(--pill-bg); color: var(--pill-text); }
+
+  /* Due */
+  .due-cell { white-space: nowrap; color: var(--cadet-base); }
+  .due-over { color: var(--destructive); font-weight: 600; }
+  .muted-dash { color: var(--cadet-06); }
+
+  /* Pagination */
+  .pagination-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; flex-wrap: wrap; gap: 10px;
+    border-top: 1px solid var(--border-subtle); }
+  .pagination-info { font-size: 13px; color: var(--foreground); }
+  .rpp { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--foreground); }
+  .rpp select { border: none; background: none; font-size: 13px; font-weight: 600; color: var(--foreground); cursor: pointer; font-family: inherit; }
+  .pagination { display: flex; align-items: center; gap: 4px; }
+  .page-btn { min-width: 30px; height: 30px; padding: 0 6px; display: flex; align-items: center; justify-content: center;
+    border-radius: var(--radius); border: 1.5px solid transparent; background: #fff; font-size: 12px; font-weight: 600;
+    color: var(--foreground); cursor: pointer; }
+  .page-btn.active { background: var(--primary-10); color: var(--primary); border-color: var(--primary); }
+  .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .page-btn:hover:not(.active):not(:disabled) { border-color: var(--border); }
+
+  /* Empty state */
+  .empty-state { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 56px 20px; text-align: center; }
+  .empty-state.show { display: flex; }
+  .empty-state svg { width: 150px; height: 120px; margin-bottom: 16px; }
+  .empty-state .empty-title { font-size: 16px; font-weight: 700; color: var(--foreground); }
+  .empty-state .empty-sub { font-size: 13px; color: var(--cadet-04); margin-top: 6px; }
+
+  /* ---------- Modal ---------- */
+  .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(16,24,40,.5); z-index: 80;
+    align-items: flex-start; justify-content: center; padding: 40px 16px; overflow-y: auto; }
+  .modal-backdrop.open { display: flex; }
+  .modal { background: #fff; border-radius: 12px; width: 100%; max-width: 720px; box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    animation: pop .16s ease; }
+  .modal.sm { max-width: 480px; }
+  @keyframes pop { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 22px 24px 16px;
+    border-bottom: 1px solid var(--border-subtle); }
+  .modal-head h2 { font-size: 20px; color: var(--primary); }
+  .modal-head .mh-sub { font-size: 12.5px; color: var(--cadet-05); margin-top: 5px; }
+  .modal-close { width: 34px; height: 34px; border: none; background: none; border-radius: 8px; color: var(--cadet-04);
+    cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .modal-close:hover { background: var(--muted); }
+  .modal-body { padding: 22px 24px; }
+  .modal-foot { display: flex; justify-content: flex-end; gap: 12px; padding: 16px 24px 22px; border-top: 1px solid var(--border-subtle);
+    flex-wrap: wrap; }
+  .modal-foot .foot-left { margin-right: auto; }
+
+  .field { margin-bottom: 18px; }
+  .field:last-child { margin-bottom: 0; }
+  label.lbl { display: block; font-size: 13px; font-weight: 600; color: var(--cadet-base); margin-bottom: 7px; }
+  label.lbl .opt { font-weight: 400; color: var(--cadet-05); }
+  .inp, .modal textarea, .modal select { width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius);
+    padding: 10px 12px; font-family: inherit; font-size: 14px; color: var(--foreground); background: #fff; }
+  .inp:focus, .modal textarea:focus, .modal select:focus { outline: none; border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0,31,95,.08); }
+  .modal textarea { resize: vertical; min-height: 76px; line-height: 1.45; }
+  .field-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-bottom: 18px; }
+  /* The generated fields are their own block, so the last one still needs its gap. */
+  #createFields .field:last-child { margin-bottom: 18px; }
+
+  /* Request summary block inside the detail modal */
+  .req-summary { border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+  .req-summary-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 12px; }
+  .req-summary-head .rs-name { font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 700; color: var(--foreground); }
+  .req-summary-head .rs-ids { font-size: 12px; color: var(--cadet-04); margin-top: 4px; }
+  .rec-rows { display: flex; flex-direction: column; gap: 2px; }
+  .rec-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 5px 0; }
+  .rec-row .rr-label { font-size: 13px; color: var(--cadet-base); }
+  .rec-row .rr-value { font-size: 14px; font-weight: 600; color: var(--foreground); text-align: right; }
+
+  .block-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--cadet-05); margin: 22px 0 12px; }
+  .block-title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .block-link { font-size: 12px; font-weight: 700; color: var(--link); text-transform: none; letter-spacing: 0; }
+  .block-link:hover { text-decoration: underline; }
+
+  /* Vertical approval chain inside the detail modal */
+  .chain-v { display: flex; flex-direction: column; }
+  .chain-step { display: flex; gap: 12px; padding-bottom: 18px; position: relative; }
+  .chain-step:not(:last-child)::before { content: ''; position: absolute; left: 13px; top: 30px; bottom: 0; width: 2px; background: var(--border); }
+  .chain-step.approved:not(:last-child)::before { background: var(--success-border); }
+  .step-mark { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; z-index: 1; background: var(--muted); color: var(--cadet-04); border: 1.5px solid var(--border);
+    font-size: 11px; font-weight: 700; font-family: 'Outfit', sans-serif; }
+  .step-mark svg { width: 14px; height: 14px; }
+  .chain-step.approved .step-mark { background: var(--success-bg); color: var(--success-text); border-color: var(--success-border); }
+  .chain-step.current .step-mark { background: var(--warning-bg); color: var(--warning-deep); border-color: var(--warning); }
+  .chain-step.rejected .step-mark { background: var(--destructive-bg); color: var(--destructive); border-color: var(--destructive-border); }
+  .chain-step.info .step-mark { background: var(--ocean-10); color: var(--primary); border-color: var(--ocean-20); }
+  .step-body { min-width: 0; flex: 1; padding-top: 1px; }
+  .step-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .step-role { font-size: 13.5px; font-weight: 700; color: var(--foreground); }
+  .step-meta { font-size: 12px; color: var(--cadet-05); margin-top: 4px; }
+  .step-note { font-size: 12.5px; color: var(--cadet-base); margin-top: 6px; line-height: 1.45;
+    background: var(--muted); border-radius: var(--radius); padding: 8px 10px; }
+  .you-pill { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .3px; padding: 2px 6px;
+    border-radius: 3px; background: var(--accent-10); color: var(--accent-100); }
+
+  /* Activity timeline */
+  .hist { display: flex; flex-direction: column; }
+  .hist-item { display: flex; gap: 12px; padding-bottom: 16px; position: relative; }
+  .hist-item:not(:last-child)::before { content: ''; position: absolute; left: 12px; top: 26px; bottom: 0; width: 1px; background: var(--border); }
+  .hist-dot { width: 24px; height: 24px; border-radius: 50%; background: var(--muted); color: var(--cadet-base);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1; }
+  .hist-dot svg { width: 13px; height: 13px; }
+  .hist-dot.approved { background: var(--success-bg); color: var(--success-text); }
+  .hist-dot.rejected { background: var(--destructive-bg); color: var(--destructive); }
+  .hist-dot.pending  { background: var(--warning-bg); color: var(--warning-deep); }
+  .hist-dot.info     { background: var(--ocean-10); color: var(--primary); }
+  .hist-body { min-width: 0; padding-top: 2px; }
+  .hist-action { font-size: 13px; font-weight: 600; color: var(--foreground); }
+  .hist-meta { font-size: 12px; color: var(--cadet-05); margin-top: 3px; }
+  .hist-note { font-size: 12.5px; color: var(--cadet-base); margin-top: 5px; line-height: 1.4; }
+
+  .confirm-text { font-size: 14px; color: var(--cadet-base); line-height: 1.55; }
+  .confirm-text b { color: var(--foreground); }
+
+  /* Alerts (styleguide §4.4) */
+  .alert { display: flex; gap: 8px; padding: 12px; border-radius: 5px; font-size: 13px; line-height: 1.45;
+    margin-bottom: 18px; border: 1px solid; }
+  .alert svg { width: 20px; height: 20px; flex-shrink: 0; }
+  .alert-info    { background: var(--primary-10); border-color: #C0D5FF; color: var(--primary); }
+  .alert-warning { background: var(--warning-bg); border-color: var(--warning-border); color: var(--warning-text); }
+  .alert-success { background: var(--success-bg); border-color: var(--success-border); color: var(--success-text); }
+  .alert-error   { background: var(--destructive-bg); border-color: var(--destructive-border); color: var(--destructive); }
+  .alert b { font-weight: 700; }
+
+  /* Routing preview inside the New Request modal */
+  .route-preview { border: 1px solid var(--border-subtle); border-radius: 8px; padding: 14px 16px; background: #FCFDFD; }
+  .route-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .route-title { font-size: 15px; font-weight: 700; color: var(--foreground); }
+  .route-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--cadet-05); white-space: nowrap; }
+  .route-why { margin: 6px 0 0; font-size: 13px; color: var(--cadet-base); line-height: 1.45; }
+  .route-why b { color: var(--foreground); font-weight: 600; }
+  .route-steps { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .route-steps li { display: flex; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 600; color: var(--foreground); }
+  .route-steps .n { width: 22px; height: 22px; border-radius: 50%; background: var(--ocean-10); color: var(--primary);
+    border: 1px solid var(--ocean-20); display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--primary);
+    color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; z-index: 100; opacity: 0;
+    pointer-events: none; transition: opacity .2s ease, transform .2s ease; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1100px) { .filter-panel { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 1000px) {
+    .content { padding: 24px 22px 60px; }
+    .topbar { padding: 12px 22px; }
+  }
+  @media (max-width: 900px) {
+    .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%);
+      transition: transform .22s ease; box-shadow: 0 10px 40px rgba(0,0,0,.18); }
+    .sidebar.open { transform: translateX(0); }
+    .hamburger { display: flex; }
+    .page-head h1 { font-size: 26px; }
+  }
+  @media (max-width: 720px) {
+    .head-actions { width: 100%; }
+    .head-actions .btn, .head-actions .acting { flex: 1; }
+    .tabs { overflow-x: auto; }
+    .filter-panel { grid-template-columns: 1fr; }
+    .field-grid { grid-template-columns: 1fr; }
+    .rec-row { flex-direction: column; align-items: flex-start; gap: 2px; }
+    .rec-row .rr-value { text-align: left; }
+  }
+  @media (max-width: 520px) {
+    .user .name { display: none; }
+    .modal-head h2 { font-size: 18px; }
+    .pagination-bar { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">kashier</div>
+
+    <a class="nav-link" href="home.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>Home</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>BIN Management</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>Financial Institutions</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"/></svg>Merchant</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h6m-6 3h6m-6 3h6M10.5 21v-3.75a1.5 1.5 0 0 1 3 0V21"/></svg>Business Industries</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z"/></svg>PCC Templates</a>
+    <a class="nav-link" href="terminals.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25"/></svg>Terminals</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-9L21 3m0 0-4.5-4.5M21 3v13.5" transform="translate(0 3)"/></svg>Reconciliation</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5M21 16.5 16.5 21m0 0L12 16.5m4.5 4.5V7.5"/></svg>Orders</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"/></svg>Transfers</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0"/></svg>Bundles</a>
+    <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5v15h18M3 4.5h.375c.621 0 1.125.504 1.125 1.125v.75c0 .621.504 1.125 1.125 1.125m0 0a48.667 48.667 0 0 1 11.964 1.041M9 15l3-3 2.25 2.25L18 10.5"/></svg>Lending</a>
+
+    <div class="nav-section">
+      <div class="section-head" id="documentsHead">Documents
+        <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
+      </div>
+      <div class="nav-sub" id="documentsSub">
+        <a href="document-types.html">Document Types</a>
+        <a href="document-rules.html">Document Rules</a>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="section-head" id="balanceHead">Balance Management
+        <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
+      </div>
+      <div class="nav-sub" id="balanceSub">
+        <a href="#">Settlement Windows</a>
+        <a href="#">Accounts</a>
+        <a href="on-hold.html">On-Hold</a>
+        <a href="#">Vacations</a>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="section-head" id="mcHead">Maker &amp; Checker
+        <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
+      </div>
+      <div class="nav-sub" id="mcSub">
+        <a class="active" href="maker-checker-tasks.html">Tasks<span class="nav-badge" id="navBadge">0</span></a>
+        <a href="maker-checker-workflows.html">Approval Workflows</a>
+        <a href="maker-checker-logs.html">Logs</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" id="hamburger" aria-label="Open menu">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+        </button>
+      </div>
+      <div class="topbar-right">
+        <button class="lang" id="langBtn">عربي</button>
+        <div class="divider"></div>
+        <div class="user">
+          <div class="avatar">AM</div>
+          <span class="name">Aya Muhammed</span>
+          <span class="gear"><svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="breadcrumb">Maker &amp; Checker <span class="sep">/</span> <span class="current">Tasks</span></div>
+
+      <div class="page-head">
+        <div>
+          <h1>Maker &amp; Checker Tasks</h1>
+          <p class="sub">Requests that need a second pair of eyes before they are applied.</p>
+        </div>
+        <div class="head-actions">
+          <div class="acting">
+            <span class="acting-label">Acting as</span>
+            <select id="roleSelect" aria-label="Acting as role"></select>
+          </div>
+          <button class="btn btn-primary" id="newRequestBtn">
+            <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            New Request
+          </button>
+        </div>
+      </div>
+
+      <div class="kpi-bar" id="kpiBar"></div>
+
+      <!-- ---------- Tabs ---------- -->
+      <div class="tabs" role="tablist">
+        <button class="tab active" role="tab" aria-selected="true" data-tab="mine">
+          Awaiting My Approval
+          <span class="tab-count urgent" id="countMine">0</span>
+        </button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="requests">
+          My Requests
+          <span class="tab-count" id="countRequests">0</span>
+        </button>
+      </div>
+
+      <!-- Both task lists share one renderer — their markup is built in JS. -->
+      <div class="tab-panel active" id="panelMine" role="tabpanel"></div>
+      <div class="tab-panel" id="panelRequests" role="tabpanel"></div>
+
+    </div>
+  </main>
+
+  <!-- ---------- Task detail modal ---------- -->
+  <div class="modal-backdrop" id="detailBackdrop">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h2 id="detailTitle">Request</h2>
+          <div class="mh-sub" id="detailSub"></div>
+        </div>
+        <button class="modal-close" id="detailClose" aria-label="Close">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="detailBody"></div>
+      <div class="modal-foot" id="detailFoot"></div>
+    </div>
+  </div>
+
+  <!-- ---------- New request modal ---------- -->
+  <div class="modal-backdrop" id="createBackdrop">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h2>New Request</h2>
+          <div class="mh-sub">Submitted as <span id="createAs">—</span> — you are the AM on this request, and the workflow
+            picks your head and any further approvers.</div>
+        </div>
+        <button class="modal-close" id="createClose" aria-label="Close">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label class="lbl" for="createType">Request type</label>
+          <select id="createType"></select>
+        </div>
+        <div id="createFields"></div>
+        <div class="field">
+          <label class="lbl" for="createJustification">Justification <span class="opt">(shown to every approver)</span></label>
+          <textarea id="createJustification" placeholder="Why this change is needed — volume commitment, competitor rate, risk mitigation, customer impact..."></textarea>
+        </div>
+        <div class="route-preview" id="routePreview"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" id="createCancel">Cancel</button>
+        <button class="btn btn-primary" id="createSubmit">Submit for Approval</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- Bulk approve modal ---------- -->
+  <div class="modal-backdrop" id="bulkBackdrop">
+    <div class="modal sm">
+      <div class="modal-head">
+        <div><h2>Approve Selected</h2></div>
+        <button class="modal-close" id="bulkClose" aria-label="Close">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-warning">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
+          Your approval is recorded against your name. Requests that clear their last step are applied immediately.
+        </div>
+        <p class="confirm-text" id="bulkText"></p>
+        <div class="field" style="margin-top:18px">
+          <label class="lbl" for="bulkNote">Note <span class="opt">(optional — recorded in Logs)</span></label>
+          <textarea id="bulkNote" placeholder="e.g. Margins reviewed against the Q3 pricing sheet — all within delegated authority."></textarea>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" id="bulkCancel">Cancel</button>
+        <button class="btn btn-success" id="bulkConfirm">Approve</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  /* ================= Reference data ================= */
+
+  /* The persona stays the same — only the role changes, so the prototype can show
+     the same inbox from each approver's point of view. */
+  const USER_NAME = 'Aya Muhammed';
+
+  const ROLES = {
+    'Sales Agent':        { short: 'SLS', maker: true },
+    'Head of Sales':      { short: 'HOS' },
+    'Risk Manager':       { short: 'RSK' },
+    'Finance Manager':    { short: 'FIN' },
+    'Compliance Officer': { short: 'CMP' },
+    'CCO':                { short: 'CCO' },
+    'Operations':         { short: 'OPS', maker: true },
+  };
+
+  let actingRole = 'Head of Sales';
+  const currentUser = () => ({ name: USER_NAME, role: actingRole });
+
+  /* ---------- Approval workflows (mirrored on maker-checker-workflows.html) ---------- */
+  const WORKFLOWS = [
+    { id: 'WF-01', type: 'Special Rate Approval',    condition: 'Selling rate at or above the method floor',    chain: ['Head of Sales'],                            slaHours: 24 },
+    { id: 'WF-02', type: 'Special Rate Approval',    condition: 'Selling rate below the method floor',          chain: ['Head of Sales', 'CCO'],                     slaHours: 48 },
+    { id: 'WF-03', type: 'Settlement Cycle Change',  condition: 'Requested cycle T+1 or T+2',                   chain: ['Risk Manager', 'Finance Manager'],          slaHours: 48 },
+    { id: 'WF-04', type: 'Settlement Cycle Change',  condition: 'Requested cycle T+0 (same day)',               chain: ['Risk Manager', 'Finance Manager', 'CCO'],   slaHours: 72 },
+    { id: 'WF-05', type: 'Refund Above Limit',       condition: '50,000 – 250,000 EGP',                         chain: ['Finance Manager'],                          slaHours: 12 },
+    { id: 'WF-06', type: 'Refund Above Limit',       condition: 'Above 250,000 EGP',                            chain: ['Finance Manager', 'CCO'],                   slaHours: 24 },
+    { id: 'WF-09', type: 'Terminal Limit Increase',  condition: 'Above the approved POS ceiling',               chain: ['Risk Manager'],                             slaHours: 24 },
+    { id: 'WF-10', type: 'On-Hold Release',          condition: 'Held amount above 100,000 EGP',                chain: ['Risk Manager', 'Finance Manager'],          slaHours: 12 },
+    { id: 'WF-11', type: 'On-Hold Release',          condition: 'Held amount up to 100,000 EGP',                chain: [],                                           slaHours: 0 },
+  ];
+
+  const wfById = id => WORKFLOWS.find(w => w.id === id);
+
+  const TYPE_ICONS = {
+    'Special Rate Approval':   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25 15 8.25m-5.25.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm6 6a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>',
+    'Settlement Cycle Change': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992V4.356m0 4.992-3.181-3.183a8.25 8.25 0 0 0-13.803 3.7M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.804-3.7"/></svg>',
+    'Refund Above Limit':      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"/></svg>',
+    'Terminal Limit Increase': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>',
+    'On-Hold Release':         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>',
+  };
+
+  const STATUS_CLASS = {
+    'Pending':        'badge-pending',
+    'Info Requested': 'badge-info',
+    'Approved':       'badge-approved',
+    'Rejected':       'badge-rejected',
+    'Cancelled':      'badge-cancelled',
+  };
+
+  /* ================= Seed data ================= */
+  /* Dates are generated relative to load time so the SLA column always reads true. */
+  const H = 3600000;
+  const hAgo   = h => new Date(Date.now() - h * H).toISOString();
+  const hAhead = h => new Date(Date.now() + h * H).toISOString();
+
+  /** Build a chain from a workflow, marking `done` steps approved and the next one current. */
+  function chainFrom(wfId, done = []) {
+    const wf = wfById(wfId);
+    return wf.chain.map((role, i) => {
+      const d = done[i];
+      if (d) return { role, status: d.status, approver: d.approver, actedAt: d.actedAt, note: d.note || '' };
+      return { role, status: i === done.length ? 'Pending' : 'Waiting', approver: null, actedAt: null, note: '' };
+    });
+  }
+
+  let tasks = [
+    {
+      id: 'TSK-1051', wf: 'WF-02', type: 'Special Rate Approval',
+      merchant: 'Cairo Electronics', mid: 'MID-60771-402',
+      maker: { name: 'Karim Salah', role: 'Sales Agent' },
+      createdAt: hAgo(6), dueAt: hAhead(42), status: 'Pending',
+      change: { label: 'Selling price — ValU', from: 'Floor 4.50%', to: '4.10%', plain: true },
+      details: [
+        ['Sales channel', 'Key Accounts'], ['Industry', 'Electronics'],
+        ['Kashier method', 'ValU'], ['Gateway', 'POS'],
+        ['Floor rate for this method', '4.50%'], ['Selling price', '4.10%'],
+        ['Competitor', 'Geidea'], ['Competitor selling price', '4.25%'],
+        ['Acquiring bank', 'Banque Misr'], ['Model', 'PF'],
+        ['Estimated TPV', '4M+ (monthly)'], ['Retention / Acquisition', 'Acquisition'],
+      ],
+      justification: 'Merchant is holding a Geidea quote at 4.25% on ValU installments. They committed to 4M+ EGP monthly TPV and to moving their whole POS estate to Kashier.',
+      chain: chainFrom('WF-02'),
+    },
+    {
+      id: 'TSK-1050', wf: 'WF-03', type: 'Settlement Cycle Change',
+      merchant: 'Nile Pharma', mid: 'MID-51002-338',
+      maker: { name: USER_NAME, role: 'Sales Agent' },
+      createdAt: hAgo(20), dueAt: hAhead(28), status: 'Pending',
+      change: { label: 'Settlement cycle', from: 'T+3', to: 'T+1' },
+      details: [['Average daily volume', '310,000 EGP'], ['Merchant age', '2 years 4 months']],
+      justification: 'Pharmacy chain with daily supplier payments. Clean chargeback history and stable volumes for 8 quarters.',
+      chain: chainFrom('WF-03', [{ status: 'Approved', approver: 'Omar Fathy', actedAt: hAgo(4), note: 'Risk profile is clean — chargeback ratio well below the 0.5% threshold.' }]),
+    },
+    {
+      id: 'TSK-1049', wf: 'WF-01', type: 'Special Rate Approval',
+      merchant: 'Zamalek Books', mid: 'MID-30188-745',
+      maker: { name: 'Karim Salah', role: 'Sales Agent' },
+      createdAt: hAgo(30), dueAt: hAgo(6), status: 'Pending',
+      change: { label: 'Selling price — Transfer', from: 'Floor 0.30%', to: '0.35% + 1.00 EGP', plain: true },
+      details: [
+        ['Sales channel', 'Direct Sales'], ['Industry', 'Retail'],
+        ['Kashier method', 'Transfer'], ['Gateway', 'Online'],
+        ['Floor rate for this method', '0.30%'], ['Selling price', '0.35% + 1.00 EGP'],
+        ['Competitor', 'Paymob'], ['Competitor selling price', '0.40% + 1.50 EGP'],
+        ['Acquiring bank', 'CIB'], ['Model', 'PSP'],
+        ['Estimated TPV', '640K (monthly)'], ['Retention / Acquisition', 'Retention'],
+      ],
+      justification: 'Small bookshop chain renewing for a second year — asking for a goodwill cut to stay ahead of the Paymob quote.',
+      chain: chainFrom('WF-01'),
+    },
+    {
+      id: 'TSK-1048', wf: 'WF-10', type: 'On-Hold Release',
+      merchant: 'Obour Mobile Shop', mid: 'MID-73450-682',
+      maker: { name: 'Mona Adel', role: 'Finance Manager' },
+      createdAt: hAgo(9), dueAt: hAhead(3), status: 'Pending',
+      change: { label: 'Held amount', from: 'On-Hold', to: 'Release 128,400.00 EGP' },
+      details: [['On-hold record', 'STB-73450682514-01'], ['Hold reason', 'Chargeback Reserve'], ['Amount', '128,400.00 EGP']],
+      justification: 'Dispute closed in the merchant’s favour — the reserve is no longer needed.',
+      chain: chainFrom('WF-10'),
+    },
+    {
+      id: 'TSK-1047', wf: 'WF-06', type: 'Refund Above Limit',
+      merchant: 'Alex Fitness Hub', mid: 'MID-88204-561',
+      maker: { name: 'Hana Gamal', role: 'Operations' },
+      createdAt: hAgo(14), dueAt: hAhead(10), status: 'Pending',
+      change: { label: 'Refund', from: '—', to: '412,000.00 EGP' },
+      details: [['Order reference', 'ORD-88204-77120'], ['Original payment', '412,000.00 EGP'], ['Reason', 'Duplicate annual membership charge']],
+      justification: 'Corporate client double-charged for 140 annual memberships. Merchant confirmed and wants a same-day refund.',
+      chain: chainFrom('WF-06', [{ status: 'Approved', approver: 'Mona Adel', actedAt: hAgo(2), note: 'Duplicate confirmed against the settlement file.' }]),
+    },
+    {
+      id: 'TSK-1046', wf: 'WF-04', type: 'Settlement Cycle Change',
+      merchant: 'Delta Grocers', mid: 'MID-19338-110',
+      maker: { name: 'Karim Salah', role: 'Sales Agent' },
+      createdAt: hAgo(26), dueAt: hAhead(46), status: 'Info Requested',
+      change: { label: 'Settlement cycle', from: 'T+3', to: 'T+0' },
+      details: [['Average daily volume', '95,000 EGP'], ['Merchant age', '7 months']],
+      justification: 'Grocery chain wants same-day settlement to fund daily produce purchases.',
+      chain: chainFrom('WF-04', [{ status: 'Info Requested', approver: 'Omar Fathy', actedAt: hAgo(5), note: 'Send the last 3 months of chargeback detail and confirm whether the new branches are on the same MID.' }]),
+    },
+    {
+      id: 'TSK-1044', wf: 'WF-09', type: 'Terminal Limit Increase',
+      merchant: 'Sharaf Store', mid: 'MID-44246-585',
+      maker: { name: 'Hana Gamal', role: 'Operations' },
+      createdAt: hAgo(34), dueAt: hAhead(14), status: 'Pending',
+      change: { label: 'Per-transaction POS ceiling', from: '50,000 EGP', to: '150,000 EGP' },
+      details: [['Terminals affected', '6'], ['Peak ticket last quarter', '138,500 EGP'], ['Chargeback ratio', '0.02%']],
+      justification: 'Electronics retailer regularly declines high-ticket sales during promotions.',
+      chain: chainFrom('WF-09'),
+    },
+    {
+      id: 'TSK-1043', wf: 'WF-01', type: 'Special Rate Approval',
+      merchant: 'MiniMore', mid: 'MID-31664-818',
+      maker: { name: USER_NAME, role: 'Sales Agent' },
+      createdAt: hAgo(72), dueAt: hAgo(48), status: 'Approved',
+      change: { label: 'Selling price — Bank Installment', from: 'Floor 2.00%', to: '2.10%', plain: true },
+      details: [
+        ['Sales channel', 'Direct Sales'], ['Industry', 'Fashion'],
+        ['Kashier method', 'Bank Installment'], ['Gateway', 'Online & POS'],
+        ['Floor rate for this method', '2.00%'], ['Selling price', '2.10%'],
+        ['Competitor', 'Fawry'], ['Competitor selling price', '2.20%'],
+        ['Acquiring bank', 'QNB Alahli'], ['Model', 'PSP'],
+        ['Estimated TPV', '13M (annual)'], ['Retention / Acquisition', 'Retention'],
+      ],
+      justification: 'Renewal in exchange for a 12-month exclusivity commitment — still 10bps above the Bank Installment floor.',
+      chain: chainFrom('WF-01', [{ status: 'Approved', approver: 'Aya Muhammed', actedAt: hAgo(60), note: 'Within delegated authority — approved.' }]),
+    },
+    {
+      id: 'TSK-1042', wf: 'WF-05', type: 'Refund Above Limit',
+      merchant: 'Kaftan Egypt', mid: 'MID-47223-121',
+      maker: { name: 'Hana Gamal', role: 'Operations' },
+      createdAt: hAgo(80), dueAt: hAgo(68), status: 'Approved',
+      change: { label: 'Refund', from: '—', to: '74,500.00 EGP' },
+      details: [['Order reference', 'ORD-47223-11902'], ['Reason', 'Cancelled bulk order']],
+      justification: 'Corporate uniform order cancelled before delivery; merchant agreed to a full refund.',
+      chain: chainFrom('WF-05', [{ status: 'Approved', approver: 'Mona Adel', actedAt: hAgo(70), note: 'Funds available in the merchant balance.' }]),
+    },
+    {
+      id: 'TSK-1041', wf: 'WF-02', type: 'Special Rate Approval',
+      merchant: 'Tanta Textiles', mid: 'MID-42990-207',
+      maker: { name: 'Karim Salah', role: 'Sales Agent' },
+      createdAt: hAgo(96), dueAt: hAgo(48), status: 'Rejected',
+      change: { label: 'Selling price — Contact', from: 'Floor 4.50%', to: '3.50%', plain: true },
+      details: [
+        ['Sales channel', 'Telesales'], ['Industry', 'Retail'],
+        ['Kashier method', 'Contact'], ['Gateway', 'POS'],
+        ['Floor rate for this method', '4.50%'], ['Selling price', '3.50%'],
+        ['Competitor', 'Geidea'], ['Competitor selling price', '3.75%'],
+        ['Acquiring bank', 'Banque Misr'], ['Model', 'PF'],
+        ['Estimated TPV', '380K (monthly)'], ['Retention / Acquisition', 'Retention'],
+      ],
+      justification: 'Merchant threatened to move to Geidea unless we match 3.75% on Contact installments.',
+      chain: chainFrom('WF-02', [
+        { status: 'Approved', approver: 'Aya Muhammed', actedAt: hAgo(90), note: 'TPV is small but the account is strategic in the Delta region.' },
+        { status: 'Rejected', approver: 'Sherif Nabil', actedAt: hAgo(84), note: '3.50% is below what Contact charges us at 380K TPV — the account would run at a loss. Counter at 4.25%.' },
+      ]),
+    },
+    {
+      id: 'TSK-1039', wf: 'WF-03', type: 'Settlement Cycle Change',
+      merchant: 'Maadi Home Decor', mid: 'MID-77410-093',
+      maker: { name: 'Karim Salah', role: 'Sales Agent' },
+      createdAt: hAgo(130), dueAt: hAgo(82), status: 'Approved',
+      change: { label: 'Settlement cycle', from: 'T+3', to: 'T+1' },
+      details: [['Average daily volume', '128,000 EGP'], ['Merchant age', '3 years']],
+      justification: 'Furniture retailer with heavy supplier prepayments; long clean history.',
+      chain: chainFrom('WF-03', [
+        { status: 'Approved', approver: 'Omar Fathy', actedAt: hAgo(120), note: 'No risk flags on this MID.' },
+        { status: 'Approved', approver: 'Mona Adel', actedAt: hAgo(100), note: 'Funding impact is within the daily float.' },
+      ]),
+    },
+    {
+      id: 'TSK-1038', wf: 'WF-11', type: 'On-Hold Release',
+      merchant: 'Zamalek Books', mid: 'MID-30188-745',
+      maker: { name: 'Mona Adel', role: 'Finance Manager' },
+      createdAt: hAgo(140), dueAt: hAgo(140), status: 'Approved',
+      change: { label: 'Held amount', from: 'On-Hold', to: 'Release 941.75 EGP' },
+      details: [['On-hold record', 'STB-30188745022-01'], ['Hold reason', 'Settlement Delay'], ['Amount', '941.75 EGP']],
+      justification: 'Provider settlement file received.',
+      chain: [],
+    },
+  ];
+
+  /* ---------- Seeded audit log ---------- */
+  let logs = [
+    { id: 'L-020', ts: hAgo(2),   action: 'Approved',       taskId: 'TSK-1047', type: 'Refund Above Limit',       merchant: 'Alex Fitness Hub',   mid: 'MID-88204-561', actor: 'Mona Adel',   role: 'Finance Manager',    system: false, detail: 'Step 1 of 2 approved — duplicate confirmed against the settlement file. Now with CCO.' },
+    { id: 'L-019', ts: hAgo(4),   action: 'Approved',       taskId: 'TSK-1050', type: 'Settlement Cycle Change',  merchant: 'Nile Pharma',        mid: 'MID-51002-338', actor: 'Omar Fathy',  role: 'Risk Manager',       system: false, detail: 'Step 1 of 2 approved — chargeback ratio well below the 0.5% threshold. Now with Finance Manager.' },
+    { id: 'L-018', ts: hAgo(5),   action: 'Info Requested', taskId: 'TSK-1046', type: 'Settlement Cycle Change',  merchant: 'Delta Grocers',      mid: 'MID-19338-110', actor: 'Omar Fathy',  role: 'Risk Manager',       system: false, detail: 'Sent back to the maker — 3 months of chargeback detail requested before a T+0 decision.' },
+    { id: 'L-017', ts: hAgo(6),   action: 'Submitted',      taskId: 'TSK-1051', type: 'Special Rate Approval',    merchant: 'Cairo Electronics',  mid: 'MID-60771-402', actor: 'Karim Salah', role: 'Sales Agent',        system: false, detail: 'ValU rate of 4.10% quoted against a 4.50% method floor — routed to Head of Sales, then CCO (WF-02).' },
+    { id: 'L-016', ts: hAgo(9),   action: 'Submitted',      taskId: 'TSK-1048', type: 'On-Hold Release',          merchant: 'Obour Mobile Shop',  mid: 'MID-73450-682', actor: 'Mona Adel',   role: 'Finance Manager',    system: false, detail: 'Release of 128,400.00 EGP requested — above the 100,000 EGP threshold, routed to Risk then Finance (WF-10).' },
+    { id: 'L-015', ts: hAgo(14),  action: 'Submitted',      taskId: 'TSK-1047', type: 'Refund Above Limit',       merchant: 'Alex Fitness Hub',   mid: 'MID-88204-561', actor: 'Hana Gamal',  role: 'Operations',         system: false, detail: 'Refund of 412,000.00 EGP requested — above 250,000 EGP, routed to Finance then CCO (WF-06).' },
+    { id: 'L-014', ts: hAgo(20),  action: 'Submitted',      taskId: 'TSK-1050', type: 'Settlement Cycle Change',  merchant: 'Nile Pharma',        mid: 'MID-51002-338', actor: USER_NAME,     role: 'Sales Agent',        system: false, detail: 'T+3 to T+1 requested — routed to Risk Manager, then Finance Manager (WF-03).' },
+    { id: 'L-013', ts: hAgo(26),  action: 'Submitted',      taskId: 'TSK-1046', type: 'Settlement Cycle Change',  merchant: 'Delta Grocers',      mid: 'MID-19338-110', actor: 'Karim Salah', role: 'Sales Agent',        system: false, detail: 'T+3 to T+0 requested — routed to Risk, Finance, then CCO (WF-04).' },
+    { id: 'L-012', ts: hAgo(28),  action: 'Escalated',      taskId: 'TSK-1049', type: 'Special Rate Approval',    merchant: 'Zamalek Books',      mid: 'MID-30188-745', actor: 'Workflow Engine', role: 'System',         system: true,  detail: 'SLA breached at Head of Sales — the request stays open and is flagged as overdue.' },
+    { id: 'L-011', ts: hAgo(30),  action: 'Submitted',      taskId: 'TSK-1049', type: 'Special Rate Approval',    merchant: 'Zamalek Books',      mid: 'MID-30188-745', actor: 'Karim Salah', role: 'Sales Agent',        system: false, detail: 'Transfer rate of 0.35% + 1.00 EGP, above the 0.30% method floor — routed to Head of Sales only (WF-01).' },
+    { id: 'L-009', ts: hAgo(34),  action: 'Submitted',      taskId: 'TSK-1044', type: 'Terminal Limit Increase',  merchant: 'Sharaf Store',       mid: 'MID-44246-585', actor: 'Hana Gamal',  role: 'Operations',         system: false, detail: 'POS ceiling raise from 50,000 to 150,000 EGP requested — routed to Risk Manager (WF-09).' },
+    { id: 'L-007', ts: hAgo(60),  action: 'Approved',       taskId: 'TSK-1043', type: 'Special Rate Approval',    merchant: 'MiniMore',           mid: 'MID-31664-818', actor: USER_NAME,     role: 'Head of Sales',      system: false, detail: 'Final approval — Bank Installment rate of 2.10% applied to the merchant profile.' },
+    { id: 'L-006', ts: hAgo(70),  action: 'Approved',       taskId: 'TSK-1042', type: 'Refund Above Limit',       merchant: 'Kaftan Egypt',       mid: 'MID-47223-121', actor: 'Mona Adel',   role: 'Finance Manager',    system: false, detail: 'Final approval — refund of 74,500.00 EGP released to the customer.' },
+    { id: 'L-005', ts: hAgo(84),  action: 'Rejected',       taskId: 'TSK-1041', type: 'Special Rate Approval',    merchant: 'Tanta Textiles',     mid: 'MID-42990-207', actor: 'Sherif Nabil', role: 'CCO',               system: false, detail: 'Rejected at step 2 of 2 — 3.50% is below what Contact charges us at this TPV. Counter-offer suggested at 4.25%.' },
+    { id: 'L-003', ts: hAgo(90),  action: 'Approved',       taskId: 'TSK-1041', type: 'Special Rate Approval',    merchant: 'Tanta Textiles',     mid: 'MID-42990-207', actor: USER_NAME,     role: 'Head of Sales',      system: false, detail: 'Step 1 of 2 approved — strategic account in the Delta region. Now with CCO.' },
+    { id: 'L-002', ts: hAgo(100), action: 'Approved',       taskId: 'TSK-1039', type: 'Settlement Cycle Change',  merchant: 'Maadi Home Decor',   mid: 'MID-77410-093', actor: 'Mona Adel',   role: 'Finance Manager',    system: false, detail: 'Final approval — settlement cycle changed to T+1 from the next window.' },
+    { id: 'L-001', ts: hAgo(140), action: 'Auto-approved',  taskId: 'TSK-1038', type: 'On-Hold Release',          merchant: 'Zamalek Books',      mid: 'MID-30188-745', actor: 'Workflow Engine', role: 'System',         system: true,  detail: 'No approval required — 941.75 EGP is below the 100,000 EGP threshold (WF-11). Applied directly.' },
+  ];
+
+  let taskSeq = 1051;
+  let logSeq = logs.length;
+
+  /* ================= Formatting helpers ================= */
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const now = () => new Date();
+  const money = n => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  function initialsOf(name) {
+    return name.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+  }
+  function isSameDay(a, b) {
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  }
+  function clockOf(d) {
+    let h = d.getHours();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${String(h).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} ${ampm}`;
+  }
+  function formatDateTime(iso) {
+    if (!iso) return null;
+    const d = new Date(iso);
+    if (isSameDay(d, now())) return `Today ${clockOf(d)}`;
+    return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()} ${clockOf(d)}`;
+  }
+  function relativeTime(iso) {
+    const diff = new Date(iso) - now();
+    const abs = Math.abs(diff);
+    const units = [['day', 86400000], ['hour', 3600000], ['minute', 60000]];
+    for (const [unit, ms] of units) {
+      if (abs >= ms) {
+        const v = Math.round(abs / ms);
+        const plural = v === 1 ? unit : unit + 's';
+        return diff < 0 ? `${v} ${plural} ago` : `in ${v} ${plural}`;
+      }
+    }
+    return 'just now';
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+  }
+
+  /* ================= Toast ================= */
+  let toastTimer;
+  function toast(msg) {
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  /* ================= Task helpers ================= */
+  const isOpen = t => t.status === 'Pending' || t.status === 'Info Requested';
+  const isOverdue = t => isOpen(t) && new Date(t.dueAt) < now();
+
+  /** The step the request is sitting on right now — null once it is closed. */
+  function currentStep(t) {
+    if (!isOpen(t)) return null;
+    return t.chain.find(s => s.status === 'Pending' || s.status === 'Info Requested') || null;
+  }
+  function stepNumber(t) {
+    const s = currentStep(t);
+    return s ? t.chain.indexOf(s) + 1 : t.chain.length;
+  }
+  /** A checker may act only on the step addressed to their role, and only while it is pending. */
+  function canAct(t) {
+    const s = currentStep(t);
+    return !!s && s.status === 'Pending' && s.role === actingRole;
+  }
+  const isMaker = t => t.maker.name === USER_NAME;
+
+  /* Every write to a task funnels through here so the audit trail can never drift. */
+  function addLog({ action, task, detail, actor }) {
+    logSeq += 1;
+    const who = actor || currentUser();
+    logs.unshift({
+      id: `L-${String(logSeq).padStart(3, '0')}`,
+      ts: new Date().toISOString(),
+      action,
+      taskId: task.id,
+      type: task.type,
+      merchant: task.merchant,
+      mid: task.mid,
+      actor: who.name,
+      role: who.role,
+      system: !!who.system,
+      detail,
+    });
+  }
+
+  /* ================= Shell chrome ================= */
+  function buildRoleSelect() {
+    $('roleSelect').innerHTML = Object.keys(ROLES)
+      .map(r => `<option value="${r}" ${r === actingRole ? 'selected' : ''}>${r}</option>`).join('');
+  }
+
+  function statusBadge(status) {
+    return `<span class="badge ${STATUS_CLASS[status]}"><span class="dot"></span>${status}</span>`;
+  }
+
+  /** "6h" / "2d" / "45m" — compact enough to sit inside a table cell. */
+  function shortDelta(iso) {
+    const abs = Math.abs(new Date(iso) - now());
+    if (abs >= 86400000) return `${Math.round(abs / 86400000)}d`;
+    if (abs >= 3600000) return `${Math.round(abs / 3600000)}h`;
+    return `${Math.max(1, Math.round(abs / 60000))}m`;
+  }
+
+  /** One line under the status badge: where the request has got to. */
+  function stepSummary(t) {
+    if (t.chain.length === 0) return 'No approval required';
+    if (isOpen(t)) return `Step ${stepNumber(t)} of ${t.chain.length} · ${currentStep(t).role}`;
+    if (t.status === 'Rejected') {
+      const at = t.chain.findIndex(s => s.status === 'Rejected') + 1;
+      return `Rejected at step ${at} of ${t.chain.length}`;
+    }
+    if (t.status === 'Approved') return `${t.chain.length} step${t.chain.length === 1 ? '' : 's'} approved`;
+    return 'Withdrawn by the maker';
+  }
+
+  /* ================= Task list panels ================= */
+  /* All three list tabs are the same table with a different base filter, so they
+     share one builder and one renderer. */
+  const LISTS = {
+    mine: {
+      panel: 'panelMine', title: 'Awaiting My Approval', bulk: true,
+      base: t => isOpen(t) && !!currentStep(t) && currentStep(t).role === actingRole && currentStep(t).status === 'Pending',
+      search: 'Search by task ID, merchant or requester...',
+      emptyTitle: 'Nothing waiting on you',
+      emptySub: 'Requests routed to your role will land here. Switch "Acting as" to see another approver’s queue.',
+    },
+    requests: {
+      panel: 'panelRequests', title: 'My Requests', bulk: false,
+      base: t => isMaker(t),
+      search: 'Search your requests...',
+      emptyTitle: 'You have not raised any requests',
+      emptySub: 'Use "New Request" to submit a change that needs approval.',
+    },
+  };
+
+  const listState = {};
+  const selected = new Set();
+
+  function buildListPanel(key) {
+    const cfg = LISTS[key];
+    listState[key] = { search: '', page: 1, perPage: 10, sortKey: 'createdAt', sortDir: 'desc', type: '', status: '', maker: '' };
+
+    const sortCaret = '<span class="sort-carets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"/></svg></span>';
+    const th = (label, sort) => sort
+      ? `<th data-sort="${sort}"><span class="th-inner">${label}${sortCaret}</span></th>`
+      : `<th>${label}</th>`;
+
+    $(cfg.panel).innerHTML = `
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="search-input">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+            <input type="text" id="${key}Search" placeholder="${cfg.search}">
+          </div>
+          <div class="toolbar-right">
+            <button class="toolbar-link" id="${key}FilterBtn">
+              <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"/></svg>
+              Filter
+            </button>
+            <button class="toolbar-link" id="${key}ExportBtn">
+              <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+              Export
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-panel" id="${key}FilterPanel">
+          <div>
+            <label class="field-label" for="${key}TypeFilter">Request type</label>
+            <select class="fselect" id="${key}TypeFilter">
+              <option value="">All types</option>
+              ${[...new Set(WORKFLOWS.map(w => w.type))].map(t => `<option value="${t}">${t}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label class="field-label" for="${key}StatusFilter">Status</label>
+            <select class="fselect" id="${key}StatusFilter">
+              <option value="">All statuses</option>
+              ${Object.keys(STATUS_CLASS).map(s => `<option value="${s}">${s}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label class="field-label" for="${key}MakerFilter">Requested by</label>
+            <select class="fselect" id="${key}MakerFilter"><option value="">Everyone</option></select>
+          </div>
+          <div class="filter-footer">
+            <button class="btn-link" id="${key}ClearFilters">Clear All</button>
+            <button class="btn btn-primary btn-sm" id="${key}SubmitFilters">Submit Filters</button>
+          </div>
+        </div>
+
+        ${cfg.bulk ? `
+        <div class="sel-bar" id="${key}SelBar">
+          <span class="sel-text" id="${key}SelText">0 selected</span>
+          <div class="sel-actions">
+            <button class="btn-link" id="${key}SelClear">Clear selection</button>
+            <button class="btn btn-success btn-sm" id="${key}SelApprove">
+              <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+              Approve Selected
+            </button>
+          </div>
+        </div>` : ''}
+
+        <div class="table-scroll">
+          <table class="task-table" id="${key}Table">
+            <thead>
+              <tr>
+                ${cfg.bulk ? `<th class="chk-cell"><input type="checkbox" id="${key}SelectAll" aria-label="Select all tasks"></th>` : ''}
+                ${th('Request', 'merchant')}
+                ${th('Change', 'change')}
+                ${th('Requested by', 'makerName')}
+                ${th('Approval', 'status')}
+                ${th('Due', 'dueAt')}
+                ${th('')}
+              </tr>
+            </thead>
+            <tbody id="${key}Body"></tbody>
+          </table>
+        </div>
+
+        <div class="empty-state" id="${key}Empty">
+          <svg viewBox="0 0 200 160" fill="none">
+            <circle cx="100" cy="80" r="70" fill="#F5F6F6"/>
+            <rect x="60" y="40" width="80" height="90" rx="6" fill="#fff" stroke="#B3BBBB" stroke-width="2"/>
+            <path d="M74 62h52M74 78h52M74 94h30" stroke="#E6E8E8" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="128" cy="106" r="22" fill="#F3FFF4" stroke="#4AAB4E" stroke-width="2"/>
+            <path d="m118 106 7 7 13-14" stroke="#4AAB4E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+          <div class="empty-title">${cfg.emptyTitle}</div>
+          <div class="empty-sub">${cfg.emptySub}</div>
+        </div>
+
+        <div class="pagination-bar" id="${key}PaginationBar">
+          <div class="pagination-info" id="${key}PageInfo">0 - 0 Of 0</div>
+          <div style="display:flex; align-items:center; gap:20px;">
+            <div class="pagination" id="${key}Pagination"></div>
+            <div class="rpp">
+              Rows per page:
+              <select id="${key}Rpp">
+                <option>5</option>
+                <option selected>10</option>
+                <option>20</option>
+                <option>50</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>`;
+
+    wireListPanel(key);
+  }
+
+  function wireListPanel(key) {
+    const st = listState[key];
+    $(`${key}Search`).addEventListener('input', e => { st.search = e.target.value.trim(); st.page = 1; renderList(key); });
+    $(`${key}Rpp`).addEventListener('change', e => { st.perPage = Number(e.target.value); st.page = 1; renderList(key); });
+    $(`${key}FilterBtn`).addEventListener('click', () => {
+      const open = $(`${key}FilterPanel`).classList.toggle('open');
+      $(`${key}FilterBtn`).classList.toggle('on', open);
+    });
+    $(`${key}SubmitFilters`).addEventListener('click', () => {
+      st.type = $(`${key}TypeFilter`).value;
+      st.status = $(`${key}StatusFilter`).value;
+      st.maker = $(`${key}MakerFilter`).value;
+      st.page = 1;
+      renderList(key);
+    });
+    $(`${key}ClearFilters`).addEventListener('click', () => {
+      [`${key}TypeFilter`, `${key}StatusFilter`, `${key}MakerFilter`].forEach(id => $(id).value = '');
+      Object.assign(st, { type: '', status: '', maker: '', page: 1 });
+      renderList(key);
+    });
+    $(`${key}ExportBtn`).addEventListener('click', () => {
+      const rows = listFiltered(key);
+      downloadCsv(`maker-checker-${key}.csv`,
+        ['Task ID', 'Type', 'Merchant', 'MID', 'Requested Change', 'From', 'To', 'Requested By', 'Role', 'Workflow', 'Current Step', 'Status', 'Submitted', 'Due'],
+        rows.map(t => [t.id, t.type, t.merchant, t.mid, t.change.label, t.change.from, t.change.to, t.maker.name, t.maker.role,
+          t.wf, t.chain.length ? `${stepNumber(t)} of ${t.chain.length} — ${(currentStep(t) || {}).role || 'Completed'}` : 'No approval required',
+          t.status, formatDateTime(t.createdAt), isOpen(t) ? formatDateTime(t.dueAt) : '-']));
+      toast(`Exported ${rows.length} task${rows.length === 1 ? '' : 's'}`);
+    });
+
+    if (LISTS[key].bulk) {
+      $(`${key}SelectAll`).addEventListener('change', e => {
+        document.querySelectorAll(`#${key}Body .row-check`).forEach(c => {
+          c.checked = e.target.checked;
+          c.checked ? selected.add(c.dataset.id) : selected.delete(c.dataset.id);
+        });
+        syncSelection(key);
+      });
+      $(`${key}SelClear`).addEventListener('click', () => {
+        selected.clear();
+        document.querySelectorAll(`#${key}Body .row-check`).forEach(c => c.checked = false);
+        syncSelection(key);
+      });
+      $(`${key}SelApprove`).addEventListener('click', openBulk);
+    }
+
+    wireSorting(`${key}Table`, st, () => renderList(key));
+  }
+
+  function listFiltered(key) {
+    const st = listState[key];
+    const q = st.search.toLowerCase();
+    const rows = tasks.filter(t => {
+      if (!LISTS[key].base(t)) return false;
+      if (q && ![t.id, t.type, t.merchant, t.mid, t.maker.name, t.change.label, t.change.to, t.justification]
+        .some(v => String(v).toLowerCase().includes(q))) return false;
+      if (st.type && t.type !== st.type) return false;
+      if (st.status && t.status !== st.status) return false;
+      if (st.maker && t.maker.name !== st.maker) return false;
+      return true;
+    });
+    return sortRows(rows.map(decorate), st);
+  }
+
+  /* Sortable mirrors of nested fields, so the shared sorter stays dumb. */
+  function decorate(t) {
+    t.makerName = t.maker.name;
+    t.change_ = t.change.to;
+    t.step = t.chain.length ? stepNumber(t) : 0;
+    return t;
+  }
+
+  function sortRows(rows, state) {
+    const dir = state.sortDir === 'asc' ? 1 : -1;
+    const key = state.sortKey === 'change' ? 'change_' : state.sortKey;
+    return rows.sort((a, b) => {
+      let x = a[key], y = b[key];
+      if (x === null || x === undefined) x = '';
+      if (y === null || y === undefined) y = '';
+      if (typeof x === 'number' && typeof y === 'number') return (x - y) * dir;
+      return String(x).localeCompare(String(y)) * dir;
+    });
+  }
+
+  function renderList(key) {
+    const cfg = LISTS[key], st = listState[key];
+    const rows = listFiltered(key);
+    const total = rows.length;
+    const totalPages = Math.max(1, Math.ceil(total / st.perPage));
+    if (st.page > totalPages) st.page = totalPages;
+    const start = (st.page - 1) * st.perPage;
+    const pageRows = rows.slice(start, start + st.perPage);
+
+    $(`${key}Empty`).classList.toggle('show', total === 0);
+    $(`${key}Table`).style.display = total === 0 ? 'none' : '';
+    $(`${key}PaginationBar`).style.display = total === 0 ? 'none' : 'flex';
+
+    $(`${key}Body`).innerHTML = pageRows.map(t => `
+      <tr>
+        ${cfg.bulk ? `<td class="chk-cell"><input type="checkbox" class="row-check" data-id="${t.id}" ${selected.has(t.id) ? 'checked' : ''} aria-label="Select ${t.id}"></td>` : ''}
+        <td>
+          <div class="req-name">${escapeHtml(t.merchant)}</div>
+          <div class="req-meta">${TYPE_ICONS[t.type] || ''}${escapeHtml(t.type)} · ${t.id}</div>
+        </td>
+        <td class="change-cell">
+          <div class="change-label">${escapeHtml(t.change.label)}</div>
+          <div class="diff ${t.change.plain ? 'plain' : ''}">
+            <span class="from">${escapeHtml(t.change.from)}</span>
+            <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg></span>
+            <span class="to">${escapeHtml(t.change.to)}</span>
+          </div>
+        </td>
+        <td>
+          <div class="by-name">${escapeHtml(t.maker.name)}</div>
+          <div class="by-role">${escapeHtml(t.maker.role)}</div>
+        </td>
+        <td>
+          ${statusBadge(t.status)}
+          <div class="step-sub">${escapeHtml(stepSummary(t))}</div>
+        </td>
+        <td class="due-cell">${isOpen(t)
+          ? (isOverdue(t) ? `<span class="due-over">Overdue ${shortDelta(t.dueAt)}</span>` : `in ${shortDelta(t.dueAt)}`)
+          : '<span class="muted-dash">—</span>'}</td>
+        <td style="text-align:right">
+          <button class="btn ${canAct(t) ? 'btn-primary' : 'btn-outline'} btn-sm open-task" data-id="${t.id}">${canAct(t) ? 'Review' : 'View'}</button>
+        </td>
+      </tr>`).join('');
+
+    $(`${key}PageInfo`).textContent = `${total === 0 ? 0 : start + 1} - ${Math.min(start + st.perPage, total)} Of ${total}`;
+    renderPagination($(`${key}Pagination`), st, totalPages, () => renderList(key));
+
+    $(`${key}Body`).querySelectorAll('.open-task').forEach(b =>
+      b.addEventListener('click', () => openDetail(b.dataset.id)));
+
+    if (cfg.bulk) {
+      $(`${key}Body`).querySelectorAll('.row-check').forEach(c =>
+        c.addEventListener('change', () => {
+          c.checked ? selected.add(c.dataset.id) : selected.delete(c.dataset.id);
+          syncSelection(key);
+        }));
+      syncSelection(key);
+    }
+  }
+
+  function syncSelection(key) {
+    // A queue can change under the user (role switch, someone else acting) — drop stale picks.
+    [...selected].forEach(id => {
+      const t = tasks.find(x => x.id === id);
+      if (!t || !canAct(t)) selected.delete(id);
+    });
+
+    const n = selected.size;
+    $(`${key}SelBar`).classList.toggle('show', n > 0);
+    $(`${key}SelText`).textContent = `${n} task${n === 1 ? '' : 's'} selected`;
+
+    const boxes = [...document.querySelectorAll(`#${key}Body .row-check`)];
+    const allOn = boxes.length > 0 && boxes.every(b => b.checked);
+    $(`${key}SelectAll`).checked = allOn;
+    $(`${key}SelectAll`).indeterminate = !allOn && boxes.some(b => b.checked);
+  }
+
+  function buildMakerOptions() {
+    const makers = [...new Set(tasks.map(t => t.maker.name))].sort();
+    Object.keys(LISTS).forEach(key => {
+      const sel = $(`${key}MakerFilter`);
+      if (!sel) return;
+      const current = sel.value;
+      sel.innerHTML = '<option value="">Everyone</option>' +
+        makers.map(m => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('');
+      sel.value = current;
+    });
+  }
+
+  /* ================= Shared table plumbing ================= */
+  function renderPagination(el, state, totalPages, rerender) {
+    const btn = (label, page, opts = {}) =>
+      `<button class="page-btn ${opts.active ? 'active' : ''}" ${opts.disabled ? 'disabled' : ''} data-page="${page}">${label}</button>`;
+
+    const chevL = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>';
+    const chevR = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>';
+
+    let html = btn(chevL, state.page - 1, { disabled: state.page <= 1 });
+    for (let p = 1; p <= totalPages; p++) html += btn(p, p, { active: p === state.page });
+    html += btn(chevR, state.page + 1, { disabled: state.page >= totalPages });
+    el.innerHTML = html;
+
+    el.querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => {
+      const p = Number(b.dataset.page);
+      if (p >= 1 && p <= totalPages) { state.page = p; rerender(); }
+    }));
+  }
+
+  function wireSorting(tableId, state, rerender) {
+    $(tableId).querySelectorAll('th[data-sort]').forEach(th => {
+      th.querySelector('.th-inner').addEventListener('click', () => {
+        const key = th.dataset.sort;
+        if (state.sortKey === key) {
+          state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          state.sortKey = key;
+          state.sortDir = 'asc';
+        }
+        $(tableId).querySelectorAll('th').forEach(h => h.classList.remove('sorted'));
+        th.classList.add('sorted');
+        state.page = 1;
+        rerender();
+      });
+    });
+  }
+
+  function downloadCsv(filename, header, rows) {
+    const esc = v => `"${String(v).replace(/"/g, '""')}"`;
+    const csv = [header, ...rows].map(r => r.map(esc).join(',')).join('\r\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  /* Timeline dot colour per action — the activity list inside a task reuses it. */
+  const LOG_DOT = {
+    'Approved': 'approved', 'Auto-approved': 'approved',
+    'Rejected': 'rejected', 'Cancelled': 'rejected',
+    'Submitted': 'pending', 'Escalated': 'pending', 'Resubmitted': 'pending',
+    'Info Requested': 'info',
+  };
+
+
+  /* ================= Task detail ================= */
+  let detailId = null;
+
+  const STEP_ICONS = {
+    Approved: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>',
+    Rejected: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>',
+    'Info Requested': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M12 17.25h.008v.008H12v-.008Z"/></svg>',
+  };
+
+  function chainVertical(t) {
+    if (t.chain.length === 0) {
+      return `<p class="hist-note" style="margin:0">This request type is below the approval threshold — it was applied directly with no checker step.</p>`;
+    }
+    return '<div class="chain-v">' + t.chain.map((s, i) => {
+      const active = isOpen(t) && s === currentStep(t);
+      const cls = s.status === 'Approved' ? 'approved'
+        : s.status === 'Rejected' ? 'rejected'
+        : s.status === 'Info Requested' ? 'info'
+        : active ? 'current' : '';
+      const mark = STEP_ICONS[s.status] || (i + 1);
+      const yours = active && s.role === actingRole ? '<span class="you-pill">Your step</span>' : '';
+      const statusText = s.status === 'Waiting' ? 'Waiting for the previous step' : s.status;
+      const meta = s.approver
+        ? `${escapeHtml(s.approver)} · ${formatDateTime(s.actedAt)}`
+        : active ? `Pending · assigned to any ${escapeHtml(s.role)}` : statusText;
+      return `
+        <div class="chain-step ${cls}">
+          <div class="step-mark">${mark}</div>
+          <div class="step-body">
+            <div class="step-title">
+              <span class="step-role">Step ${i + 1} — ${escapeHtml(s.role)}</span>
+              ${s.status === 'Waiting' ? '<span class="badge badge-waiting">Waiting</span>' : statusBadge(s.status === 'Pending' && !active ? 'Pending' : s.status)}
+              ${yours}
+            </div>
+            <div class="step-meta">${meta}</div>
+            ${s.note ? `<div class="step-note">${escapeHtml(s.note)}</div>` : ''}
+          </div>
+        </div>`;
+    }).join('') + '</div>';
+  }
+
+  function openDetail(id) {
+    detailId = id;
+    const t = tasks.find(x => x.id === id);
+    const history = logs.filter(l => l.taskId === id);
+    const acting = canAct(t);
+    const mine = isMaker(t);
+    const wf = wfById(t.wf);
+
+    $('detailTitle').textContent = `${t.id} — ${t.type}`;
+    $('detailSub').innerHTML = `Workflow ${wf.id} · ${escapeHtml(wf.condition)} · SLA ${wf.slaHours ? wf.slaHours + 'h' : 'n/a'}`;
+
+    $('detailBody').innerHTML = `
+      <div class="req-summary">
+        <div class="req-summary-head">
+          <div>
+            <div class="rs-name">${escapeHtml(t.merchant)}</div>
+            <div class="rs-ids">${t.mid}</div>
+          </div>
+          ${statusBadge(t.status)}
+        </div>
+        <div class="rec-rows">
+          <div class="rec-row">
+            <span class="rr-label">${escapeHtml(t.change.label)}</span>
+            <span class="rr-value">
+              <span class="diff ${t.change.plain ? 'plain' : ''}">
+                <span class="from">${escapeHtml(t.change.from)}</span>
+                <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg></span>
+                <span class="to">${escapeHtml(t.change.to)}</span>
+              </span>
+            </span>
+          </div>
+          ${t.details.map(([k, v]) => `<div class="rec-row"><span class="rr-label">${escapeHtml(k)}</span><span class="rr-value">${escapeHtml(v)}</span></div>`).join('')}
+          <div class="rec-row"><span class="rr-label">Requested by</span><span class="rr-value">${escapeHtml(t.maker.name)} · ${escapeHtml(t.maker.role)}</span></div>
+          <div class="rec-row"><span class="rr-label">Submitted</span><span class="rr-value">${formatDateTime(t.createdAt)}</span></div>
+          ${isOpen(t) ? `<div class="rec-row"><span class="rr-label">SLA</span><span class="rr-value" style="color:${isOverdue(t) ? 'var(--destructive)' : 'inherit'}">${isOverdue(t) ? 'Overdue by ' + relativeTime(t.dueAt).replace(' ago', '') : 'Due ' + relativeTime(t.dueAt)}</span></div>` : ''}
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="lbl">Justification</label>
+        <p class="confirm-text" style="margin:0">${escapeHtml(t.justification)}</p>
+      </div>
+
+      ${acting ? `
+        <div class="alert alert-warning">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
+          <div>This request is waiting on <b>you</b> as ${escapeHtml(actingRole)}${stepNumber(t) < t.chain.length
+            ? ` — approving sends it to <b>${escapeHtml(t.chain[stepNumber(t)].role)}</b> for the final decision.`
+            : ' — this is the last step, so approving applies the change immediately.'}</div>
+        </div>` : ''}
+
+      ${t.status === 'Info Requested' && mine ? `
+        <div class="alert alert-info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
+          <div>An approver sent this back to you. Add the missing information below and resubmit — it returns to the same step.</div>
+        </div>` : ''}
+
+      ${(acting || (mine && t.status === 'Info Requested')) ? `
+        <div class="field">
+          <label class="lbl" for="detailNote">${acting ? 'Decision note' : 'Response'}
+            <span class="opt">${acting ? '(required to reject or request info)' : '(sent back to the approver)'}</span></label>
+          <textarea id="detailNote" placeholder="${acting
+            ? 'e.g. Within delegated authority given the 24-month commitment.'
+            : 'e.g. Attaching the last 3 months of chargeback detail — all branches are on the same MID.'}"></textarea>
+        </div>` : ''}
+
+      <div class="block-title">Approval chain (${t.chain.length ? `${t.chain.length} step${t.chain.length === 1 ? '' : 's'}` : 'none'})</div>
+      ${chainVertical(t)}
+
+      <div class="block-title block-title-row">
+        <span>Activity (${history.length})</span>
+        <a class="block-link" href="maker-checker-logs.html">Open in Logs</a>
+      </div>
+      <div class="hist">
+        ${history.map(l => `
+          <div class="hist-item">
+            <div class="hist-dot ${LOG_DOT[l.action] || ''}">${STEP_ICONS[l.action] || '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5"/></svg>'}</div>
+            <div class="hist-body">
+              <div class="hist-action">${l.action}</div>
+              <div class="hist-meta">${escapeHtml(l.actor)} · ${escapeHtml(l.role)} · ${formatDateTime(l.ts)}</div>
+              <div class="hist-note">${escapeHtml(l.detail)}</div>
+            </div>
+          </div>`).join('')}
+      </div>`;
+
+    /* The footer is the action surface — it changes with who is looking at the task. */
+    const foot = [];
+    if (mine && isOpen(t)) foot.push('<button class="btn btn-danger-outline" id="detailCancelReq">Withdraw Request</button>');
+    if (mine && t.status === 'Info Requested') foot.push('<button class="btn btn-primary" id="detailResubmit">Send &amp; Resubmit</button>');
+    if (acting) {
+      foot.push('<button class="btn btn-ghost" id="detailInfo">Request Info</button>');
+      foot.push('<button class="btn btn-danger" id="detailReject">Reject</button>');
+      foot.push('<button class="btn btn-success" id="detailApprove"><svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>Approve</button>');
+    }
+    if (foot.length === 0) foot.push('<button class="btn btn-outline" id="detailDismiss">Close</button>');
+    $('detailFoot').innerHTML = foot.join('');
+
+    if ($('detailCancelReq')) $('detailCancelReq').addEventListener('click', withdrawRequest);
+    if ($('detailResubmit'))  $('detailResubmit').addEventListener('click', resubmitRequest);
+    if ($('detailInfo'))      $('detailInfo').addEventListener('click', requestInfo);
+    if ($('detailReject'))    $('detailReject').addEventListener('click', rejectTask);
+    if ($('detailApprove'))   $('detailApprove').addEventListener('click', approveTask);
+    if ($('detailDismiss'))   $('detailDismiss').addEventListener('click', closeDetail);
+
+    $('detailBackdrop').classList.add('open');
+  }
+
+  function closeDetail() {
+    $('detailBackdrop').classList.remove('open');
+    detailId = null;
+  }
+  $('detailClose').addEventListener('click', closeDetail);
+  $('detailBackdrop').addEventListener('click', e => { if (e.target === $('detailBackdrop')) closeDetail(); });
+
+  function noteValue() {
+    const el = $('detailNote');
+    return el ? el.value.trim() : '';
+  }
+
+  /* ---------- Approval actions ---------- */
+
+  /** Approve the step in front of `role` and move the request forward. */
+  function approveStep(t, note) {
+    const step = currentStep(t);
+    step.status = 'Approved';
+    step.approver = USER_NAME;
+    step.actedAt = new Date().toISOString();
+    step.note = note;
+
+    const idx = t.chain.indexOf(step);
+    const last = idx === t.chain.length - 1;
+    if (last) {
+      t.status = 'Approved';
+      addLog({ action: 'Approved', task: t,
+        detail: `Final approval — ${t.change.label} changed to ${t.change.to} for ${t.merchant}.${note ? ' ' + note : ''}` });
+    } else {
+      t.chain[idx + 1].status = 'Pending';
+      addLog({ action: 'Approved', task: t,
+        detail: `Step ${idx + 1} of ${t.chain.length} approved. Now with ${t.chain[idx + 1].role}.${note ? ' ' + note : ''}` });
+    }
+    return last;
+  }
+
+  function approveTask() {
+    const t = tasks.find(x => x.id === detailId);
+    const note = noteValue();
+    const final = approveStep(t, note);
+    closeDetail();
+    refreshAll();
+    toast(final ? `${t.id} approved and applied` : `${t.id} approved — sent to ${currentStep(t).role}`);
+  }
+
+  function rejectTask() {
+    const t = tasks.find(x => x.id === detailId);
+    const note = noteValue();
+    if (!note) { toast('Add a reason before rejecting'); $('detailNote').focus(); return; }
+
+    const step = currentStep(t);
+    step.status = 'Rejected';
+    step.approver = USER_NAME;
+    step.actedAt = new Date().toISOString();
+    step.note = note;
+    t.status = 'Rejected';
+
+    addLog({ action: 'Rejected', task: t,
+      detail: `Rejected at step ${t.chain.indexOf(step) + 1} of ${t.chain.length}. ${note}` });
+    closeDetail();
+    refreshAll();
+    toast(`${t.id} rejected`);
+  }
+
+  function requestInfo() {
+    const t = tasks.find(x => x.id === detailId);
+    const note = noteValue();
+    if (!note) { toast('Say what information you need'); $('detailNote').focus(); return; }
+
+    const step = currentStep(t);
+    step.status = 'Info Requested';
+    step.approver = USER_NAME;
+    step.actedAt = new Date().toISOString();
+    step.note = note;
+    t.status = 'Info Requested';
+
+    addLog({ action: 'Info Requested', task: t, detail: `Sent back to ${t.maker.name}. ${note}` });
+    closeDetail();
+    refreshAll();
+    toast(`${t.id} sent back to ${t.maker.name}`);
+  }
+
+  function resubmitRequest() {
+    const t = tasks.find(x => x.id === detailId);
+    const note = noteValue();
+    if (!note) { toast('Add your response before resubmitting'); $('detailNote').focus(); return; }
+
+    // Back to the same checker, with the approver's question left in place as history.
+    const step = t.chain.find(s => s.status === 'Info Requested');
+    step.status = 'Pending';
+    step.approver = null;
+    step.actedAt = null;
+    t.status = 'Pending';
+    t.dueAt = new Date(Date.now() + wfById(t.wf).slaHours * H).toISOString();
+
+    addLog({ action: 'Resubmitted', task: t, actor: { name: t.maker.name, role: t.maker.role },
+      detail: `Maker responded and resubmitted to ${step.role}. ${note}` });
+    closeDetail();
+    refreshAll();
+    toast(`${t.id} resubmitted to ${step.role}`);
+  }
+
+  function withdrawRequest() {
+    const t = tasks.find(x => x.id === detailId);
+    t.status = 'Cancelled';
+    t.chain.forEach(s => { if (s.status === 'Pending' || s.status === 'Waiting' || s.status === 'Info Requested') s.status = 'Waiting'; });
+    addLog({ action: 'Cancelled', task: t, actor: { name: t.maker.name, role: t.maker.role },
+      detail: 'Withdrawn by the maker before a decision was taken.' });
+    closeDetail();
+    refreshAll();
+    toast(`${t.id} withdrawn`);
+  }
+
+  /* ================= Bulk approve ================= */
+  function openBulk() {
+    if (selected.size === 0) return;
+    const rows = [...selected].map(id => tasks.find(t => t.id === id));
+    const finals = rows.filter(t => stepNumber(t) === t.chain.length).length;
+    const tail = finals === 0
+      ? 'All of them move on to the next approver in their chain.'
+      : finals === rows.length
+        ? `${finals === 1 ? 'It is on its last step' : 'All of them are on their last step'}, so the change${finals === 1 ? ' is' : 's are'} applied immediately.`
+        : `<b>${finals}</b> ${finals === 1 ? 'is on its last step and will be applied' : 'are on their last step and will be applied'} immediately; the rest move to the next approver.`;
+    $('bulkText').innerHTML = `You are approving <b>${rows.length} request${rows.length === 1 ? '' : 's'}</b> as
+      <b>${escapeHtml(actingRole)}</b>. ${tail}`;
+    $('bulkNote').value = '';
+    $('bulkBackdrop').classList.add('open');
+  }
+  function closeBulk() { $('bulkBackdrop').classList.remove('open'); }
+  $('bulkClose').addEventListener('click', closeBulk);
+  $('bulkCancel').addEventListener('click', closeBulk);
+  $('bulkBackdrop').addEventListener('click', e => { if (e.target === $('bulkBackdrop')) closeBulk(); });
+
+  $('bulkConfirm').addEventListener('click', () => {
+    const note = $('bulkNote').value.trim();
+    const rows = [...selected].map(id => tasks.find(t => t.id === id));
+    rows.forEach(t => approveStep(t, note ? `${note} (bulk approval of ${rows.length} requests.)` : `Part of a bulk approval of ${rows.length} requests.`));
+    selected.clear();
+    closeBulk();
+    refreshAll();
+    toast(`Approved ${rows.length} request${rows.length === 1 ? '' : 's'}`);
+  });
+
+  /* ================= New request ================= */
+
+  /* Pick-lists for the special-rate template. */
+  const SALES_CHANNELS  = ['Direct Sales', 'Key Accounts', 'Partner / Referral', 'Telesales', 'Inbound'];
+  const INDUSTRIES      = ['F&B', 'Retail', 'Fashion', 'Electronics', 'Supermarkets', 'Travel & Airlines',
+                           'Healthcare', 'Education', 'Automotive', 'Services', 'Government', 'Charity'];
+  const ACQUIRING_BANKS = ['Banque Misr', 'National Bank of Egypt', 'CIB', 'QNB Alahli', 'AAIB',
+                           'Bank of Alexandria', 'HSBC Egypt'];
+
+  /* The Kashier methods a rate exception can be raised against, each with its published
+     floor rate — the lowest a maker may quote before the request has to go past their
+     head to the CCO. Floor values are placeholders; swap them for the real pricing sheet. */
+  const METHOD_FLOORS = {
+    'Card':             1.60,
+    'Wallet':           1.00,
+    'ValU':             4.50,
+    'Octo':             4.25,
+    'Souhoola':         4.00,
+    'AMAN':             4.00,
+    'Bank Installment': 2.00,
+    'Transfer':         0.30,
+    'InstaPay':         0.50,
+    'Contact':          4.50,
+    'Basata':           3.75,
+    'Mogo':             3.50,
+    'TRU':              3.50,
+    'Forsa':            4.25,
+  };
+  const KASHIER_METHODS = Object.keys(METHOD_FLOORS);
+  const floorFor = v => METHOD_FLOORS[v.method] ?? 1.00;
+
+  /* Rate cells read like "0.90" or "0.90%" — take the leading number. */
+  const rate = s => parseFloat(String(s).replace('%', '')) || 0;
+
+  /* A price can be a percentage, a flat fee, or both — render whichever was filled in. */
+  function priceText(pct, flat) {
+    const parts = [];
+    if (rate(pct)) parts.push(`${rate(pct).toFixed(2)}%`);
+    if (rate(flat)) parts.push(`${rate(flat).toFixed(2)} EGP`);
+    return parts.join(' + ') || '—';
+  }
+
+  /* Each type declares its own fields and its own routing rule — that pair is what
+     turns a form into a task with the right approvers on it. */
+  const REQUEST_TYPES = {
+    /* Fields follow the "Special Rate Template" sheet. The AM is the maker and the head
+       is the first approver in the chain, so neither is asked for on the form. */
+    'Special Rate Approval': {
+      fields: [
+        { id: 'merchant', label: 'Merchant name', type: 'text', placeholder: 'Merchant name', half: true },
+        { id: 'mid', label: 'MID', type: 'text', placeholder: 'MID-00000-000', half: true },
+        { id: 'channel', label: 'Sales channel', type: 'select', options: SALES_CHANNELS, half: true },
+        { id: 'industry', label: 'Industry', type: 'select', options: INDUSTRIES, half: true },
+        { id: 'method', label: 'Kashier method', type: 'select', options: KASHIER_METHODS, half: true },
+        { id: 'gateway', label: 'Gateway', type: 'select', options: ['POS', 'Online', 'Online & POS'], half: true },
+        { id: 'sellPct', label: 'Selling price — rate % (on-us / off-us / POS)', type: 'text',
+          value: () => METHOD_FLOORS[KASHIER_METHODS[0]].toFixed(2), half: true },
+        { id: 'sellFlat', label: 'Selling price — flat fee EGP', type: 'text', placeholder: 'e.g. 1.50', half: true },
+        { id: 'competitor', label: 'Competitor name', type: 'text', placeholder: 'e.g. Geidea' },
+        { id: 'compPct', label: 'Competitor selling price — rate %', type: 'text', placeholder: 'e.g. 1.00', half: true },
+        { id: 'compFlat', label: 'Competitor selling price — flat fee EGP', type: 'text', placeholder: 'e.g. 2.00', half: true },
+        { id: 'bank', label: 'Acquiring bank', type: 'select', options: ACQUIRING_BANKS, half: true },
+        { id: 'model', label: 'Model', type: 'select', options: ['PF', 'PSP'], half: true },
+        { id: 'tpv', label: 'Estimated TPV (EGP)', type: 'text', placeholder: 'e.g. 4M+', half: true },
+        { id: 'tpvBasis', label: 'TPV basis', type: 'select', options: ['Monthly', 'Annual'], half: true },
+        { id: 'retention', label: 'Retention / Acquisition', type: 'select', options: ['Acquisition', 'Retention'] },
+      ],
+      changeLabel: v => `Selling price — ${v.method}`,
+      from: v => `Floor ${floorFor(v).toFixed(2)}%`,
+      to: v => priceText(v.sellPct, v.sellFlat),
+      plain: true,                      // floor → quoted price is a comparison, not a replaced value
+      /* Anything under the method's published floor needs the CCO on top of the head. */
+      route: v => rate(v.sellPct) < floorFor(v) ? 'WF-02' : 'WF-01',
+      routeReason: v => {
+        const quoted = priceText(v.sellPct, v.sellFlat);
+        const floor = `${floorFor(v).toFixed(2)}%`;
+        return rate(v.sellPct) < floorFor(v)
+          ? `<b>${escapeHtml(quoted)}</b> is below the ${floor} floor for ${escapeHtml(v.method)}.`
+          : `<b>${escapeHtml(quoted)}</b> meets the ${floor} floor for ${escapeHtml(v.method)}.`;
+      },
+      /* Floors differ sharply between services, so reset the rate to the new service's
+         floor when the maker switches — they discount down from there. */
+      onFieldChange: (id, v, set) => { if (id === 'method') set('sellPct', floorFor(v).toFixed(2)); },
+      details: v => [
+        ['Sales channel', v.channel], ['Industry', v.industry],
+        ['Kashier method', v.method], ['Gateway', v.gateway],
+        ['Floor rate for this method', `${floorFor(v).toFixed(2)}%`],
+        ['Selling price', priceText(v.sellPct, v.sellFlat)],
+        ['Competitor', v.competitor || '—'], ['Competitor selling price', priceText(v.compPct, v.compFlat)],
+        ['Acquiring bank', v.bank], ['Model', v.model],
+        ['Estimated TPV', v.tpv ? `${v.tpv} (${v.tpvBasis.toLowerCase()})` : '—'],
+        ['Retention / Acquisition', v.retention],
+      ],
+    },
+    'Settlement Cycle Change': {
+      fields: [
+        { id: 'merchant', label: 'Merchant', type: 'text', placeholder: 'Merchant name', half: true },
+        { id: 'mid', label: 'MID', type: 'text', placeholder: 'MID-00000-000', half: true },
+        { id: 'from', label: 'Current cycle', type: 'select', options: ['T+3', 'T+2', 'T+1'], half: true },
+        { id: 'to', label: 'Requested cycle', type: 'select', options: ['T+1', 'T+2', 'T+0'], half: true },
+        { id: 'volume', label: 'Average daily volume (EGP)', type: 'number', placeholder: '100000', half: true },
+      ],
+      changeLabel: () => 'Settlement cycle',
+      route: v => v.to === 'T+0' ? 'WF-04' : 'WF-03',
+      details: v => [['Average daily volume', v.volume ? money(Number(v.volume)) + ' EGP' : '—']],
+    },
+    'Refund Above Limit': {
+      fields: [
+        { id: 'merchant', label: 'Merchant', type: 'text', placeholder: 'Merchant name', half: true },
+        { id: 'mid', label: 'MID', type: 'text', placeholder: 'MID-00000-000', half: true },
+        { id: 'order', label: 'Order reference', type: 'text', placeholder: 'ORD-00000-00000', half: true },
+        { id: 'amount', label: 'Refund amount (EGP)', type: 'number', placeholder: '75000', half: true },
+      ],
+      changeLabel: () => 'Refund',
+      from: () => '—',
+      to: v => (v.amount ? money(Number(v.amount)) : '0.00') + ' EGP',
+      route: v => Number(v.amount) > 250000 ? 'WF-06' : 'WF-05',
+      details: v => [['Order reference', v.order || '—']],
+    },
+    'Terminal Limit Increase': {
+      fields: [
+        { id: 'merchant', label: 'Merchant', type: 'text', placeholder: 'Merchant name', half: true },
+        { id: 'mid', label: 'MID', type: 'text', placeholder: 'MID-00000-000', half: true },
+        { id: 'from', label: 'Current ceiling', type: 'text', value: '50,000 EGP', half: true },
+        { id: 'to', label: 'Requested ceiling', type: 'text', placeholder: 'e.g. 150,000 EGP', half: true },
+        { id: 'terminals', label: 'Terminals affected', type: 'number', placeholder: '4', half: true },
+      ],
+      changeLabel: () => 'Per-transaction POS ceiling',
+      route: () => 'WF-09',
+      details: v => [['Terminals affected', v.terminals || '—']],
+    },
+    'On-Hold Release': {
+      fields: [
+        { id: 'merchant', label: 'Merchant', type: 'text', placeholder: 'Merchant name', half: true },
+        { id: 'mid', label: 'MID', type: 'text', placeholder: 'MID-00000-000', half: true },
+        { id: 'record', label: 'On-hold record', type: 'text', placeholder: 'STB-00000000000-01', half: true },
+        { id: 'amount', label: 'Amount to release (EGP)', type: 'number', placeholder: '128400', half: true },
+      ],
+      changeLabel: () => 'Held amount',
+      from: () => 'On-Hold',
+      to: v => `Release ${v.amount ? money(Number(v.amount)) : '0.00'} EGP`,
+      route: v => Number(v.amount) > 100000 ? 'WF-10' : 'WF-11',
+      details: v => [['On-hold record', v.record || '—']],
+    },
+  };
+
+  function buildCreateForm() {
+    const type = $('createType').value;
+    const cfg = REQUEST_TYPES[type];
+    let html = '', open = false;
+
+    cfg.fields.forEach((f, i) => {
+      const next = cfg.fields[i + 1];
+      if (f.half && !open) { html += '<div class="field-grid">'; open = true; }
+      const preset = typeof f.value === 'function' ? f.value() : (f.value || '');
+      const input = f.type === 'select'
+        ? `<select id="cf_${f.id}">${f.options.map(o => `<option value="${o}">${o}</option>`).join('')}</select>`
+        : `<input class="inp" type="${f.type}" id="cf_${f.id}" placeholder="${f.placeholder || ''}" value="${preset}">`;
+      html += `<div class="field"><label class="lbl" for="cf_${f.id}">${f.label}</label>${input}</div>`;
+      if (open && (!f.half || !next || !next.half)) { html += '</div>'; open = false; }
+    });
+    if (open) html += '</div>';
+
+    $('createFields').innerHTML = html;
+
+    /* A type can react to one field before the route is recalculated — e.g. resetting the
+       quoted rate when the service changes. */
+    const onEdit = id => {
+      if (cfg.onFieldChange) cfg.onFieldChange(id, readCreateForm(), (target, val) => { $(`cf_${target}`).value = val; });
+      renderRoutePreview();
+    };
+    cfg.fields.forEach(f => {
+      $(`cf_${f.id}`).addEventListener('input', () => onEdit(f.id));
+      $(`cf_${f.id}`).addEventListener('change', () => onEdit(f.id));
+    });
+    renderRoutePreview();
+  }
+
+  function readCreateForm() {
+    const cfg = REQUEST_TYPES[$('createType').value];
+    const v = {};
+    cfg.fields.forEach(f => v[f.id] = $(`cf_${f.id}`).value.trim());
+    return v;
+  }
+
+  /* Three things the maker needs before submitting: how many approvals, why, and who. */
+  function renderRoutePreview() {
+    const cfg = REQUEST_TYPES[$('createType').value];
+    const v = readCreateForm();
+    const wf = wfById(cfg.route(v));
+    const n = wf.chain.length;
+
+    const title = n === 0 ? 'No approval needed' : `Needs ${n} approval${n === 1 ? '' : 's'}`;
+    const why = n === 0
+      ? 'Applied as soon as you submit — this is below the approval threshold.'
+      : (cfg.routeReason ? cfg.routeReason(v, wf) : escapeHtml(wf.condition) + '.');
+
+    $('routePreview').innerHTML = `
+      <div class="route-head">
+        <span class="route-title">${title}</span>
+        <span class="route-tag">${wf.id}${n ? ` · ${wf.slaHours}h per step` : ''}</span>
+      </div>
+      <p class="route-why">${why}</p>
+      ${n === 0 ? '' : `<ol class="route-steps">
+        ${wf.chain.map((r, i) => `<li><span class="n">${i + 1}</span>${escapeHtml(r)}</li>`).join('')}
+      </ol>`}`;
+  }
+
+  function openCreate() {
+    $('createAs').textContent = `${USER_NAME} · ${actingRole}`;
+    $('createType').innerHTML = Object.keys(REQUEST_TYPES).map(t => `<option value="${t}">${t}</option>`).join('');
+    $('createJustification').value = '';
+    buildCreateForm();
+    $('createBackdrop').classList.add('open');
+  }
+  function closeCreate() { $('createBackdrop').classList.remove('open'); }
+  $('newRequestBtn').addEventListener('click', openCreate);
+  $('createClose').addEventListener('click', closeCreate);
+  $('createCancel').addEventListener('click', closeCreate);
+  $('createBackdrop').addEventListener('click', e => { if (e.target === $('createBackdrop')) closeCreate(); });
+  $('createType').addEventListener('change', buildCreateForm);
+
+  $('createSubmit').addEventListener('click', () => {
+    const type = $('createType').value;
+    const cfg = REQUEST_TYPES[type];
+    const v = readCreateForm();
+    const justification = $('createJustification').value.trim();
+
+    if (!v.merchant) { toast('Enter the merchant name'); $('cf_merchant').focus(); return; }
+    if (!justification) { toast('Add a justification for the approvers'); $('createJustification').focus(); return; }
+
+    const wf = wfById(cfg.route(v));
+    taskSeq += 1;
+    const task = {
+      id: `TSK-${taskSeq}`, wf: wf.id, type,
+      merchant: v.merchant, mid: v.mid || '—',
+      maker: { name: USER_NAME, role: actingRole },
+      createdAt: new Date().toISOString(),
+      dueAt: new Date(Date.now() + (wf.slaHours || 0) * H).toISOString(),
+      status: wf.chain.length === 0 ? 'Approved' : 'Pending',
+      change: {
+        label: cfg.changeLabel(v),
+        from: cfg.from ? cfg.from(v) : (v.from || '—'),
+        to: cfg.to ? cfg.to(v) : (v.to || '—'),
+        plain: !!cfg.plain,
+      },
+      details: cfg.details(v),
+      justification,
+      chain: wf.chain.map((role, i) => ({ role, status: i === 0 ? 'Pending' : 'Waiting', approver: null, actedAt: null, note: '' })),
+    };
+    tasks.unshift(task);
+
+    if (wf.chain.length === 0) {
+      addLog({ action: 'Auto-approved', task, actor: { name: 'Workflow Engine', role: 'System', system: true },
+        detail: `No approval required — ${wf.condition} (${wf.id}). Applied directly.` });
+      toast(`${task.id} applied — no approval needed`);
+    } else {
+      addLog({ action: 'Submitted', task,
+        detail: `${task.change.label}: ${task.change.from} → ${task.change.to}. Routed to ${wf.chain.join(', then ')} (${wf.id}).` });
+      toast(`${task.id} submitted to ${wf.chain[0]}`);
+    }
+
+    closeCreate();
+    refreshAll();
+    switchTab('requests');
+  });
+
+  /* ================= KPIs, counts, tabs ================= */
+  /* Two numbers only — what is on me, and what is mine. Anything wider belongs in Logs. */
+  function renderKpis() {
+    const mineCount = tasks.filter(LISTS.mine.base).length;
+    const mineOverdue = tasks.filter(t => LISTS.mine.base(t) && isOverdue(t)).length;
+    const myOpen = tasks.filter(t => isMaker(t) && isOpen(t)).length;
+    const myInfo = tasks.filter(t => isMaker(t) && t.status === 'Info Requested').length;
+
+    $('kpiBar').innerHTML = `
+      <div class="kpi">
+        <span class="k-label">Awaiting my approval</span>
+        <span class="k-value ${mineCount ? 'warn' : ''}">${mineCount}</span>
+        <span class="k-desc ${mineOverdue ? 'k-desc-bad' : ''}">${mineOverdue ? `${mineOverdue} past SLA` : `As ${escapeHtml(actingRole)}`}</span>
+      </div>
+      <div class="kpi">
+        <span class="k-label">My open requests</span>
+        <span class="k-value">${myOpen}</span>
+        <span class="k-desc">${myInfo ? `${myInfo} sent back to me` : 'Waiting on approvers'}</span>
+      </div>`;
+  }
+
+  function refreshCounts() {
+    const mineCount = tasks.filter(LISTS.mine.base).length;
+    $('countMine').textContent = mineCount;
+    $('countMine').classList.toggle('urgent', mineCount > 0);
+    $('countRequests').textContent = tasks.filter(LISTS.requests.base).length;
+    $('navBadge').textContent = mineCount;
+    $('navBadge').style.display = mineCount ? '' : 'none';
+  }
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach(t => {
+      const on = t.dataset.tab === name;
+      t.classList.toggle('active', on);
+      t.setAttribute('aria-selected', String(on));
+    });
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    $('panel' + name[0].toUpperCase() + name.slice(1)).classList.add('active');
+  }
+  document.querySelectorAll('.tab').forEach(tab =>
+    tab.addEventListener('click', () => switchTab(tab.dataset.tab)));
+
+  /** One entry point for "something changed" — keeps every view in step. */
+  function refreshAll() {
+    buildMakerOptions();
+    Object.keys(LISTS).forEach(renderList);
+    renderKpis();
+    refreshCounts();
+  }
+
+  $('roleSelect').addEventListener('change', e => {
+    actingRole = e.target.value;
+    selected.clear();               // a queue you can no longer act on must not stay selected
+    refreshAll();
+    toast(`Now acting as ${actingRole}`);
+  });
+
+  /* ================= Shell ================= */
+  function openSidebar() { $('sidebar').classList.add('open'); $('overlay').classList.add('open'); }
+  function closeSidebar() { $('sidebar').classList.remove('open'); $('overlay').classList.remove('open'); }
+  $('hamburger').addEventListener('click', openSidebar);
+  $('overlay').addEventListener('click', closeSidebar);
+
+  function wireNavSection(headId, subId) {
+    $(headId).addEventListener('click', () => {
+      const sub = $(subId);
+      const chev = $(headId).querySelector('svg');
+      const collapsed = sub.style.display === 'none';
+      sub.style.display = collapsed ? 'flex' : 'none';
+      chev.style.transform = collapsed ? '' : 'rotate(180deg)';
+    });
+  }
+  wireNavSection('balanceHead', 'balanceSub');
+  wireNavSection('mcHead', 'mcSub');
+
+  $('langBtn').addEventListener('click', () => {
+    const btn = $('langBtn');
+    const toAr = btn.textContent === 'عربي';
+    btn.textContent = toAr ? 'English' : 'عربي';
+    toast(toAr ? 'تم التبديل إلى العربية (عرض توضيحي)' : 'Switched to English');
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeDetail(); closeCreate(); closeBulk(); closeSidebar(); }
+  });
+
+  /* ================= Init ================= */
+  buildRoleSelect();
+  Object.keys(LISTS).forEach(buildListPanel);
+  refreshAll();
+</script>
+<script>
+  /* Documents nav group */
+  (function () {
+    const head = document.getElementById('documentsHead');
+    const sub = document.getElementById('documentsSub');
+    if (!head || !sub) return;
+    head.addEventListener('click', () => {
+      const chev = head.querySelector('svg');
+      const open = sub.style.display !== 'none';
+      sub.style.display = open ? 'none' : 'flex';
+      if (chev) chev.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+    });
+  })();
+</script>
+</body>
+</html>

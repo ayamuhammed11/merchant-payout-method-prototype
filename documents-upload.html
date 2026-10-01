@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kashier | Documents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #001F5F; --primary-hover: #103788; --ocean-10: #F1F6FF; --ocean-07: #C0D5FF; --link: #2955B1;
+    --accent: #00BCB4; --accent-hover: #00938D; --accent-10: #EAFFFE;
+    --destructive: #A50017; --destructive-hover: #830012; --destructive-bg: #FFEAED;
+    --success: #4AAB4E; --success-bg: #F3FFF4; --success-text: #1A541D;
+    --warning: #B7791F; --warning-bg: #FFF7E6; --warning-text: #7A5210;
+    --foreground: #202020; --border: #E6E8E8; --border-subtle: #F5F6F6; --muted: #F5F6F6;
+    --cadet-base: #556767; --cadet-02: #697979; --cadet-04: #839090; --cadet-05: #919C9C; --cadet-06: #B3BBBB;
+    --pill-bg: #F5F6F6; --pill-text: #697979; --radius: 4px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: 'Noto Sans', Arial, sans-serif; background: #fff; color: var(--foreground);
+    display: flex; font-size: 14px; min-height: 100vh; }
+  h1, h2, h3, h4 { font-family: 'Outfit', Arial, sans-serif; margin: 0; font-weight: 700; }
+  a { text-decoration: none; }
+  button { font-family: inherit; }
+  .hi { width: 20px; height: 20px; flex-shrink: 0; }
+  .hi-sm { width: 16px; height: 16px; flex-shrink: 0; }
+  .hi-xs { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* Sidebar */
+  .sidebar { width: 232px; background: #fff; min-height: 100vh; padding: 22px 14px 30px;
+    border-right: 1px solid var(--border-subtle); position: sticky; top: 0; align-self: flex-start;
+    max-height: 100vh; overflow-y: auto; flex-shrink: 0; z-index: 60; }
+  .brand { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 26px; color: var(--accent);
+    padding: 0 10px; margin-bottom: 26px; letter-spacing: -.01em; }
+  .nav-link { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 8px;
+    color: var(--cadet-base); font-size: 14px; margin-bottom: 2px; position: relative; }
+  .nav-link svg { color: var(--cadet-04); }
+  .nav-link.active { background: #EEF1FB; color: var(--primary); font-weight: 600; }
+  .nav-link.active svg { color: var(--primary); }
+  .nav-link:not(.active):hover { background: #F7F8F8; }
+  .nav-section { margin-top: 14px; }
+  .nav-section .section-head { display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 12px; color: var(--primary); font-weight: 600; font-size: 13px; cursor: pointer; user-select: none; }
+  .nav-section .section-head svg { color: var(--cadet-05); transition: transform .2s ease; }
+  .nav-sub { display: flex; flex-direction: column; overflow: hidden; }
+  .nav-sub a { padding: 9px 12px; border-radius: 8px; color: var(--cadet-base); font-size: 14px; }
+  .nav-sub a:hover { background: #F7F8F8; }
+  .nav-sub a.active { background: #EEF1FB; color: var(--primary); font-weight: 600; }
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(16,24,40,.45); z-index: 55; }
+  .overlay.open { display: block; }
+
+  /* Main */
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 14px 34px;
+    border-bottom: 1px solid var(--border-subtle); position: sticky; top: 0; background: #fff; z-index: 40; }
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .hamburger { display: none; width: 40px; height: 40px; border: 1px solid var(--border); border-radius: 8px;
+    background: #fff; color: var(--cadet-base); align-items: center; justify-content: center; cursor: pointer; }
+  .hamburger:hover { background: var(--muted); }
+  .topbar-right { display: flex; align-items: center; gap: 18px; }
+  .lang { color: var(--cadet-base); font-size: 14px; cursor: pointer; background: none; border: none; padding: 0; }
+  .lang:hover { color: var(--primary); }
+  .divider { width: 1px; height: 22px; background: var(--border); }
+  .user { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .user .avatar { width: 30px; height: 30px; background: #E7ECF7; color: var(--primary); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; font-family: 'Outfit', sans-serif; }
+  .user .name { font-weight: 600; font-size: 14px; color: var(--foreground); }
+  .user .gear { color: var(--cadet-04); display: flex; }
+
+  .content { padding: 28px 34px 60px; max-width: 1000px; width: 100%; }
+  .breadcrumb { font-size: 13px; color: var(--cadet-04); margin-bottom: 12px; }
+  .breadcrumb .sep { margin: 0 6px; color: var(--cadet-06); }
+  .breadcrumb .current { color: var(--cadet-base); }
+  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; margin-bottom: 22px; }
+  .head-actions { display: flex; gap: 12px; flex-shrink: 0; }
+  .head-actions .btn[hidden] { display: none; }
+  .page-head h1 { font-size: 30px; color: var(--primary); margin-bottom: 8px; }
+  .page-head .sub { font-size: 14px; color: var(--cadet-base); max-width: 560px; line-height: 1.5; margin: 0; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 600;
+    border-radius: var(--radius); cursor: pointer; border: 1.5px solid transparent; padding: 0 18px; height: 40px; white-space: nowrap; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-sm { height: 38px; padding: 0 14px; font-size: 13px; }
+
+  .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: #fff;
+    font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 13px; display: inline-flex;
+    align-items: center; justify-content: center; flex-shrink: 0; }
+
+  .card { border: 1px solid var(--border-subtle); border-radius: 12px; background: #fff; overflow: hidden; margin-bottom: 22px; }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 18px 22px; border-bottom: 1px solid var(--border-subtle); }
+  .card-head .ttl { display: flex; align-items: center; gap: 12px; }
+  .card-head h2 { font-size: 17px; color: var(--primary); }
+  .card-head h2 .opt { font-family: 'Noto Sans', sans-serif; font-weight: 400; font-size: 13px; color: var(--cadet-05); }
+  .card-head .count { font-size: 13px; color: var(--cadet-04); white-space: nowrap; }
+  .card-body { padding: 20px 22px; }
+  .card-hint { font-size: 13.5px; color: var(--cadet-base); line-height: 1.5; margin: 0 0 16px; }
+
+  /* Criteria & Services selector — the required documents below are computed live from this */
+  .crit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; }
+  .crit-group { display: flex; flex-direction: column; gap: 9px; }
+  .crit-group.full { grid-column: 1 / -1; }
+  .crit-label { font-size: 12.5px; font-weight: 700; color: var(--foreground); display: flex; align-items: center; gap: 6px; }
+  .crit-label .req { color: var(--destructive); }
+  .crit-label .opt { font-weight: 400; color: var(--cadet-05); }
+  .crit-select { height: 42px; border: 1.5px solid var(--border); border-radius: 8px; padding: 0 12px; font-family: inherit;
+    font-size: 13.5px; color: var(--foreground); background: #fff; cursor: pointer; }
+  .crit-select:focus { outline: none; border-color: var(--primary); }
+  .crit-select:disabled { opacity: .6; cursor: not-allowed; background: var(--muted); }
+  .crit-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  /* Services picker mirrors the Kashier Services portal: Basic / Add-on tiers. */
+  .svc-group { margin-bottom: 14px; }
+  .svc-group:last-child { margin-bottom: 0; }
+  .svc-group-label { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--cadet-05); margin-bottom: 8px; }
+  .crit-chip { border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 14px; font-size: 13px; font-weight: 600;
+    font-family: inherit; color: var(--cadet-base); background: #fff; cursor: pointer;
+    transition: border-color .12s ease, background .12s ease, color .12s ease; }
+  .crit-chip:hover:not(:disabled) { border-color: var(--cadet-05); }
+  .crit-chip.on { border-color: var(--primary); background: var(--ocean-10); color: var(--primary); }
+  .crit-chip:disabled { opacity: .6; cursor: not-allowed; }
+  .handoff-note { display: flex; gap: 10px; align-items: flex-start; background: var(--ocean-10); border: 1px solid var(--ocean-07);
+    color: var(--primary); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 13.5px; line-height: 1.5; }
+  .handoff-note[hidden] { display: none; }
+  .handoff-note svg { width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px; }
+  .handoff-note b { font-weight: 700; }
+  .crit-card.locked-crit { opacity: .55; }
+  .crit-card.locked-crit .crit-chip, .crit-card.locked-crit .crit-select { pointer-events: none; }
+  .req-via { font-size: 11.5px; color: var(--cadet-05); font-style: italic; margin-top: 9px; }
+
+  /* Requirement summary strip */
+  .req-summary { display: flex; align-items: center; gap: 14px; border: 1px solid var(--border-subtle);
+    background: #FAFBFB; border-radius: 10px; padding: 14px 18px; margin-bottom: 22px; }
+  .req-summary .ring { position: relative; width: 44px; height: 44px; flex-shrink: 0; }
+  .req-summary .ring svg { transform: rotate(-90deg); }
+  .req-summary .ring .pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 12px; color: var(--primary); }
+  .req-summary .txt b { font-family: 'Outfit', sans-serif; color: var(--foreground); font-size: 15px; }
+  .req-summary .txt span { display: block; color: var(--cadet-base); font-size: 13px; margin-top: 2px; }
+
+  /* Required document item */
+  .req-list { display: flex; flex-direction: column; }
+  .req-item { padding: 20px 22px; border-bottom: 1px solid var(--border-subtle); }
+  .req-item:last-child { border-bottom: none; }
+  .req-top { display: flex; gap: 16px; align-items: flex-start; }
+  .req-thumb { border: 1px solid var(--border); border-radius: 8px; width: 66px; height: 46px; overflow: hidden; background: #fff; flex-shrink: 0; }
+  .req-thumb svg { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .req-info { flex: 1; min-width: 0; }
+  .req-title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .req-title { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 14.5px; color: var(--foreground); }
+  .req-title .star { color: var(--destructive); }
+  .req-ar { color: var(--cadet-05); font-size: 13px; direction: rtl; }
+  .req-desc { font-size: 13px; color: var(--cadet-base); line-height: 1.5; margin-top: 5px; }
+  .req-meta { font-size: 12px; color: var(--cadet-05); margin-top: 6px; }
+  .req-conds { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+  .req-conds li { display: flex; align-items: flex-start; gap: 6px; font-size: 12px; color: var(--cadet-base); line-height: 1.4; }
+  .req-conds li svg { color: var(--success); margin-top: 1px; flex-shrink: 0; }
+  .status-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; border-radius: 20px;
+    padding: 4px 10px; text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; flex-shrink: 0; }
+  .status-pill .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .status-pill.required { background: var(--pill-bg); color: var(--pill-text); }
+  .status-pill.required .dot { background: var(--cadet-05); }
+  .status-pill.partial { background: var(--warning-bg); color: var(--warning-text); }
+  .status-pill.partial .dot { background: var(--warning); }
+  .status-pill.done { background: var(--success-bg); color: var(--success-text); }
+  .status-pill.done .dot { background: var(--success); }
+
+  /* Upload slots */
+  .req-slots { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .req-slots.single { grid-template-columns: 1fr; }
+  .dz-block .dz-label { font-size: 12.5px; font-weight: 700; color: var(--cadet-base); margin-bottom: 7px; display: flex; align-items: center; gap: 6px; }
+  .dz-block .dz-label .req { color: var(--destructive); }
+  .dropzone { display: block; border: 1.5px dashed var(--border); border-radius: 10px; padding: 18px; text-align: center;
+    cursor: pointer; transition: border-color .12s ease, background .12s ease; background: #fff; }
+  .dropzone:hover, .dropzone.drag { border-color: var(--primary); background: var(--ocean-10); }
+  .dropzone.err { border-color: var(--destructive); background: var(--destructive-bg); }
+  .dz-ico { width: 30px; height: 30px; color: var(--primary); margin: 0 auto 7px; display: block; }
+  .dz-main { font-size: 13px; color: var(--foreground); font-weight: 600; }
+  .dz-main .link { color: var(--primary); text-decoration: underline; }
+  .dz-sub { font-size: 11.5px; color: var(--cadet-05); margin-top: 4px; }
+  .dz-files { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .dz-fchip { display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-subtle); background: #fff;
+    border-radius: 8px; padding: 9px 12px; text-align: left; }
+  .dz-fchip svg.doc { color: var(--cadet-04); flex-shrink: 0; }
+  .dz-fchip .flabel { font-size: 11px; font-weight: 700; color: var(--primary); background: #EEF1FB; border: 1px solid #DCE3F5;
+    border-radius: 4px; padding: 1px 7px; white-space: nowrap; }
+  .dz-fchip .fname { font-size: 13px; font-weight: 600; color: var(--foreground); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dz-fchip .fsize { font-size: 12px; color: var(--cadet-05); margin-left: auto; white-space: nowrap; }
+  .dz-fchip .rm { border: none; background: none; color: var(--cadet-04); cursor: pointer; width: 26px; height: 26px;
+    border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .dz-fchip .rm:hover { color: var(--destructive); background: var(--destructive-bg); }
+  .dz-fchip .dl { border: none; background: none; color: var(--cadet-04); cursor: pointer; width: 26px; height: 26px;
+    border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .dz-fchip .dl:hover { color: var(--primary); background: var(--ocean-10); }
+
+  /* Submit / review */
+  .btn-ghost { background: transparent; color: var(--primary); border-color: transparent; }
+  .btn-ghost:hover { background: var(--ocean-10); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .submit-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    border: 1px solid var(--border-subtle); border-radius: 12px; background: #FAFBFB; padding: 16px 20px; margin-bottom: 18px; }
+  .submit-note { font-size: 13px; color: var(--cadet-base); margin: 0; max-width: 540px; line-height: 1.5; }
+  .submit-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .review-banner { display: flex; gap: 12px; align-items: flex-start; border: 1px solid; border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 18px; font-size: 13.5px; line-height: 1.45; }
+  .review-banner[hidden] { display: none; }
+  .review-banner .rb-ic { width: 22px; height: 22px; flex-shrink: 0; margin-top: 1px; }
+  .review-banner .rb-title { font-weight: 700; font-family: 'Outfit', sans-serif; }
+  .review-banner .rb-text { margin-top: 3px; }
+  .review-banner .rb-time { font-size: 12px; opacity: .8; margin-top: 6px; }
+  .review-banner .rb-continue, .review-banner .rb-download, .review-banner .rb-editbtn { margin-top: 12px; margin-right: 10px; }
+  .review-banner.pending { background: var(--ocean-10); border-color: var(--ocean-07); color: var(--primary); }
+  .review-banner.approved { background: var(--success-bg); border-color: #AEEBB0; color: var(--success-text); }
+  .review-banner.rejected { background: var(--warning-bg); border-color: #F3D48A; color: var(--warning-text); }
+  .review-banner.draft { background: var(--muted); border-color: var(--border); color: var(--cadet-base); }
+  .review-banner.draft .rb-title { color: var(--foreground); }
+  .btn-cancel { color: var(--destructive); }
+  .btn-cancel:hover { background: var(--destructive-bg); }
+  /* Dim the documents section while a request is awaiting feedback */
+  .docs-for[data-state="submitted"] > .req-summary,
+  .docs-for[data-state="submitted"] > section.card { opacity: .6; transition: opacity .15s ease; }
+  .proto { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; border-top: 1px dashed var(--border);
+    padding-top: 14px; margin-bottom: 22px; }
+  .proto[hidden] { display: none; }
+  .proto-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--cadet-05); }
+  .proto-link { background: none; border: none; color: var(--link); font-size: 13px; font-weight: 600; cursor: pointer; padding: 0; text-decoration: underline; }
+  .proto-link:hover { color: var(--primary); }
+  .docs-for.locked .dropzone { pointer-events: none; opacity: .5; border-style: solid; background: var(--muted); }
+  .docs-for.locked .dz-fchip .rm { display: none; }
+  .docs-for.locked .dz-fchip .dl { display: flex; }
+  .status-pill.pending { background: var(--ocean-10); color: var(--primary); }
+  .status-pill.pending .dot { background: var(--primary); }
+  .status-pill.approved { background: var(--success-bg); color: var(--success-text); }
+  .status-pill.approved .dot { background: var(--success); }
+  .status-pill.rejected { background: var(--destructive-bg); color: var(--destructive); }
+  .status-pill.rejected .dot { background: var(--destructive); }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--primary);
+    color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; z-index: 100; opacity: 0;
+    pointer-events: none; transition: opacity .2s ease, transform .2s ease; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 1000px) { .content { padding: 24px 22px 60px; } .topbar { padding: 12px 22px; } }
+  @media (max-width: 900px) {
+    .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%); transition: transform .22s ease; box-shadow: 0 10px 40px rgba(0,0,0,.18); }
+    .sidebar.open { transform: translateX(0); }
+    .hamburger { display: flex; }
+    .page-head h1 { font-size: 26px; }
+    .crit-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 620px) { .user .name { display: none; } .req-slots { grid-template-columns: 1fr; } .req-top { flex-wrap: wrap; } }
+</style>
+</head>
+<body>
+
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">kashier</div>
+    <a class="nav-link" href="home.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>Home</a>
+    <a class="nav-link" href="payments.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg>Payments</a>
+    <a class="nav-link active" href="documents-upload.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>Business Profile</a>
+    <a class="nav-link" href="terminals.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25"/></svg>Terminals</a>
+    <a class="nav-link" href="document-rules.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75"/></svg>Document Rules</a>
+    <div class="nav-section">
+      <div class="section-head" id="configHead">Configuration
+        <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
+      </div>
+      <div class="nav-sub" id="configSub">
+        <a href="document-types.html">Document Types</a>
+        <a href="documents-upload.html" class="active">Documents</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" id="hamburger" aria-label="Open menu">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+        </button>
+      </div>
+      <div class="topbar-right">
+        <button class="lang" id="langBtn">عربي</button>
+        <div class="divider"></div>
+        <div class="user">
+          <div class="avatar">AM</div>
+          <span class="name">Aya Muhammed</span>
+          <span class="gear"><svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="breadcrumb">Business Profile <span class="sep">/</span> <span class="current">Documents</span></div>
+
+      <div class="page-head">
+        <div>
+          <h1 id="pageTitle">Documents</h1>
+          <p class="sub" id="pageSub">Tell us about your business below. The documents you need to upload update automatically as you complete your criteria and services.</p>
+        </div>
+        <div class="head-actions">
+          <button class="btn btn-primary" id="topEdit" type="button" hidden>
+            <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg>
+            Edit
+          </button>
+        </div>
+      </div>
+
+      <!-- Shown only when arriving via an application link sent from New Merchant Application -->
+      <div class="handoff-note" id="handoffNote" hidden></div>
+
+      <!-- STEP 1 — Criteria & Services -->
+      <section class="card crit-card">
+        <div class="card-head"><div class="ttl"><span class="step-num">1</span><h2>Criteria &amp; Services</h2></div></div>
+        <div class="card-body">
+          <p class="card-hint">Tell us about your business and the services you need. This determines which documents are required — the same rules your account manager configures in Document Rules.</p>
+          <div class="crit-grid">
+            <div class="crit-group">
+              <div class="crit-label">Merchant Type<span class="req">*</span></div>
+              <div class="crit-chips" id="critEntity"></div>
+            </div>
+            <div class="crit-group">
+              <div class="crit-label">Business Owner Nationality<span class="opt">(optional)</span></div>
+              <div class="crit-chips" id="critOwner"></div>
+            </div>
+            <div class="crit-group">
+              <div class="crit-label">Industry<span class="req">*</span></div>
+              <select class="crit-select" id="critIndustry"><option value="">Select industry…</option></select>
+            </div>
+            <div class="crit-group">
+              <div class="crit-label">Financial Institution<span class="req">*</span></div>
+              <select class="crit-select" id="critBank"><option value="">Select bank…</option></select>
+            </div>
+            <div class="crit-group">
+              <div class="crit-label">Settlement type<span class="req">*</span></div>
+              <div class="crit-chips" id="critModule"></div>
+            </div>
+            <div class="crit-group full">
+              <div class="crit-label">Services<span class="opt">(select all that apply)</span></div>
+              <div id="critService"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== REQUIRED DOCUMENTS (computed live from Step 1) ===== -->
+      <div class="docs-for" id="docs-computed" data-state="editing">
+        <div class="req-summary">
+          <div class="ring"><svg width="44" height="44" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="#E6E8E8" stroke-width="5"/><circle class="ring-prog" cx="22" cy="22" r="18" fill="none" stroke="#00BCB4" stroke-width="5" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="113"/></svg><span class="pct ring-pct">0%</span></div>
+          <div class="txt"><b class="sum-title">0 of 0 required documents uploaded</b><span>Upload each required document below so our team can verify your business.</span></div>
+        </div>
+        <section class="card">
+          <div class="card-head"><div class="ttl"><span class="step-num">2</span><h2>Required documents</h2></div><span class="count req-count">0 of 0 complete</span></div>
+          <div class="req-list" id="reqList"></div>
+        </section>
+        <section class="card">
+          <div class="card-head"><div class="ttl"><span class="step-num">+</span><h2>Additional documents <span class="opt">(Optional)</span></h2></div><span class="count add-count">0 files</span></div>
+          <div class="card-body additional">
+            <p class="card-hint">Upload any other supporting documents relevant to your business — for example a licence, authorization letter, or anything our team requests.</p>
+            <div class="dz-block" data-label="">
+              <label class="dropzone"><svg class="dz-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg><div class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</div><div class="dz-sub">PDF, JPG, PNG · up to 10 MB · one or more files</div><input type="file" accept=".pdf,.jpg,.jpeg,.png" multiple hidden></label>
+              <div class="dz-files"></div>
+            </div>
+          </div>
+        </section>
+        <div class="review-banner" hidden></div>
+        <div class="submit-bar">
+          <p class="submit-note">Upload all required documents, then submit for review. Once submitted, you can't make changes until the team approves or rejects your request.</p>
+          <div class="submit-actions">
+            <button class="btn btn-ghost btn-cancel" type="button">Cancel</button>
+            <button class="btn btn-ghost btn-draft" type="button">Save draft</button>
+            <button class="btn btn-primary btn-submit" type="button" disabled>Submit for review</button>
+          </div>
+        </div>
+        <div class="proto" hidden>
+          <span class="proto-label">Prototype — simulate the compliance team's decision</span>
+          <button class="proto-link sim-approve" type="button">▶ Approve all</button>
+          <button class="proto-link sim-reject" type="button">▶ Reject a document</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const DOC_ICON = '<svg class="doc" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>';
+  const RM_ICON = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>';
+  const DL_ICON = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>';
+  const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+  const fmtSize = b => b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
+  const extOf = n => (n.split('.').pop() || '').toUpperCase().replace('JPEG', 'JPG');
+
+  /* ══════════ Criteria vocabulary — mirrors the Document Rules module ══════════ */
+  const ENTITIES = ['Individual Seller', 'Registered Business', 'Professional Business'];
+  const OWNERS = ['Egyptian Owner', 'Foreign Owner'];
+  const INDUSTRIES = ['Retail & E-commerce', 'Food & Beverage', 'Healthcare / Pharmacy', 'Education',
+    'Travel & Tourism', 'Professional Services', 'Technology / SaaS', 'Real Estate', 'Automotive',
+    'Fashion & Beauty', 'Entertainment & Media', 'Non-profit / NGO', 'Government', 'Financial Services',
+    'Insurance', 'Marketplace', 'Logistics & Delivery'];
+  const BANKS = ['Bank Misr', 'National Bank of Egypt', 'QNB'];
+  const MODULES = ['PF', 'PSP'];
+  /* Service catalog — matches the Pricing Rules module's own service list: every
+     method Pricing Rules can target, available both Online and POS. Channel is part
+     of the service name itself (Online Card / POS Card). */
+  const SERVICE_CATALOG = [
+    { tier: 'Online', services: ['Online Card', 'Online Wallet', 'Online Valu', 'Online OCTO', 'Online Souhoola',
+      'Online Contact', 'Online Basata', 'Online Mogo', 'Online Tru', 'Online Forsa', 'Online Aman',
+      'Online Bank Installments', 'Online Transfer', 'Online Instapay'] },
+    { tier: 'POS', services: ['POS Card', 'POS Wallet', 'POS Valu', 'POS OCTO', 'POS Souhoola',
+      'POS Contact', 'POS Basata', 'POS Mogo', 'POS Tru', 'POS Forsa', 'POS Aman',
+      'POS Bank Installments', 'POS Transfer', 'POS Instapay'] },
+  ];
+  const SERVICES = SERVICE_CATALOG[0].services.concat(SERVICE_CATALOG[1].services);
+  const BASIC_SERVICES = SERVICES;
+
+  /* ══════════ Document metadata — presentation details per document type ══════════ */
+  const DOC_META = {
+    'National ID': { ar: 'بطاقة الرقم القومي', desc: 'Front and back of a valid national identity card.',
+      formats: 'PDF, JPG, PNG', size: 5, slots: [{ label: 'Front side' }, { label: 'Back side' }],
+      conds: ['Both front and back sides are clearly visible', 'Document is valid and not expired'] },
+    'Bank Account Letter / IBAN proof': { ar: 'خطاب حساب بنكي / إثبات الآيبان',
+      desc: 'A letter from your bank confirming your account and IBAN.', formats: 'PDF, JPG', size: 5, slots: 'single',
+      conds: ['Issued within the last 3 months', 'Bank name and IBAN are clearly visible'] },
+    'Commercial Registration (CR)': { ar: 'السجل التجاري', desc: 'Official commercial registration certificate.',
+      formats: 'PDF', size: 10, slots: 'single',
+      conds: ['Issued within the last 6 months', 'Company name matches your application'] },
+    'Tax Identification Card': { ar: 'البطاقة الضريبية', desc: 'Valid tax registration card (Tax ID) issued by the authority.',
+      formats: 'PDF, JPG', size: 5, slots: 'single', conds: ['Tax number is clearly readable', 'Card is currently valid'] },
+    "Owner's Passport": { ar: 'جواز سفر المالك', desc: 'Passport of the business owner (non-Egyptian).',
+      formats: 'PDF, JPG, PNG', size: 5, slots: 'single', conds: ['Passport is valid and not expired', 'Photo page is clearly visible'] },
+    "Owner's Residence Card": { ar: 'بطاقة إقامة المالك', desc: 'Valid Egyptian residence permit for the business owner.',
+      formats: 'PDF, JPG, PNG', size: 5, slots: 'single', conds: ['Residence card is currently valid'] },
+    'BM PSP Agreement Annex': { ar: 'ملحق اتفاقية PSP - بنك مصر', desc: 'Signed PSP agreement annex required by Bank Misr.',
+      formats: 'PDF', size: 10, slots: 'single', conds: ['Signed and stamped by an authorized signatory'] },
+    'Signed Payout Contract': { ar: 'عقد الدفعات الموقع', desc: 'Payout services contract, signed by the business owner.',
+      formats: 'PDF', size: 10, slots: 'single', conds: ['All pages are signed'] },
+    'Disbursement Authorization Letter': { ar: 'خطاب تفويض الصرف',
+      desc: 'Letter authorizing Kashier to disburse payouts to your account.', formats: 'PDF', size: 5, slots: 'single',
+      conds: ['Signed by an authorized signatory'] },
+    'Brand Authorization Letter': { ar: 'خطاب تفويض العلامة التجارية',
+      desc: 'Letter authorizing you to sell under this brand online.', formats: 'PDF', size: 5, slots: 'single',
+      conds: ['Signed and stamped by the brand owner'] },
+    'Store Lease / Location Proof': { ar: 'عقد إيجار المتجر / إثبات الموقع',
+      desc: 'Lease contract or utility bill proving your POS location.', formats: 'PDF, JPG', size: 5, slots: 'single',
+      conds: ['Issued within the last 3 months', 'Address matches your application'] },
+  };
+
+  /* ══════════ Requirement rules — same OR-within-group / AND-across-groups matching
+     semantics as the Document Rules module. An empty condition group matches everyone. ══════════ */
+  const RULES = [
+    { name: 'Identity (universal)',    docs: ['National ID'],                                                entities: [], owners: [], industries: [], banks: [], modules: [], services: [] },
+    { name: 'Bank proof (universal)',  docs: ['Bank Account Letter / IBAN proof'],                            entities: [], owners: [], industries: [], banks: [], modules: [], services: [] },
+    { name: 'Tax registration',        docs: ['Tax Identification Card'],                                     entities: ['Registered Business', 'Professional Business'], owners: [], industries: [], banks: [], modules: [], services: [] },
+    { name: 'Commercial Registration', docs: ['Commercial Registration (CR)'],                                entities: ['Registered Business'], owners: [], industries: [], banks: [], modules: [], services: [] },
+    { name: 'Foreign owner KYC',       docs: ["Owner's Passport", "Owner's Residence Card"],                  entities: [], owners: ['Foreign Owner'], industries: [], banks: [], modules: [], services: [] },
+    { name: 'Bank Misr PSP annex',     docs: ['BM PSP Agreement Annex'],                                      entities: [], owners: [], industries: [], banks: ['Bank Misr'], modules: ['PSP'], services: [] },
+    { name: 'Online services',         docs: ['Brand Authorization Letter'],                                  entities: [], owners: [], industries: [], banks: [], modules: [], services: BASIC_SERVICES.filter(s => s.startsWith('Online ')) },
+    { name: 'POS services',            docs: ['Store Lease / Location Proof'],                                entities: [], owners: [], industries: [], banks: [], modules: [], services: BASIC_SERVICES.filter(s => s.startsWith('POS ')) },
+  ];
+
+  const criteria = { entity: '', owner: '', industry: '', bank: '', module: '', services: [] };
+
+  /* Within a group: OR. Across groups: AND. Empty group on the rule = matches anyone. */
+  function ruleMatches(r, cfg) {
+    if (r.entities.length && !r.entities.includes(cfg.entity)) return false;
+    if (r.owners.length && !r.owners.includes(cfg.owner)) return false;
+    if (r.industries.length && !r.industries.includes(cfg.industry)) return false;
+    if (r.banks.length && !r.banks.includes(cfg.bank)) return false;
+    if (r.modules.length && !r.modules.includes(cfg.module)) return false;
+    if (r.services.length && !r.services.some(s => cfg.services.includes(s))) return false;
+    return true;
+  }
+
+  /* Returns Map<docName, [matching rule names]> for the current criteria selection. */
+  function computeRequiredDocs(cfg) {
+    const map = new Map();
+    RULES.forEach(r => {
+      if (!ruleMatches(r, cfg)) return;
+      r.docs.forEach(d => {
+        if (!map.has(d)) map.set(d, []);
+        map.get(d).push(r.name);
+      });
+    });
+    return map;
+  }
+
+  let toastTimer;
+  function toast(msg) {
+    const t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+  /* ---- Progressive upload enhancement on the static dropzones ---- */
+  function acceptedFormats(sub) {
+    // derive allowed formats from the "PDF, JPG · up to N MB" hint
+    const fmts = (sub.match(/PDF|JPG|JPEG|PNG/gi) || []).map(s => s.toUpperCase().replace('JPEG','JPG'));
+    const size = parseInt((sub.match(/up to (\d+) MB/) || [])[1] || '10', 10);
+    return { fmts: [...new Set(fmts)], size };
+  }
+
+  /* Build a file chip (download/remove handled via delegation, so seeded chips work too) */
+  function buildChip(f, label) {
+    const chip = document.createElement('div');
+    chip.className = 'dz-fchip';
+    chip._file = f;
+    chip.innerHTML = `${DOC_ICON}${label ? `<span class="flabel">${esc(label)}</span>` : ''}<span class="fname" title="${esc(f.name)}">${esc(f.name)}</span><span class="fsize">${esc(fmtSize(f.size))}</span><button class="dl" type="button" aria-label="Download file" title="Download">${DL_ICON}</button><button class="rm" type="button" aria-label="Remove file" title="Remove">${RM_ICON}</button>`;
+    return chip;
+  }
+
+  function wireDropzone(block) {
+    const zone = block.querySelector('.dropzone');
+    const input = block.querySelector('input[type=file]');
+    const filesWrap = block.querySelector('.dz-files');
+    const multiple = input.hasAttribute('multiple');
+    const label = block.dataset.label || '';
+    const { fmts, size } = acceptedFormats(block.querySelector('.dz-sub').textContent);
+
+    function addChip(f) {
+      if (!multiple) filesWrap.innerHTML = '';
+      filesWrap.appendChild(buildChip(f, label));
+    }
+
+    function handle(list) {
+      const valid = [];
+      for (const f of [...list]) {
+        if (!fmts.includes(extOf(f.name))) { toast(`Only ${fmts.join(', ')} allowed here`); continue; }
+        if (f.size > size * 1048576) { toast(`${f.name} exceeds the ${size} MB limit`); continue; }
+        valid.push(f);
+      }
+      if (!valid.length) { zone.classList.add('err'); return; }
+      zone.classList.remove('err');
+      valid.forEach(addChip);
+      const it = block.closest('.req-item'); if (it) delete it.dataset.rejected;
+      if (!multiple) zone.style.display = 'none';
+      updateStatus();
+    }
+
+    input.addEventListener('change', e => { handle(e.target.files); e.target.value = ''; });
+    ['dragover','dragenter'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.add('drag'); }));
+    ['dragleave','dragend'].forEach(ev => zone.addEventListener(ev, () => zone.classList.remove('drag')));
+    zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag'); handle(e.dataTransfer.files); });
+  }
+
+  /* ---- Review state per section: editing | submitted | approved
+         (reject returns the section to editing with a warning banner) ---- */
+  const setPill = (item, cls, txt) => { const p = item.querySelector('.status-pill'); p.className = 'status-pill ' + cls; p.innerHTML = '<span class="dot"></span>' + txt; };
+  const secComplete = sec => { const items = [...sec.querySelectorAll('.req-item')]; return items.length > 0 && items.every(it => [...it.querySelectorAll('.dz-block')].every(b => b.querySelector('.dz-files').children.length > 0)); };
+  function lockSection(sec, locked) { sec.classList.toggle('locked', locked); sec.querySelectorAll('input[type=file]').forEach(i => i.disabled = locked); }
+
+  /* ══════════ Criteria form — chip groups + the live-computed document checklist ══════════ */
+  const GENERIC_DOC_SVG = '<svg viewBox="0 0 280 176" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"><rect x="46" y="14" width="188" height="148" rx="8" fill="#FFFFFF" stroke="#E6E8E8"/><rect x="70" y="34" width="140" height="11" rx="5.5" fill="#001F5F"/><rect x="86" y="58" width="108" height="7" rx="3.5" fill="#E6E8E8"/><rect x="78" y="74" width="124" height="7" rx="3.5" fill="#E6E8E8"/><rect x="86" y="90" width="108" height="7" rx="3.5" fill="#E6E8E8"/><circle cx="94" cy="128" r="18" fill="#FBE9E9" stroke="#A50017" stroke-width="1.5"/><path d="M94 116l3.4 6.9 7.6 1.1-5.5 5.4 1.3 7.6-6.8-3.6-6.8 3.6 1.3-7.6-5.5-5.4 7.6-1.1z" fill="#E4A0AB"/><rect x="140" y="120" width="70" height="6" rx="3" fill="#E6E8E8"/><path d="M140 138c14-8 26-8 40 0" stroke="#001F5F" stroke-width="2" stroke-linecap="round"/></svg>';
+  const DZ_ICO_SVG = '<svg class="dz-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg>';
+  const CHECK_SM = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>';
+
+  function acceptAttr(formats) {
+    const map = { PDF: '.pdf', JPG: '.jpg,.jpeg', PNG: '.png' };
+    return (formats || 'PDF').split(',').map(s => s.trim().toUpperCase()).map(f => map[f] || '').filter(Boolean).join(',');
+  }
+
+  function renderSingleChips(containerId, options, key) {
+    const c = $(containerId); c.innerHTML = '';
+    options.forEach(opt => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'crit-chip' + (criteria[key] === opt ? ' on' : '');
+      b.textContent = opt;
+      b.addEventListener('click', () => {
+        criteria[key] = criteria[key] === opt ? '' : opt;
+        renderCriteria();
+        recomputeAndRender();
+      });
+      c.appendChild(b);
+    });
+  }
+
+  function renderMultiChips(containerId, options, key) {
+    const c = $(containerId); c.innerHTML = '';
+    options.forEach(opt => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'crit-chip' + (criteria[key].includes(opt) ? ' on' : '');
+      b.textContent = opt;
+      b.addEventListener('click', () => {
+        const i = criteria[key].indexOf(opt);
+        if (i >= 0) criteria[key].splice(i, 1); else criteria[key].push(opt);
+        renderCriteria();
+        recomputeAndRender();
+      });
+      c.appendChild(b);
+    });
+  }
+
+  /* Services picker mirrors the Pricing Rules module: grouped by channel (Online / POS).
+     The group header already supplies the channel, so each chip's own label only needs
+     the method name — the stored value keeps the full "Online Card" / "POS Card" form. */
+  const stripChannel = name => name.replace(/^(Online|POS) /, '');
+  function renderServiceCatalogChips() {
+    const c = $('critService'); c.innerHTML = '';
+    SERVICE_CATALOG.forEach(tier => {
+      const group = document.createElement('div');
+      group.className = 'svc-group';
+      const label = document.createElement('div');
+      label.className = 'svc-group-label';
+      label.textContent = tier.tier;
+      group.appendChild(label);
+      const row = document.createElement('div');
+      row.className = 'crit-chips';
+      tier.services.forEach(name => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'crit-chip' + (criteria.services.includes(name) ? ' on' : '');
+        b.textContent = stripChannel(name);
+        b.addEventListener('click', () => {
+          const i = criteria.services.indexOf(name);
+          if (i >= 0) criteria.services.splice(i, 1); else criteria.services.push(name);
+          renderCriteria();
+          recomputeAndRender();
+        });
+        row.appendChild(b);
+      });
+      group.appendChild(row);
+      c.appendChild(group);
+    });
+  }
+
+  function renderCriteria() {
+    renderSingleChips('critEntity', ENTITIES, 'entity');
+    renderSingleChips('critOwner', OWNERS, 'owner');
+    renderSingleChips('critModule', MODULES, 'module');
+    renderServiceCatalogChips();
+    const locked = document.querySelector('.crit-card')?.classList.contains('locked-crit');
+    document.querySelectorAll('.crit-chip').forEach(c => c.disabled = !!locked);
+  }
+
+  /* One required-document card, using a shared generic thumbnail for every doc type. */
+  function reqItemHTML(name, viaNames) {
+    const meta = DOC_META[name] || {};
+    const dzInner = `${DZ_ICO_SVG}<div class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</div><div class="dz-sub">${esc(meta.formats || 'PDF')} · up to ${meta.size || 10} MB</div><input type="file" accept="${acceptAttr(meta.formats)}" hidden>`;
+    const slotsHTML = meta.slots === 'single'
+      ? `<div class="req-slots single"><div class="dz-block" data-label=""><label class="dropzone">${dzInner}</label><div class="dz-files"></div></div></div>`
+      : `<div class="req-slots">${(meta.slots || []).map(s => `<div class="dz-block" data-label="${esc(s.label)}"><div class="dz-label">${esc(s.label)} <span class="req">*</span></div><label class="dropzone">${dzInner}</label><div class="dz-files"></div></div>`).join('')}</div>`;
+    const metaLine = meta.slots === 'single' ? 'single file' : `${(meta.slots || []).length} files (labeled)`;
+    return `<div class="req-item" data-doc="${esc(name)}">
+      <div class="req-top">
+        <div class="req-thumb">${GENERIC_DOC_SVG}</div>
+        <div class="req-info">
+          <div class="req-title-row"><span class="req-title">${esc(name)} <span class="star">*</span></span>${meta.ar ? `<span class="req-ar">${esc(meta.ar)}</span>` : ''}</div>
+          <div class="req-desc">${esc(meta.desc || '')}</div>
+          <div class="req-meta">${esc(meta.formats || 'PDF')} · up to ${meta.size || 10} MB · ${metaLine}</div>
+          ${meta.conds ? `<ul class="req-conds">${meta.conds.map(c => `<li>${CHECK_SM}<span>${esc(c)}</span></li>`).join('')}</ul>` : ''}
+          <div class="req-via">Required because: ${viaNames.map(esc).join(', ')}</div>
+        </div>
+        <span class="status-pill required"><span class="dot"></span>Required</span>
+      </div>
+      ${slotsHTML}
+    </div>`;
+  }
+
+  /* Rebuild the required-documents list from the current criteria, without losing files
+     already uploaded to a document that's still required. */
+  function recomputeAndRender() {
+    const sec = $('docs-computed');
+    if ((sec.dataset.state || 'editing') !== 'editing') return;   // locked while submitted/approved
+    const map = computeRequiredDocs(criteria);
+    const list = $('reqList');
+    const existing = new Map([...list.querySelectorAll('.req-item')].map(it => [it.dataset.doc, it]));
+
+    existing.forEach((el, name) => { if (!map.has(name)) el.remove(); });
+
+    map.forEach((via, name) => {
+      if (existing.has(name)) {
+        const viaEl = existing.get(name).querySelector('.req-via');
+        if (viaEl) viaEl.textContent = 'Required because: ' + via.join(', ');
+        return;
+      }
+      const wrap = document.createElement('div');
+      wrap.innerHTML = reqItemHTML(name, via);
+      const item = wrap.firstElementChild;
+      list.appendChild(item);
+      item.querySelectorAll('.dz-block').forEach(wireDropzone);
+    });
+
+    refreshSection(sec);
+  }
+
+  /* Lock the criteria form whenever the documents section is not being edited */
+  function syncCriteriaLock() {
+    const sec = document.getElementById('docs-computed');
+    const state = sec ? (sec.dataset.state || 'editing') : 'editing';
+    const locked = !!(sec && state !== 'editing');
+    document.querySelectorAll('.crit-chip').forEach(c => c.disabled = locked);
+    document.querySelectorAll('.crit-select').forEach(s => s.disabled = locked);
+    const card = document.querySelector('.crit-card');
+    if (card) card.classList.toggle('locked-crit', locked);
+    // Top-right Edit button: shown only when the current documents are approved/locked
+    const topEdit = document.getElementById('topEdit');
+    if (topEdit) { topEdit._sec = sec; topEdit.hidden = !(sec && state === 'approved'); }
+  }
+
+  function refreshSection(sec) {
+    const state = sec.dataset.state || 'editing';
+    const items = [...sec.querySelectorAll('.req-item')];
+    if (state === 'editing' || state === 'draft') {
+      items.forEach(it => {
+        if (state === 'editing' && it.dataset.rejected === '1') { setPill(it, 'rejected', 'Rejected — replace'); return; }
+        const blocks = it.querySelectorAll('.dz-block');
+        const filled = [...blocks].filter(b => b.querySelector('.dz-files').children.length > 0).length;
+        const cls = filled === 0 ? 'required' : filled < blocks.length ? 'partial' : 'done';
+        setPill(it, cls, filled === 0 ? 'Required' : filled < blocks.length ? `${filled} of ${blocks.length} added` : 'Uploaded');
+      });
+    } else if (state === 'submitted') {
+      items.forEach(it => setPill(it, 'pending', 'Pending review'));
+    } else if (state === 'approved') {
+      items.forEach(it => setPill(it, 'approved', 'Approved'));
+    }
+    const done = items.filter(it => [...it.querySelectorAll('.dz-block')].every(b => b.querySelector('.dz-files').children.length > 0)).length;
+    const total = items.length;
+    const set = (sel, txt) => { const el = sec.querySelector(sel); if (el) el.textContent = txt; };
+    set('.ring-pct', (total ? Math.round(done / total * 100) : 0) + '%');
+    set('.sum-title', `${done} of ${total} required documents uploaded`);
+    set('.req-count', `${done} of ${total} complete`);
+    const ring = sec.querySelector('.ring-prog');
+    if (ring) { const C = 2 * Math.PI * 18; ring.setAttribute('stroke-dasharray', C.toFixed(1)); ring.setAttribute('stroke-dashoffset', (C * (1 - (total ? done / total : 0))).toFixed(1)); }
+    const addFiles = sec.querySelector('.additional .dz-files'), addCount = sec.querySelector('.add-count');
+    if (addFiles && addCount) { const n = addFiles.children.length; addCount.textContent = n + (n === 1 ? ' file' : ' files'); }
+    // Action bar (Cancel / Save draft / Submit) is only available while editing
+    const bar = sec.querySelector('.submit-bar');
+    if (bar) bar.style.display = state === 'editing' ? '' : 'none';
+    const btn = sec.querySelector('.btn-submit');
+    if (btn && state === 'editing') btn.disabled = !secComplete(sec);
+    syncCriteriaLock();
+  }
+  function updateStatus() { document.querySelectorAll('.docs-for').forEach(refreshSection); }
+
+  const RB_ICON = {
+    pending: 'M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z',
+    approved: 'M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
+    rejected: 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z',
+    draft: 'M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z'
+  };
+  function showBanner(sec, type, title, text) {
+    const b = sec.querySelector('.review-banner');
+    b.className = 'review-banner ' + type;
+    const time = new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const label = type === 'pending' ? 'Submitted ' : type === 'approved' ? 'Reviewed ' : type === 'draft' ? 'Saved ' : 'Updated ';
+    let btns = '';
+    if (type === 'draft') btns = `<button class="btn btn-primary btn-sm rb-continue" type="button">Continue editing</button>`;
+    else if (type === 'approved') btns = `<button class="btn btn-ghost btn-sm rb-download" type="button">${DL_ICON}Download all documents</button>`;
+    b.innerHTML = `<svg class="rb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="${RB_ICON[type]}"/></svg>`
+      + `<div><div class="rb-title">${esc(title)}</div><div class="rb-text">${esc(text)}</div>`
+      + `<div class="rb-time">${label}${time}</div>`
+      + btns + `</div>`;
+    b.hidden = false;
+    const cont = b.querySelector('.rb-continue');
+    if (cont) cont.addEventListener('click', () => editSection(sec));
+    const editBtn = b.querySelector('.rb-editbtn');
+    if (editBtn) editBtn.addEventListener('click', () => editSection(sec));
+    const dl = b.querySelector('.rb-download');
+    if (dl) dl.addEventListener('click', () => downloadAll(sec));
+  }
+  function hideBanner(sec) { sec.querySelector('.review-banner').hidden = true; }
+
+  /* ---- Download uploaded files (real File kept in memory; placeholder as fallback) ---- */
+  function downloadFile(name, file) {
+    const blob = (file instanceof File) ? file : new Blob(['Kashier prototype — placeholder for uploaded document: ' + name], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name || 'document';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+  function downloadAll(sec) {
+    const chips = [...sec.querySelectorAll('.dz-fchip')];
+    if (!chips.length) { toast('No documents to download'); return; }
+    chips.forEach((chip, i) => setTimeout(() => downloadFile(chip.querySelector('.fname').textContent, chip._file), i * 350));
+    toast('Downloading ' + chips.length + ' document' + (chips.length > 1 ? 's' : ''));
+  }
+  function showProto(sec, show) { const p = sec.querySelector('.proto'); if (p) p.hidden = !show; }
+
+  function submitSection(sec) {
+    if (!secComplete(sec)) { toast('Please upload all required documents first'); return; }
+    sec.querySelectorAll('.req-item').forEach(it => delete it.dataset.rejected);
+    sec.dataset.state = 'submitted';
+    lockSection(sec, true);
+    showBanner(sec, 'pending', 'Documents submitted for review', 'Your documents are now with our compliance team. You can’t make changes until they approve or reject your request.');
+    showProto(sec, true);
+    refreshSection(sec);
+    toast('Submitted for review');
+  }
+  function saveDraft(sec) {
+    const items = [...sec.querySelectorAll('.req-item')];
+    const done = items.filter(it => [...it.querySelectorAll('.dz-block')].every(b => b.querySelector('.dz-files').children.length > 0)).length;
+    sec.dataset.state = 'draft';
+    lockSection(sec, true);
+    showBanner(sec, 'draft', 'Draft saved', `Your progress is saved (${done} of ${items.length} required documents uploaded). Click “Continue editing” whenever you want to finish and submit.`);
+    showProto(sec, false);
+    refreshSection(sec);
+    toast('Draft saved');
+  }
+  /* Snapshot the current documents + state (+ criteria, for docs-computed) so Cancel can restore them */
+  function snapshotSection(sec) {
+    sec._snapshot = {
+      state: sec.dataset.state || 'editing',
+      criteria: sec.id === 'docs-computed' ? JSON.parse(JSON.stringify(criteria)) : null,
+      blocks: [...sec.querySelectorAll('.dz-block')].map(block =>
+        [...block.querySelectorAll('.dz-fchip')].map(c => ({
+          file: c._file, name: c.querySelector('.fname').textContent,
+          label: c.querySelector('.flabel') ? c.querySelector('.flabel').textContent : ''
+        }))
+      )
+    };
+  }
+  function restoreSection(sec) {
+    const snap = sec._snapshot;
+    if (snap && snap.criteria && sec.id === 'docs-computed') {
+      // Rebuild the checklist to match the criteria as they were when editing started,
+      // so the dz-block order lines up with the snapshotted files restored below.
+      Object.assign(criteria, snap.criteria);
+      renderCriteria();
+      const map = computeRequiredDocs(criteria);
+      const list = $('reqList');
+      list.innerHTML = '';
+      map.forEach((via, name) => {
+        const wrap = document.createElement('div');
+        wrap.innerHTML = reqItemHTML(name, via);
+        const item = wrap.firstElementChild;
+        list.appendChild(item);
+        item.querySelectorAll('.dz-block').forEach(wireDropzone);
+      });
+    }
+    [...sec.querySelectorAll('.dz-block')].forEach((block, i) => {
+      const filesWrap = block.querySelector('.dz-files');
+      const multiple = block.querySelector('input[type=file]').hasAttribute('multiple');
+      const chips = (snap && snap.blocks[i]) || [];
+      filesWrap.innerHTML = '';
+      chips.forEach(cd => filesWrap.appendChild(buildChip(cd.file || seedFile(cd.name, 200), cd.label)));
+      block.querySelector('.dropzone').style.display = (!multiple && chips.length) ? 'none' : 'block';
+    });
+    sec.querySelectorAll('.req-item').forEach(it => delete it.dataset.rejected);
+    const prev = (snap && snap.state) || 'editing';
+    sec.dataset.state = prev;
+    if (prev === 'approved') { lockSection(sec, true); showBanner(sec, 'approved', 'Your documents are approved', 'Your documents are approved. Click Edit to make changes.'); showProto(sec, false); }
+    else if (prev === 'submitted') { lockSection(sec, true); showBanner(sec, 'pending', 'Documents submitted for review', 'Your documents are with our compliance team. You can’t make changes until they approve or reject your request.'); showProto(sec, true); }
+    else { lockSection(sec, false); hideBanner(sec); showProto(sec, false); }
+    refreshSection(sec);
+  }
+  function cancelSection(sec) {
+    if (sec._snapshot) { restoreSection(sec); toast('Changes discarded'); return; }
+    sec.querySelectorAll('.req-item').forEach(it => delete it.dataset.rejected);
+    sec.querySelectorAll('.dz-files').forEach(f => f.innerHTML = '');
+    sec.querySelectorAll('.dropzone').forEach(z => { z.style.display = 'block'; z.classList.remove('err'); });
+    sec.dataset.state = 'editing';
+    lockSection(sec, false);
+    hideBanner(sec); showProto(sec, false);
+    refreshSection(sec);
+    toast('Changes reset');
+  }
+  function editSection(sec) {
+    snapshotSection(sec);          // remember current docs + state to restore on Cancel
+    sec.dataset.state = 'editing';
+    lockSection(sec, false);
+    hideBanner(sec); showProto(sec, false);
+    refreshSection(sec);
+  }
+  function approveSection(sec) {
+    sec.dataset.state = 'approved';
+    lockSection(sec, true);
+    showBanner(sec, 'approved', 'All documents approved', 'Your documents were approved by the compliance team. Your account is verified.');
+    showProto(sec, false);
+    refreshSection(sec);
+    toast('Documents approved');
+  }
+  function rejectSection(sec) {
+    const items = [...sec.querySelectorAll('.req-item')];
+    const rej = items[items.length - 1];
+    const name = rej.querySelector('.req-title').textContent.replace('*', '').trim();
+    rej.dataset.rejected = '1';                 // flag the rejected document; keep ALL uploaded files
+    sec.dataset.state = 'editing';
+    lockSection(sec, false);
+    showBanner(sec, 'rejected', name + ' was rejected', 'The compliance team rejected "' + name + '". Your uploaded files are kept — download it to review, then replace it and submit again. Your other documents are unchanged.');
+    showProto(sec, false);
+    refreshSection(sec);
+    toast(name + ' rejected');
+  }
+
+  /* ---- Onboarding seed: the documents the merchant provided when they signed up ---- */
+  const SEED = {
+    'National ID': [ { label: 'Front side', name: 'national-id-front.jpg', kb: 420 }, { label: 'Back side', name: 'national-id-back.jpg', kb: 400 } ],
+    'Bank Account Letter / IBAN proof': [ { name: 'bank-account-letter.pdf', kb: 180 } ],
+    'Tax Identification Card': [ { name: 'tax-card.pdf', kb: 280 } ],
+    'Commercial Registration (CR)': [ { name: 'commercial-registration.pdf', kb: 760 } ],
+    'Brand Authorization Letter': [ { name: 'brand-authorization-letter.pdf', kb: 210 } ],
+  };
+  function seedFile(name, kb) {
+    return new File([new Uint8Array(kb * 1024)], name, { type: /\.pdf$/i.test(name) ? 'application/pdf' : 'image/jpeg' });
+  }
+  function seedOnboarding() {
+    const sec = document.getElementById('docs-computed');
+    if (!sec) return;
+    Object.assign(criteria, {
+      entity: 'Registered Business', owner: 'Egyptian Owner', industry: 'Retail & E-commerce',
+      bank: 'Bank Misr', module: 'PF', services: ['Online Card'],
+    });
+    $('critIndustry').value = criteria.industry;
+    $('critBank').value = criteria.bank;
+    renderCriteria();
+    recomputeAndRender();   // builds the req-items for the seeded criteria above
+
+    [...sec.querySelectorAll('.req-item')].forEach(it => {
+      const seed = SEED[it.dataset.doc] || [];
+      [...it.querySelectorAll('.dz-block')].forEach((block, i) => {
+        const s = seed[i]; if (!s) return;
+        const filesWrap = block.querySelector('.dz-files');
+        filesWrap.innerHTML = '';
+        filesWrap.appendChild(buildChip(seedFile(s.name, s.kb), s.label || block.dataset.label || ''));
+        block.querySelector('.dropzone').style.display = 'none';
+      });
+    });
+    sec.dataset.state = 'approved';
+    lockSection(sec, true);
+    showBanner(sec, 'approved', 'Your onboarding documents', 'These are the documents you provided when you signed up, and they are approved. Click Edit to make changes.');
+    showProto(sec, false);
+    refreshSection(sec);
+  }
+
+  fillSelect('critIndustry', INDUSTRIES);
+  fillSelect('critBank', BANKS);
+  function fillSelect(id, options) {
+    const s = $(id);
+    options.forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = o; s.appendChild(opt); });
+  }
+  $('critIndustry').addEventListener('change', e => { criteria.industry = e.target.value; recomputeAndRender(); });
+  $('critBank').addEventListener('change', e => { criteria.bank = e.target.value; recomputeAndRender(); });
+
+  document.querySelectorAll('.dz-block').forEach(wireDropzone);
+
+  /* Download / remove a file (delegated so seeded and uploaded chips both work) */
+  document.addEventListener('click', e => {
+    const dlBtn = e.target.closest('.dz-fchip .dl');
+    const rmBtn = e.target.closest('.dz-fchip .rm');
+    if (dlBtn) {
+      const chip = dlBtn.closest('.dz-fchip');
+      downloadFile(chip.querySelector('.fname').textContent, chip._file);
+    } else if (rmBtn) {
+      const chip = rmBtn.closest('.dz-fchip');
+      const block = chip.closest('.dz-block');
+      const zone = block.querySelector('.dropzone');
+      const multiple = block.querySelector('input[type=file]').hasAttribute('multiple');
+      chip.remove();
+      if (!multiple) zone.style.display = 'block';
+      const it = block.closest('.req-item'); if (it) delete it.dataset.rejected;
+      updateStatus(); toast('File removed');
+    }
+  });
+
+  /* ---- Chrome ---- */
+  $('hamburger').addEventListener('click', () => { $('sidebar').classList.add('open'); $('overlay').classList.add('open'); });
+  $('overlay').addEventListener('click', () => { $('sidebar').classList.remove('open'); $('overlay').classList.remove('open'); });
+  $('configHead').addEventListener('click', () => {
+    const sub = $('configSub'), chev = $('configHead').querySelector('svg');
+    const open = sub.style.display !== 'none';
+    sub.style.display = open ? 'none' : 'flex';
+    chev.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+  });
+  $('langBtn').addEventListener('click', () => {
+    const btn = $('langBtn'); const toAr = btn.textContent === 'عربي';
+    btn.textContent = toAr ? 'English' : 'عربي';
+    toast(toAr ? 'تم التبديل إلى العربية (عرض توضيحي)' : 'Switched to English');
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('sidebar').classList.remove('open'); $('overlay').classList.remove('open'); } });
+
+  /* ---- Submit / review actions ---- */
+  document.querySelectorAll('.btn-submit').forEach(b => b.addEventListener('click', () => submitSection(b.closest('.docs-for'))));
+  document.querySelectorAll('.btn-draft').forEach(b => b.addEventListener('click', () => saveDraft(b.closest('.docs-for'))));
+  document.querySelectorAll('.btn-cancel').forEach(b => b.addEventListener('click', () => cancelSection(b.closest('.docs-for'))));
+  document.querySelectorAll('.sim-approve').forEach(b => b.addEventListener('click', () => approveSection(b.closest('.docs-for'))));
+  document.querySelectorAll('.sim-reject').forEach(b => b.addEventListener('click', () => rejectSection(b.closest('.docs-for'))));
+  $('topEdit').addEventListener('click', () => { const s = $('topEdit')._sec; if (s) editSection(s); });
+
+  /* ══════════ Hand-off from New Merchant Application (sales) ══════════
+     If this page was opened via an application link (?biz=...&entity=...), pre-fill
+     the criteria from that link instead of the default "returning approved merchant"
+     demo, and greet the merchant by name. */
+  function applyHandoff() {
+    const p = new URLSearchParams(location.search);
+    const biz = p.get('biz');
+    if (!biz && !p.get('entity')) return false;
+
+    if (ENTITIES.includes(p.get('entity'))) criteria.entity = p.get('entity');
+    if (OWNERS.includes(p.get('owner'))) criteria.owner = p.get('owner');
+    if (INDUSTRIES.includes(p.get('industry'))) { criteria.industry = p.get('industry'); $('critIndustry').value = criteria.industry; }
+    if (BANKS.includes(p.get('bank'))) { criteria.bank = p.get('bank'); $('critBank').value = criteria.bank; }
+    if (MODULES.includes(p.get('module'))) criteria.module = p.get('module');
+    criteria.services = (p.get('services') || '').split(',').filter(s => SERVICES.includes(s));
+
+    renderCriteria();
+    recomputeAndRender();   // section is already 'editing' by default — nothing to unlock
+
+    if (biz) {
+      $('pageTitle').textContent = 'Welcome, ' + biz;
+      $('pageSub').textContent = "Your account manager has started your application. We've pre-filled your business criteria below — review them and upload the required documents to continue.";
+    }
+    const note = $('handoffNote');
+    note.hidden = false;
+    note.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>' +
+      '<span>You\'re continuing an application' + (biz ? ' for <b>' + esc(biz) + '</b>' : '') + ' started by your Kashier account manager. The criteria below were entered on your behalf — check them, then upload the documents required.</span>';
+    return true;
+  }
+
+  if (!applyHandoff()) {
+    seedOnboarding();   // no application link — open on the locked "returning approved merchant" demo
+  }
+  updateStatus();
+</script>
+
+</body>
+</html>
