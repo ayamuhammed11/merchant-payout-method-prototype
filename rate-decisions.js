@@ -798,6 +798,30 @@ window.KashierRates = (function () {
     return approved.length ? approved[approved.length - 1].to : app.payout;
   }
 
+  /* The payout accounts in force now, each with when and by which request it last changed. */
+  function payoutAccounts(app) {
+    const changes = payoutChanges(app).slice().reverse();   // oldest first
+    const latest = name => {
+      let hit = null;
+      changes.forEach(r => r.items.forEach(i => {
+        if (i.account === name && i.state === 'approved' && (!hit || new Date(i.decidedTs) >= new Date(hit.item.decidedTs))) hit = { item: i, ref: r.ref };
+      }));
+      return hit;
+    };
+    const accounts = [];
+    if (app.payout && app.payout.method) {
+      const hit = latest('Primary account');
+      accounts.push({ account: 'Primary account', details: hit ? hit.item.to : app.payout,
+        updatedTs: hit ? hit.item.decidedTs : '', ref: hit ? hit.ref : '' });
+    }
+    if (accountStatusFor(app) === 'live') {
+      const hit = latest('Secondary account');
+      accounts.push({ account: 'Secondary account', details: hit ? hit.item.to : SECONDARY_SEED,
+        updatedTs: hit ? hit.item.decidedTs : '', ref: hit ? hit.ref : '' });
+    }
+    return accounts;
+  }
+
   /* Field-by-field difference between two payout methods; only what changed. */
   function payoutDiff(from, to) {
     const rows = [];
@@ -948,6 +972,6 @@ window.KashierRates = (function () {
     ACCOUNT_STATUS: ACCOUNT_STATUS, midFor: midFor, accountStatusFor: accountStatusFor,
     merchantAccounts: merchantAccounts, findAccount: findAccount, accountLog: accountLog, accountURL: accountURL,
     approveAccount: approveAccount, rejectAccount: rejectAccount, goLiveAccount: goLiveAccount,
-    payoutChanges: payoutChanges, currentPayout: currentPayout, payoutDiff: payoutDiff, decidePayoutChange: decidePayoutChange,
+    payoutChanges: payoutChanges, payoutAccounts: payoutAccounts, currentPayout: currentPayout, payoutDiff: payoutDiff, decidePayoutChange: decidePayoutChange,
   };
 })();

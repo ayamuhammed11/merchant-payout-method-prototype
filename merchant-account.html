@@ -810,17 +810,31 @@
   }
   const PAYOUT_LABEL = { bank: 'Bank Account', wallet: 'E-Wallet' };
 
+  /* One account as it stands now, with when and by which request it last changed. */
+  function payoutCurrentCard(a) {
+    return `<div class="pc-item">
+      <div class="pc-head">
+        <div><div class="pc-title">${esc(a.account)}</div>
+          <div class="pc-meta">${a.updatedTs ? `Updated ${esc(fmtDateTime(a.updatedTs))} · <b>${esc(a.ref)}</b>` : 'As submitted with the application'}</div></div>
+        <span class="badge primary">${esc(PAYOUT_LABEL[a.details.method])}</span>
+      </div>
+      <div class="kv-grid">${payoutRows(a.details)}</div>
+    </div>`;
+  }
+
   function panelPayout(acct) {
     const p = K.currentPayout(acct.app);
     if (!p || !p.method) return `<h2 class="section-title">Payout Method</h2><div class="kv-grid">${kv('Primary payout method', 'Not provided')}</div>`;
     const changes = K.payoutChanges(acct.app);
+    const accounts = K.payoutAccounts(acct.app);
     const pending = changes.filter(r => r.state === 'pending'), history = changes.filter(r => r.state !== 'pending');
     return `<h2 class="section-title">Payout Method</h2>
       <div class="subtabs" role="tablist" style="margin-top:0">
         <button class="subtab${payoutTab === 'new' ? ' active' : ''}" role="tab" data-ptab="new">New Request${pending.length ? `<span class="mx-count">${pending.length}</span>` : ''}</button>
         <button class="subtab${payoutTab === 'history' ? ' active' : ''}" role="tab" data-ptab="history">History of Changes<span class="mx-count">${history.length}</span></button>
+        <button class="subtab${payoutTab === 'current' ? ' active' : ''}" role="tab" data-ptab="current">Current Payout Method${accounts.length > 1 ? 's' : ''}<span class="mx-count">${accounts.length}</span></button>
       </div>
-      ${payoutTab === 'new'
+      ${payoutTab === 'current' ? accounts.map(payoutCurrentCard).join('') : payoutTab === 'new'
         ? (pending.length ? pending.map(r => payoutChangeItem(r, isOnboarding())).join('')
           : `<div class="panel-empty" style="padding:30px 20px">${ICON.empty}<h3>No pending request</h3><p>There is no payout change waiting for a decision.</p></div>`)
         : (history.length ? history.map(r => payoutChangeItem(r, isOnboarding())).join('')
